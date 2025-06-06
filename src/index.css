@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply font-body text-neutral-800 bg-neutral-50;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading font-semibold text-primary-800;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl leading-tight;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl leading-tight;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl leading-snug;
+  }
+
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+
+  h5 {
+    @apply text-lg md:text-xl;
+  }
+
+  h6 {
+    @apply text-base md:text-lg;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center px-5 py-2.5 rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white focus:ring-primary-500;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary-500 hover:bg-secondary-600 text-white focus:ring-secondary-400;
+  }
+
+  .btn-outline {
+    @apply border border-primary-600 text-primary-600 hover:bg-primary-50 focus:ring-primary-500;
+  }
+
+  .btn-white {
+    @apply bg-white hover:bg-neutral-100 text-primary-700 border border-neutral-200 focus:ring-primary-500;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-2.5 border border-neutral-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200;
+  }
+
+  .select-field {
+    @apply w-full pl-4 pr-10 py-2.5 border border-neutral-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 bg-white;
+  }
+
+  .card {
+    @apply bg-white rounded-lg shadow-card hover:shadow-card-hover transition-shadow duration-300;
+  }
+
+  .section {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+}
+
+/* Custom Slick Carousel Styles */
+.slick-prev:before, .slick-next:before {
+  color: #0052a3;
+}
+
+.slick-dots li button:before {
+  font-size: 10px;
+  color: #0052a3;
+}
+
+.slick-dots li.slick-active button:before {
+  color: #0052a3;
+}
+
+/* Property Detail Gallery */
+.gallery-thumbnail {
+  @apply cursor-pointer border-2 border-transparent opacity-70 transition-all duration-200;
+}
+
+.gallery-thumbnail.active {
+  @apply border-primary-500 opacity-100;
+}
+
+/* Custom Leaflet Map Styles */
+.leaflet-container {
+  @apply h-full rounded-lg overflow-hidden border border-neutral-200;
+}
