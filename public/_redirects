@@ -1,0 +1,8 @@
+# Netlify redirects file for React Router
+# This ensures that all routes are handled by the React app
+
+# Redirect all requests to index.html for client-side routing
+/*    /index.html   200
+
+# Optional: Redirect admin routes specifically (if needed)
+/admin/*    /index.html   200
