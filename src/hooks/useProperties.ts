@@ -16,6 +16,8 @@ export const useProperties = (filters?: SearchFilters) => {
     } catch (err) {
       setError('Error al cargar las propiedades');
       console.error('Error fetching properties:', err);
+      // Set empty array on error to prevent white screen
+      setProperties([]);
     } finally {
       setLoading(false);
     }
@@ -53,6 +55,7 @@ export const useProperty = (id: string) => {
       } catch (err) {
         setError('Error al cargar la propiedad');
         console.error('Error fetching property:', err);
+        setProperty(null);
       } finally {
         setLoading(false);
       }

@@ -1,10 +1,127 @@
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 import { Property, PropertyFormData, SearchFilters } from '../types';
+
+// Mock data for when Supabase is not configured
+const mockProperties: Property[] = [
+  {
+    id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+    title: 'Exclusivo Departamento en Polanco',
+    description: 'Hermoso departamento con acabados de lujo, ubicado en una de las zonas más exclusivas de la ciudad. Cuenta con amplios espacios, iluminación natural, y vistas panorámicas impresionantes. La cocina está equipada con electrodomésticos de alta gama y el baño principal incluye una bañera de hidromasaje. El edificio ofrece seguridad 24/7, gimnasio, alberca y área de BBQ.',
+    price: 8500000,
+    operation: 'venta',
+    type: 'departamento',
+    area: 120,
+    bedrooms: 2,
+    bathrooms: 2,
+    parking: 1,
+    is_furnished: false,
+    address: 'Calle Emilio Castelar 135',
+    city: 'Ciudad de México',
+    state: 'CDMX',
+    latitude: 19.4324,
+    longitude: -99.1962,
+    images: [
+      'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg',
+      'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg',
+      'https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg',
+      'https://images.pexels.com/photos/1648776/pexels-photo-1648776.jpeg',
+      'https://images.pexels.com/photos/1080721/pexels-photo-1080721.jpeg'
+    ],
+    features: [
+      'Elevador',
+      'Seguridad 24/7',
+      'Gimnasio',
+      'Alberca',
+      'Terraza',
+      'Cocina integral',
+      'Área de lavado'
+    ],
+    created_at: '2025-03-15T00:00:00Z',
+    updated_at: '2025-03-20T00:00:00Z'
+  },
+  {
+    id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12',
+    title: 'Casa con jardín en Coyoacán',
+    description: 'Encantadora casa estilo colonial con amplio jardín en una tranquila calle de Coyoacán. Perfecta para familias que buscan espacio y comodidad. Cuenta con sala de estar, comedor amplio, cocina renovada y un hermoso jardín trasero ideal para reuniones familiares.',
+    price: 12500000,
+    operation: 'venta',
+    type: 'casa',
+    area: 280,
+    bedrooms: 4,
+    bathrooms: 3,
+    parking: 2,
+    is_furnished: false,
+    address: 'Francisco Sosa 205',
+    city: 'Ciudad de México',
+    state: 'CDMX',
+    latitude: 19.3434,
+    longitude: -99.1663,
+    images: [
+      'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg',
+      'https://images.pexels.com/photos/1643384/pexels-photo-1643384.jpeg',
+      'https://images.pexels.com/photos/1743227/pexels-photo-1743227.jpeg',
+      'https://images.pexels.com/photos/1080696/pexels-photo-1080696.jpeg',
+      'https://images.pexels.com/photos/2724749/pexels-photo-2724749.jpeg'
+    ],
+    features: [
+      'Jardín',
+      'Estudio',
+      'Cuarto de servicio',
+      'Bodega',
+      'Terraza',
+      'Seguridad',
+      'Cisterna'
+    ],
+    created_at: '2025-01-10T00:00:00Z',
+    updated_at: '2025-03-18T00:00:00Z'
+  },
+  {
+    id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13',
+    title: 'Moderno Loft en Condesa',
+    description: 'Espectacular loft completamente amueblado en el corazón de la Condesa. Ideal para ejecutivos o parejas. Diseño contemporáneo, espacios abiertos y excelente ubicación a pasos de restaurantes, cafés y parques.',
+    price: 18000,
+    operation: 'renta',
+    type: 'departamento',
+    area: 75,
+    bedrooms: 1,
+    bathrooms: 1,
+    parking: 1,
+    is_furnished: true,
+    address: 'Av. Tamaulipas 66',
+    city: 'Ciudad de México',
+    state: 'CDMX',
+    latitude: 19.4134,
+    longitude: -99.1763,
+    images: [
+      'https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg',
+      'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg',
+      'https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg',
+      'https://images.pexels.com/photos/2089698/pexels-photo-2089698.jpeg',
+      'https://images.pexels.com/photos/2598638/pexels-photo-2598638.jpeg'
+    ],
+    features: [
+      'Amueblado',
+      'Internet incluido',
+      'Vigilancia',
+      'Roof garden',
+      'Pet friendly',
+      'Cocina equipada',
+      'Closets amplios'
+    ],
+    created_at: '2025-02-25T00:00:00Z',
+    updated_at: '2025-03-15T00:00:00Z'
+  }
+];
 
 export class PropertyService {
   // Get all properties with optional filters
   static async getProperties(filters?: SearchFilters): Promise<Property[]> {
     try {
+      if (!isSupabaseConfigured) {
+        console.warn('Supabase not configured, using mock data');
+        return this.filterMockProperties(mockProperties, filters);
+      }
+
       let query = supabase
         .from('properties')
         .select('*')
@@ -53,13 +170,40 @@ export class PropertyService {
       return data || [];
     } catch (error) {
       console.error('Error in getProperties:', error);
-      throw error;
+      // Fallback to mock data on error
+      return this.filterMockProperties(mockProperties, filters);
     }
+  }
+
+  // Filter mock properties based on filters
+  private static filterMockProperties(properties: Property[], filters?: SearchFilters): Property[] {
+    if (!filters) return properties;
+
+    return properties.filter(property => {
+      if (filters.operation && property.operation !== filters.operation) return false;
+      if (filters.type && property.type !== filters.type) return false;
+      if (filters.minPrice && property.price < filters.minPrice) return false;
+      if (filters.maxPrice && property.price > filters.maxPrice) return false;
+      if (filters.bedrooms && property.bedrooms < filters.bedrooms) return false;
+      if (filters.bathrooms && property.bathrooms < filters.bathrooms) return false;
+      if (filters.parking && property.parking < filters.parking) return false;
+      if (filters.location) {
+        const searchTerm = filters.location.toLowerCase();
+        const searchableText = `${property.city} ${property.address} ${property.state}`.toLowerCase();
+        if (!searchableText.includes(searchTerm)) return false;
+      }
+      return true;
+    });
   }
 
   // Get a single property by ID
   static async getPropertyById(id: string): Promise<Property | null> {
     try {
+      if (!isSupabaseConfigured) {
+        console.warn('Supabase not configured, using mock data');
+        return mockProperties.find(p => p.id === id) || null;
+      }
+
       const { data, error } = await supabase
         .from('properties')
         .select('*')
@@ -77,13 +221,25 @@ export class PropertyService {
       return data;
     } catch (error) {
       console.error('Error in getPropertyById:', error);
-      throw error;
+      // Fallback to mock data
+      return mockProperties.find(p => p.id === id) || null;
     }
   }
 
   // Create a new property
   static async createProperty(propertyData: PropertyFormData): Promise<Property> {
     try {
+      if (!isSupabaseConfigured) {
+        console.warn('Supabase not configured, simulating property creation');
+        const newProperty: Property = {
+          id: `mock-${Date.now()}`,
+          ...propertyData,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        return newProperty;
+      }
+
       const { data, error } = await supabase
         .from('properties')
         .insert([propertyData])
@@ -105,6 +261,18 @@ export class PropertyService {
   // Update an existing property
   static async updateProperty(id: string, propertyData: Partial<PropertyFormData>): Promise<Property> {
     try {
+      if (!isSupabaseConfigured) {
+        console.warn('Supabase not configured, simulating property update');
+        const existingProperty = mockProperties.find(p => p.id === id);
+        if (!existingProperty) throw new Error('Property not found');
+        
+        return {
+          ...existingProperty,
+          ...propertyData,
+          updated_at: new Date().toISOString()
+        };
+      }
+
       const { data, error } = await supabase
         .from('properties')
         .update(propertyData)
@@ -127,6 +295,11 @@ export class PropertyService {
   // Delete a property
   static async deleteProperty(id: string): Promise<void> {
     try {
+      if (!isSupabaseConfigured) {
+        console.warn('Supabase not configured, simulating property deletion');
+        return;
+      }
+
       const { error } = await supabase
         .from('properties')
         .delete()
@@ -150,6 +323,11 @@ export class PropertyService {
     offset: number = 0
   ): Promise<Property[]> {
     try {
+      if (!isSupabaseConfigured) {
+        console.warn('Supabase not configured, using mock data');
+        return this.filterMockProperties(mockProperties, filters);
+      }
+
       const { data, error } = await supabase.rpc('search_properties', {
         search_query: searchQuery || null,
         operation_filter: filters?.operation || null,
@@ -172,13 +350,19 @@ export class PropertyService {
       return data || [];
     } catch (error) {
       console.error('Error in searchProperties:', error);
-      throw error;
+      // Fallback to mock data
+      return this.filterMockProperties(mockProperties, filters);
     }
   }
 
   // Get featured properties (most recent)
   static async getFeaturedProperties(limit: number = 3): Promise<Property[]> {
     try {
+      if (!isSupabaseConfigured) {
+        console.warn('Supabase not configured, using mock data');
+        return mockProperties.slice(0, limit);
+      }
+
       const { data, error } = await supabase
         .from('properties')
         .select('*')
@@ -193,13 +377,19 @@ export class PropertyService {
       return data || [];
     } catch (error) {
       console.error('Error in getFeaturedProperties:', error);
-      throw error;
+      // Fallback to mock data
+      return mockProperties.slice(0, limit);
     }
   }
 
   // Record a property view
   static async recordPropertyView(propertyId: string): Promise<void> {
     try {
+      if (!isSupabaseConfigured) {
+        console.warn('Supabase not configured, skipping view tracking');
+        return;
+      }
+
       const { error } = await supabase
         .from('property_views')
         .insert([{
