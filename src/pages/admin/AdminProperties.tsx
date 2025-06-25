@@ -24,8 +24,9 @@ const AdminProperties: React.FC = () => {
       result = result.filter(property => 
         property.title.toLowerCase().includes(term) ||
         property.description.toLowerCase().includes(term) ||
-        property.location.address.toLowerCase().includes(term) ||
-        property.location.city.toLowerCase().includes(term)
+        property.location.calle.toLowerCase().includes(term) ||
+        property.location.colonia.toLowerCase().includes(term) ||
+        property.location.alcaldia.toLowerCase().includes(term)
       );
     }
     
@@ -49,6 +50,16 @@ const AdminProperties: React.FC = () => {
       currency: 'MXN',
       maximumFractionDigits: 0,
     }).format(price);
+  };
+
+  // Format address for display
+  const formatAddress = (location: Property['location']) => {
+    const parts = [];
+    if (location.calle) parts.push(location.calle);
+    if (location.numero) parts.push(location.numero);
+    if (location.colonia) parts.push(location.colonia);
+    
+    return parts.join(', ');
   };
 
   const handleDeleteProperty = (id: string) => {
@@ -175,8 +186,8 @@ const AdminProperties: React.FC = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="text-sm text-neutral-900 line-clamp-1">{property.location.address}</div>
-                        <div className="text-xs text-neutral-500">{property.location.city}, {property.location.state}</div>
+                        <div className="text-sm text-neutral-900 line-clamp-1">{formatAddress(property.location)}</div>
+                        <div className="text-xs text-neutral-500">{property.location.alcaldia}, {property.location.estado}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-neutral-900">

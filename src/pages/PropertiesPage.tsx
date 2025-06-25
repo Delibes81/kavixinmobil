@@ -59,9 +59,10 @@ const PropertiesPage: React.FC = () => {
     if (filters.location) {
       const searchTerm = filters.location.toLowerCase();
       filtered = filtered.filter(property => 
-        property.location.address.toLowerCase().includes(searchTerm) ||
-        property.location.city.toLowerCase().includes(searchTerm) ||
-        property.location.state.toLowerCase().includes(searchTerm)
+        property.location.calle.toLowerCase().includes(searchTerm) ||
+        property.location.colonia.toLowerCase().includes(searchTerm) ||
+        property.location.alcaldia.toLowerCase().includes(searchTerm) ||
+        property.location.estado.toLowerCase().includes(searchTerm)
       );
     }
     

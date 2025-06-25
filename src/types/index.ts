@@ -11,9 +11,12 @@ export interface Property {
   parking: number;
   isFurnished: boolean;
   location: {
-    address: string;
-    city: string;
-    state: string;
+    calle: string;
+    numero: string;
+    colonia: string;
+    alcaldia: string;
+    codigoPostal: string;
+    estado: string;
     lat: number;
     lng: number;
   };

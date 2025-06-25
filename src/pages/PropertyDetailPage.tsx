@@ -42,6 +42,19 @@ const PropertyDetailPage: React.FC = () => {
     }).format(price);
   };
 
+  // Format full address
+  const formatFullAddress = () => {
+    const parts = [];
+    if (property.location.calle) parts.push(property.location.calle);
+    if (property.location.numero) parts.push(property.location.numero);
+    if (property.location.colonia) parts.push(`Col. ${property.location.colonia}`);
+    if (property.location.alcaldia) parts.push(property.location.alcaldia);
+    if (property.location.codigoPostal) parts.push(`C.P. ${property.location.codigoPostal}`);
+    if (property.location.estado) parts.push(property.location.estado);
+    
+    return parts.join(', ');
+  };
+
   return (
     <div className="pt-20">
       {/* Property Header */}
@@ -71,7 +84,7 @@ const PropertyDetailPage: React.FC = () => {
                 {formatPrice(property.price)}
                 {property.operation === 'renta' && <span className="text-sm font-normal text-neutral-300">/mes</span>}
               </p>
-              <p className="text-white/80">{property.location.address}, {property.location.city}</p>
+              <p className="text-white/80">{formatFullAddress()}</p>
             </div>
             
             <div className="mt-4 md:mt-0 flex items-center">
@@ -112,12 +125,13 @@ const PropertyDetailPage: React.FC = () => {
             {/* Map Section */}
             <div className="bg-white rounded-lg shadow-md p-6 mb-8">
               <h3 className="text-xl font-semibold mb-4">Ubicación</h3>
-              <p className="text-neutral-600 mb-4">
-                {property.location.address}, {property.location.city}, {property.location.state}
-              </p>
+              <div className="mb-4">
+                <p className="text-neutral-800 font-medium mb-2">Dirección completa:</p>
+                <p className="text-neutral-600">{formatFullAddress()}</p>
+              </div>
               <PropertyMap 
                 position={[property.location.lat, property.location.lng]} 
-                address={property.location.address}
+                address={formatFullAddress()}
               />
             </div>
           </div>

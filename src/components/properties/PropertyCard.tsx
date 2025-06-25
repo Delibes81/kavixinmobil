@@ -17,6 +17,17 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
     }).format(price);
   };
 
+  // Format address
+  const formatAddress = () => {
+    const parts = [];
+    if (property.location.calle) parts.push(property.location.calle);
+    if (property.location.numero) parts.push(property.location.numero);
+    if (property.location.colonia) parts.push(property.location.colonia);
+    if (property.location.alcaldia) parts.push(property.location.alcaldia);
+    
+    return parts.join(', ');
+  };
+
   return (
     <div className="card group overflow-hidden transition-all duration-300">
       {/* Image container with overlay */}
@@ -55,7 +66,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
 
         <div className="flex items-center text-neutral-600 mb-4">
           <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-          <span className="text-sm truncate">{property.location.address}, {property.location.city}</span>
+          <span className="text-sm truncate">{formatAddress()}</span>
         </div>
 
         <p className="text-neutral-600 mb-4 line-clamp-2">{property.description}</p>
