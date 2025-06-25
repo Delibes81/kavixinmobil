@@ -13,6 +13,7 @@ const AdminProperties: React.FC = () => {
   const [operationFilter, setOperationFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
+  const [deletingProperty, setDeletingProperty] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = 'Gestionar Propiedades | Nova Hestia';
@@ -73,13 +74,44 @@ const AdminProperties: React.FC = () => {
   const handleDeleteProperty = async (id: string) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar esta propiedad? Esta acción no se puede deshacer.')) {
       try {
+        setDeletingProperty(id);
         await PropertyService.deleteProperty(id);
-        setProperties(properties.filter(property => property.id !== id));
+        
+        // Update local state immediately
+        const updatedProperties = properties.filter(property => property.id !== id);
+        setProperties(updatedProperties);
+        setFilteredProperties(updatedProperties.filter(property => {
+          // Apply current filters to the updated list
+          let matches = true;
+          
+          if (searchTerm) {
+            const term = searchTerm.toLowerCase();
+            matches = matches && (
+              property.title.toLowerCase().includes(term) ||
+              property.description.toLowerCase().includes(term) ||
+              property.address.toLowerCase().includes(term) ||
+              property.city.toLowerCase().includes(term)
+            );
+          }
+          
+          if (operationFilter) {
+            matches = matches && property.operation === operationFilter;
+          }
+          
+          if (typeFilter) {
+            matches = matches && property.type === typeFilter;
+          }
+          
+          return matches;
+        }));
+        
         setSelectedProperty(null);
         alert('Propiedad eliminada correctamente');
       } catch (error: any) {
         console.error('Error deleting property:', error);
         alert(error.message || 'Error al eliminar la propiedad');
+      } finally {
+        setDeletingProperty(null);
       }
     }
   };
@@ -87,6 +119,18 @@ const AdminProperties: React.FC = () => {
   const toggleDropdown = (id: string) => {
     setSelectedProperty(selectedProperty === id ? null : id);
   };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setSelectedProperty(null);
+    };
+
+    if (selectedProperty) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [selectedProperty]);
 
   if (loading) {
     return (
@@ -274,19 +318,31 @@ const AdminProperties: React.FC = () => {
                         </Link>
                         <div className="relative">
                           <button 
-                            onClick={() => toggleDropdown(property.id)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleDropdown(property.id);
+                            }}
                             className="text-neutral-500 hover:text-neutral-700 transition-colors"
                             title="Más opciones"
+                            disabled={deletingProperty === property.id}
                           >
-                            <MoreHorizontal className="h-5 w-5" />
+                            {deletingProperty === property.id ? (
+                              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-neutral-500"></div>
+                            ) : (
+                              <MoreHorizontal className="h-5 w-5" />
+                            )}
                           </button>
                           
                           {selectedProperty === property.id && (
-                            <div className="absolute right-0 top-8 w-48 bg-white rounded-md shadow-lg z-10">
+                            <div className="absolute right-0 top-8 w-48 bg-white rounded-md shadow-lg z-10 border border-neutral-200">
                               <div className="py-1">
                                 <button
-                                  onClick={() => handleDeleteProperty(property.id)}
-                                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-neutral-100 flex items-center"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteProperty(property.id);
+                                  }}
+                                  disabled={deletingProperty === property.id}
+                                  className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-neutral-100 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                   <Trash2 className="h-4 w-4 mr-2" />
                                   Eliminar propiedad

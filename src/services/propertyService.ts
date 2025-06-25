@@ -163,16 +163,58 @@ export class PropertyService {
         throw new Error('Supabase no está configurado. No se pueden eliminar propiedades.');
       }
 
-      console.log('Deleting property with ID:', id);
+      console.log('Attempting to delete property with ID:', id);
 
-      const { error } = await supabase
+      // First check if the property exists
+      const { data: existingProperty, error: fetchError } = await supabase
+        .from('properties')
+        .select('id')
+        .eq('id', id)
+        .single();
+
+      if (fetchError) {
+        if (fetchError.code === 'PGRST116') {
+          throw new Error('La propiedad no existe o ya fue eliminada');
+        }
+        console.error('Error checking property existence:', fetchError);
+        throw new Error(`Error al verificar la propiedad: ${fetchError.message}`);
+      }
+
+      if (!existingProperty) {
+        throw new Error('La propiedad no existe');
+      }
+
+      // Delete related property views first (due to foreign key constraint)
+      const { error: viewsError } = await supabase
+        .from('property_views')
+        .delete()
+        .eq('property_id', id);
+
+      if (viewsError) {
+        console.warn('Error deleting property views:', viewsError);
+        // Continue with property deletion even if views deletion fails
+      }
+
+      // Delete related contacts (set property_id to null due to foreign key constraint)
+      const { error: contactsError } = await supabase
+        .from('contacts')
+        .update({ property_id: null })
+        .eq('property_id', id);
+
+      if (contactsError) {
+        console.warn('Error updating contacts:', contactsError);
+        // Continue with property deletion even if contacts update fails
+      }
+
+      // Now delete the property
+      const { error: deleteError } = await supabase
         .from('properties')
         .delete()
         .eq('id', id);
 
-      if (error) {
-        console.error('Error deleting property:', error);
-        throw new Error(`Error al eliminar la propiedad: ${error.message}`);
+      if (deleteError) {
+        console.error('Error deleting property:', deleteError);
+        throw new Error(`Error al eliminar la propiedad: ${deleteError.message}`);
       }
 
       console.log('Property deleted successfully');
