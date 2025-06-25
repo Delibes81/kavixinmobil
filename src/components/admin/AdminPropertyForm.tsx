@@ -37,6 +37,50 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
   const [newFeature, setNewFeature] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Lista predefinida de amenidades comunes
+  const commonAmenities = [
+    'Elevador',
+    'Seguridad 24/7',
+    'Gimnasio',
+    'Alberca',
+    'Terraza',
+    'Jardín',
+    'Cocina integral',
+    'Área de lavado',
+    'Estudio',
+    'Cuarto de servicio',
+    'Bodega',
+    'Cisterna',
+    'Roof garden',
+    'Pet friendly',
+    'Internet incluido',
+    'Vigilancia',
+    'Closets amplios',
+    'Aire acondicionado',
+    'Calefacción',
+    'Chimenea',
+    'Balcón',
+    'Vista panorámica',
+    'Acceso para discapacitados',
+    'Salón de eventos',
+    'Área de BBQ',
+    'Cancha de tenis',
+    'Cancha de paddle',
+    'Spa',
+    'Sauna',
+    'Jacuzzi',
+    'Área de juegos infantiles',
+    'Biblioteca',
+    'Sala de juntas',
+    'Coworking',
+    'Lavandería',
+    'Valet parking',
+    'Servicio de concierge',
+    'Cámaras de seguridad',
+    'Control de acceso',
+    'Intercomunicador'
+  ];
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     
@@ -65,23 +109,44 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
     });
   };
 
-  const addFeature = () => {
-    if (newFeature.trim() && formData.features) {
+  const handleAmenityChange = (amenity: string, checked: boolean) => {
+    const currentFeatures = formData.features || [];
+    
+    if (checked) {
+      // Agregar amenidad si no existe
+      if (!currentFeatures.includes(amenity)) {
+        setFormData({
+          ...formData,
+          features: [...currentFeatures, amenity],
+        });
+      }
+    } else {
+      // Remover amenidad
       setFormData({
         ...formData,
-        features: [...formData.features, newFeature.trim()],
+        features: currentFeatures.filter(feature => feature !== amenity),
       });
-      setNewFeature('');
     }
   };
 
-  const removeFeature = (index: number) => {
+  const addCustomFeature = () => {
+    if (newFeature.trim() && formData.features) {
+      const currentFeatures = formData.features || [];
+      if (!currentFeatures.includes(newFeature.trim())) {
+        setFormData({
+          ...formData,
+          features: [...currentFeatures, newFeature.trim()],
+        });
+        setNewFeature('');
+      }
+    }
+  };
+
+  const removeFeature = (featureToRemove: string) => {
     if (formData.features) {
-      const updatedFeatures = [...formData.features];
-      updatedFeatures.splice(index, 1);
       setFormData({
         ...formData,
-        features: updatedFeatures,
+        features: formData.features.filter(feature => feature !== featureToRemove),
       });
     }
   };
@@ -315,42 +380,76 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
           </div>
         </div>
         
-        {/* Features */}
+        {/* Amenities Checklist */}
         <div className="mt-6">
-          <label className="block text-sm font-medium text-neutral-700 mb-2">
+          <label className="block text-sm font-medium text-neutral-700 mb-4">
             Amenidades
           </label>
           
-          <div className="flex flex-wrap gap-2 mb-4">
-            {formData.features?.map((feature, index) => (
-              <div key={index} className="bg-neutral-100 rounded-full px-3 py-1 flex items-center">
-                <span className="text-neutral-800">{feature}</span>
-                <button
-                  type="button"
-                  onClick={() => removeFeature(index)}
-                  className="ml-2 text-neutral-500 hover:text-red-500"
-                >
-                  <X className="h-4 w-4" />
-                </button>
+          {/* Selected Features Display */}
+          {formData.features && formData.features.length > 0 && (
+            <div className="mb-6">
+              <p className="text-sm font-medium text-neutral-700 mb-2">Amenidades seleccionadas:</p>
+              <div className="flex flex-wrap gap-2">
+                {formData.features.map((feature, index) => (
+                  <div key={index} className="bg-primary-100 text-primary-800 rounded-full px-3 py-1 flex items-center text-sm">
+                    <span>{feature}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeFeature(feature)}
+                      className="ml-2 text-primary-600 hover:text-red-500"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+          )}
+          
+          {/* Amenities Checklist */}
+          <div className="border border-neutral-200 rounded-lg p-4 max-h-64 overflow-y-auto">
+            <p className="text-sm font-medium text-neutral-700 mb-3">Selecciona las amenidades disponibles:</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+              {commonAmenities.map((amenity) => (
+                <label key={amenity} className="flex items-center space-x-2 p-2 hover:bg-neutral-50 rounded cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.features?.includes(amenity) || false}
+                    onChange={(e) => handleAmenityChange(amenity, e.target.checked)}
+                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+                  />
+                  <span className="text-sm text-neutral-700">{amenity}</span>
+                </label>
+              ))}
+            </div>
           </div>
           
-          <div className="flex">
-            <input
-              type="text"
-              value={newFeature}
-              onChange={(e) => setNewFeature(e.target.value)}
-              className="input-field rounded-r-none"
-              placeholder="Agregar nueva amenidad..."
-            />
-            <button
-              type="button"
-              onClick={addFeature}
-              className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-r-md focus:outline-none"
-            >
-              <Plus className="h-5 w-5" />
-            </button>
+          {/* Custom Amenity Input */}
+          <div className="mt-4">
+            <p className="text-sm font-medium text-neutral-700 mb-2">¿No encuentras una amenidad? Agrégala manualmente:</p>
+            <div className="flex">
+              <input
+                type="text"
+                value={newFeature}
+                onChange={(e) => setNewFeature(e.target.value)}
+                className="input-field rounded-r-none flex-1"
+                placeholder="Escribir amenidad personalizada..."
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addCustomFeature();
+                  }
+                }}
+              />
+              <button
+                type="button"
+                onClick={addCustomFeature}
+                className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-r-md focus:outline-none"
+              >
+                <Plus className="h-5 w-5" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
