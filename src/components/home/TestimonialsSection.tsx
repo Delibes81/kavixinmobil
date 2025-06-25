@@ -55,7 +55,7 @@ const TestimonialsSection: React.FC = () => {
 
   const testimonials = [
     {
-      quote: "El equipo de PropMax fue excepcional en todo momento. Encontraron exactamente lo que buscábamos y nos guiaron en cada paso del proceso de compra. Totalmente recomendables.",
+      quote: "El equipo de Nova Hestia fue excepcional en todo momento. Encontraron exactamente lo que buscábamos y nos guiaron en cada paso del proceso de compra. Totalmente recomendables.",
       author: "Carlos Méndez",
       position: "Comprador",
       rating: 5,
@@ -76,7 +76,7 @@ const TestimonialsSection: React.FC = () => {
       image: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg"
     },
     {
-      quote: "Como inversionista inmobiliario, valoro mucho la transparencia y eficiencia de PropMax. Su asesoría me ha permitido expandir mi portafolio de propiedades con excelentes resultados.",
+      quote: "Como inversionista inmobiliario, valoro mucho la transparencia y eficiencia de Nova Hestia. Su asesoría me ha permitido expandir mi portafolio de propiedades con excelentes resultados.",
       author: "Laura Sánchez",
       position: "Inversionista",
       rating: 5,
@@ -117,7 +117,7 @@ const TestimonialsSection: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="mb-4">Lo que dicen nuestros clientes</h2>
           <p className="text-neutral-600">
-            Nuestro mayor orgullo es la satisfacción de nuestros clientes. Conoce sus experiencias con PropMax.
+            Nuestro mayor orgullo es la satisfacción de nuestros clientes. Conoce sus experiencias con Nova Hestia.
           </p>
         </div>
 

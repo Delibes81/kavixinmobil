@@ -59,7 +59,7 @@ const ServicesSection: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="mb-4">Nuestros servicios</h2>
           <p className="text-neutral-600">
-            En PropMax ofrecemos soluciones inmobiliarias integrales para satisfacer todas tus necesidades.
+            En Nova Hestia ofrecemos soluciones inmobiliarias integrales para satisfacer todas tus necesidades.
             Contamos con un equipo de profesionales altamente capacitados para brindarte el mejor servicio.
           </p>
         </div>

@@ -18,8 +18,8 @@ const AdminPropertyEdit: React.FC = () => {
     }
     
     document.title = isNewProperty 
-      ? 'Nueva Propiedad | PropMax' 
-      : 'Editar Propiedad | PropMax';
+      ? 'Nueva Propiedad | Nova Hestia' 
+      : 'Editar Propiedad | Nova Hestia';
   }, [id, isNewProperty]);
 
   const handleSubmit = (formData: Partial<Property>) => {

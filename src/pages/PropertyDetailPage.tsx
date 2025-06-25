@@ -23,9 +23,9 @@ const PropertyDetailPage: React.FC = () => {
     
     // Update the page title
     if (foundProperty) {
-      document.title = `${foundProperty.title} | PropMax`;
+      document.title = `${foundProperty.title} | Nova Hestia`;
     } else {
-      document.title = 'Propiedad no encontrada | PropMax';
+      document.title = 'Propiedad no encontrada | Nova Hestia';
     }
   }, [id]);
   
@@ -132,7 +132,7 @@ const PropertyDetailPage: React.FC = () => {
             
             {/* Agency Info */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-xl font-semibold mb-4">PropMax Inmobiliaria</h3>
+              <h3 className="text-xl font-semibold mb-4">Nova Hestia Inmobiliaria</h3>
               <p className="text-neutral-600 mb-4">
                 Somos expertos inmobiliarios con más de 15 años de experiencia en el mercado.
                 Nuestro compromiso es encontrar la propiedad perfecta para ti.

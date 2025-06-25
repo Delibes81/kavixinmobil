@@ -3,7 +3,7 @@ import { Phone, Mail, MapPin, Send, Facebook, Instagram, Twitter } from 'lucide-
 
 const ContactPage: React.FC = () => {
   useEffect(() => {
-    document.title = 'Contacto | PropMax';
+    document.title = 'Contacto | Nova Hestia';
   }, []);
 
   const [formData, setFormData] = useState({
@@ -131,11 +131,11 @@ const ContactPage: React.FC = () => {
                 <div>
                   <h4 className="text-lg font-medium mb-1">Correo Electrónico</h4>
                   <p className="text-neutral-700">
-                    <a href="mailto:info@propmax.com" className="hover:text-primary-600 transition-colors block">
-                      info@propmax.com
+                    <a href="mailto:info@novahestia.com" className="hover:text-primary-600 transition-colors block">
+                      info@novahestia.com
                     </a>
-                    <a href="mailto:ventas@propmax.com" className="hover:text-primary-600 transition-colors block">
-                      ventas@propmax.com
+                    <a href="mailto:ventas@novahestia.com" className="hover:text-primary-600 transition-colors block">
+                      ventas@novahestia.com
                     </a>
                   </p>
                 </div>
@@ -318,7 +318,7 @@ const ContactPage: React.FC = () => {
             allowFullScreen 
             loading="lazy" 
             referrerPolicy="no-referrer-when-downgrade"
-            title="Ubicación de PropMax"
+            title="Ubicación de Nova Hestia"
           ></iframe>
         </div>
       </div>

@@ -12,7 +12,7 @@ const AdminProperties: React.FC = () => {
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
 
   useEffect(() => {
-    document.title = 'Gestionar Propiedades | PropMax';
+    document.title = 'Gestionar Propiedades | Nova Hestia';
   }, []);
 
   useEffect(() => {

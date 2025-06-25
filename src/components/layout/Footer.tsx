@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
           <div>
             <div className="flex items-center mb-4">
               <Building2 className="h-8 w-8 text-secondary-400" />
-              <span className="ml-2 text-xl font-heading font-bold">PropMax</span>
+              <span className="ml-2 text-xl font-heading font-bold">Nova Hestia</span>
             </div>
             <p className="text-neutral-300 mb-6">
               Encuentra el hogar de tus sueños con la ayuda de nuestros expertos inmobiliarios.
@@ -102,8 +102,8 @@ const Footer: React.FC = () => {
               </li>
               <li className="flex items-center">
                 <Mail className="h-5 w-5 text-secondary-400 mr-3" />
-                <a href="mailto:info@propmax.com" className="text-neutral-300 hover:text-secondary-400 transition-colors">
-                  info@propmax.com
+                <a href="mailto:info@novahestia.com" className="text-neutral-300 hover:text-secondary-400 transition-colors">
+                  info@novahestia.com
                 </a>
               </li>
             </ul>
@@ -114,7 +114,7 @@ const Footer: React.FC = () => {
 
         <div className="flex flex-col md:flex-row justify-between items-center text-sm">
           <p className="text-neutral-400 mb-4 md:mb-0">
-            &copy; {new Date().getFullYear()} PropMax. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} Nova Hestia. Todos los derechos reservados.
           </p>
           <div className="flex space-x-6">
             <Link to="/privacy" className="text-neutral-400 hover:text-secondary-400 transition-colors">

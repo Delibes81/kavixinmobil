@@ -7,7 +7,7 @@ import CTASection from '../components/home/CTASection';
 
 const HomePage: React.FC = () => {
   useEffect(() => {
-    document.title = 'PropMax | Encuentra tu hogar ideal';
+    document.title = 'Nova Hestia | Encuentra tu hogar ideal';
   }, []);
 
   return (

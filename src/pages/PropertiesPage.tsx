@@ -19,7 +19,7 @@ const PropertiesPage: React.FC = () => {
   });
 
   useEffect(() => {
-    document.title = 'Propiedades | PropMax';
+    document.title = 'Propiedades | Nova Hestia';
   }, []);
 
   const applyFilters = (filters: SearchFilters) => {

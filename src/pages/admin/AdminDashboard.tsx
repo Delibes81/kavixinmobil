@@ -5,7 +5,7 @@ import { properties } from '../../data/properties';
 
 const AdminDashboard: React.FC = () => {
   useEffect(() => {
-    document.title = 'Panel de Administración | PropMax';
+    document.title = 'Panel de Administración | Nova Hestia';
   }, []);
 
   // Mock stats for dashboard

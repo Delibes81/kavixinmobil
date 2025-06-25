@@ -3,7 +3,7 @@ import { Users, Award, Target, MapPin, Phone, Mail } from 'lucide-react';
 
 const AboutPage: React.FC = () => {
   useEffect(() => {
-    document.title = 'Nosotros | PropMax';
+    document.title = 'Nosotros | Nova Hestia';
   }, []);
 
   return (
@@ -16,7 +16,7 @@ const AboutPage: React.FC = () => {
             <h1 className="text-white">Nosotros</h1>
           </div>
           <p className="text-white/80 max-w-3xl">
-            Conoce más sobre PropMax, nuestra misión, visión y valores que nos distinguen en el mercado inmobiliario.
+            Conoce más sobre Nova Hestia, nuestra misión, visión y valores que nos distinguen en el mercado inmobiliario.
           </p>
         </div>
       </div>
@@ -27,7 +27,7 @@ const AboutPage: React.FC = () => {
           <div>
             <h2 className="mb-6">Nuestra Historia</h2>
             <p className="text-neutral-700 mb-4">
-              PropMax nació en 2010 con la visión de transformar la experiencia de comprar, vender y rentar propiedades en México. 
+              Nova Hestia nació en 2010 con la visión de transformar la experiencia de comprar, vender y rentar propiedades en México. 
               Fundada por un grupo de profesionales apasionados por el sector inmobiliario, la empresa comenzó como una pequeña oficina 
               en la colonia Roma y ha crecido hasta convertirse en una de las inmobiliarias más reconocidas en la Ciudad de México.
             </p>
@@ -38,7 +38,7 @@ const AboutPage: React.FC = () => {
               y los resultados.
             </p>
             <p className="text-neutral-700">
-              Hoy en día, PropMax cuenta con un equipo de más de 50 profesionales altamente capacitados y una cartera diversa 
+              Hoy en día, Nova Hestia cuenta con un equipo de más de 50 profesionales altamente capacitados y una cartera diversa 
               de propiedades que abarca desde departamentos en zonas exclusivas hasta desarrollos comerciales y terrenos con 
               gran potencial.
             </p>
@@ -46,7 +46,7 @@ const AboutPage: React.FC = () => {
           <div>
             <img 
               src="https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg" 
-              alt="Equipo PropMax" 
+              alt="Equipo Nova Hestia" 
               className="rounded-lg shadow-lg w-full h-auto"
             />
           </div>
@@ -176,7 +176,7 @@ const AboutPage: React.FC = () => {
           <div className="text-center mb-12">
             <h2 className="mb-4">Nuestros Servicios</h2>
             <p className="text-neutral-700 max-w-3xl mx-auto">
-              En PropMax ofrecemos una amplia gama de servicios inmobiliarios diseñados para satisfacer 
+              En Nova Hestia ofrecemos una amplia gama de servicios inmobiliarios diseñados para satisfacer 
               todas tus necesidades, ya sea que busques comprar, vender o rentar una propiedad.
             </p>
           </div>
@@ -293,12 +293,12 @@ const AboutPage: React.FC = () => {
               </div>
               <h4 className="text-lg font-semibold mb-2">Correo Electrónico</h4>
               <p className="text-neutral-700">
-                <a href="mailto:info@propmax.com" className="hover:text-primary-600 transition-colors">
-                  info@propmax.com
+                <a href="mailto:info@novahestia.com" className="hover:text-primary-600 transition-colors">
+                  info@novahestia.com
                 </a>
                 <br />
-                <a href="mailto:ventas@propmax.com" className="hover:text-primary-600 transition-colors">
-                  ventas@propmax.com
+                <a href="mailto:ventas@novahestia.com" className="hover:text-primary-600 transition-colors">
+                  ventas@novahestia.com
                 </a>
               </p>
             </div>

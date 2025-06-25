@@ -49,7 +49,7 @@ const Navbar: React.FC = () => {
         <Link to="/" className="flex items-center">
           <Building2 className={`h-8 w-8 ${isScrolled || !isHomePage ? 'text-primary-600' : 'text-white'}`} />
           <span className={`ml-2 text-xl font-heading font-bold ${isScrolled || !isHomePage ? 'text-primary-800' : 'text-white'}`}>
-            PropMax
+            Nova Hestia
           </span>
         </Link>
 
