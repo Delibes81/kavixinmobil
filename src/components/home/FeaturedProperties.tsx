@@ -1,12 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import PropertyCard from '../properties/PropertyCard';
-import { properties } from '../../data/properties';
+import { PropertyService } from '../../services/propertyService';
+import { Property } from '../../types';
 
 const FeaturedProperties: React.FC = () => {
-  // Get 3 featured properties
-  const featuredProperties = properties.slice(0, 3);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeaturedProperties = async () => {
+      try {
+        const data = await PropertyService.getFeaturedProperties(3);
+        setProperties(data);
+      } catch (error) {
+        console.error('Error fetching featured properties:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeaturedProperties();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="section bg-white">
+        <div className="container-custom">
+          <div className="flex justify-center items-center py-16">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="section bg-white">
@@ -27,11 +55,17 @@ const FeaturedProperties: React.FC = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredProperties.map((property) => (
-            <PropertyCard key={property.id} property={property} />
-          ))}
-        </div>
+        {properties.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {properties.map((property) => (
+              <PropertyCard key={property.id} property={property} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <p className="text-neutral-600">No hay propiedades destacadas disponibles en este momento.</p>
+          </div>
+        )}
       </div>
     </section>
   );

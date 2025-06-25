@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Building2 } from 'lucide-react';
 import PropertySearchFilters from '../components/properties/PropertySearchFilters';
 import PropertyCard from '../components/properties/PropertyCard';
-import { properties } from '../data/properties';
 import { Property, SearchFilters } from '../types';
+import { useProperties } from '../hooks/useProperties';
 
 const PropertiesPage: React.FC = () => {
-  const [filteredProperties, setFilteredProperties] = useState<Property[]>(properties);
   const [activeFilters, setActiveFilters] = useState<SearchFilters>({
     operation: '',
     type: '',
@@ -18,55 +17,31 @@ const PropertiesPage: React.FC = () => {
     location: '',
   });
 
+  const { properties, loading, error } = useProperties(activeFilters);
+
   useEffect(() => {
     document.title = 'Propiedades | Nova Hestia';
   }, []);
 
   const applyFilters = (filters: SearchFilters) => {
     setActiveFilters(filters);
-    
-    let filtered = [...properties];
-    
-    // Apply filters
-    if (filters.operation) {
-      filtered = filtered.filter(property => property.operation === filters.operation);
-    }
-    
-    if (filters.type) {
-      filtered = filtered.filter(property => property.type === filters.type);
-    }
-    
-    if (filters.minPrice) {
-      filtered = filtered.filter(property => property.price >= filters.minPrice!);
-    }
-    
-    if (filters.maxPrice) {
-      filtered = filtered.filter(property => property.price <= filters.maxPrice!);
-    }
-    
-    if (filters.bedrooms) {
-      filtered = filtered.filter(property => property.bedrooms >= filters.bedrooms!);
-    }
-    
-    if (filters.bathrooms) {
-      filtered = filtered.filter(property => property.bathrooms >= filters.bathrooms!);
-    }
-    
-    if (filters.parking) {
-      filtered = filtered.filter(property => property.parking >= filters.parking!);
-    }
-    
-    if (filters.location) {
-      const searchTerm = filters.location.toLowerCase();
-      filtered = filtered.filter(property => 
-        property.location.address.toLowerCase().includes(searchTerm) ||
-        property.location.city.toLowerCase().includes(searchTerm) ||
-        property.location.state.toLowerCase().includes(searchTerm)
-      );
-    }
-    
-    setFilteredProperties(filtered);
   };
+
+  if (error) {
+    return (
+      <div className="pt-20">
+        <div className="container-custom py-16 text-center">
+          <p className="text-red-600 mb-4">Error al cargar las propiedades</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="btn btn-primary"
+          >
+            Intentar de nuevo
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-20">
@@ -91,8 +66,12 @@ const PropertiesPage: React.FC = () => {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-semibold">
-              {filteredProperties.length} 
-              {filteredProperties.length === 1 ? ' propiedad encontrada' : ' propiedades encontradas'}
+              {loading ? 'Cargando...' : (
+                <>
+                  {properties.length} 
+                  {properties.length === 1 ? ' propiedad encontrada' : ' propiedades encontradas'}
+                </>
+              )}
             </h2>
             <div>
               <select className="select-field w-auto">
@@ -162,14 +141,24 @@ const PropertiesPage: React.FC = () => {
             </div>
           )}
           
+          {/* Loading State */}
+          {loading && (
+            <div className="flex justify-center py-16">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+            </div>
+          )}
+          
           {/* Property Grid */}
-          {filteredProperties.length > 0 ? (
+          {!loading && properties.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredProperties.map((property) => (
+              {properties.map((property) => (
                 <PropertyCard key={property.id} property={property} />
               ))}
             </div>
-          ) : (
+          )}
+          
+          {/* No Results */}
+          {!loading && properties.length === 0 && (
             <div className="text-center py-16">
               <Building2 className="h-16 w-16 text-neutral-300 mx-auto mb-4" />
               <h3 className="text-2xl font-semibold mb-2">No se encontraron propiedades</h3>
@@ -192,29 +181,6 @@ const PropertiesPage: React.FC = () => {
               >
                 Limpiar filtros
               </button>
-            </div>
-          )}
-          
-          {/* Pagination (mockup) */}
-          {filteredProperties.length > 0 && (
-            <div className="flex justify-center mt-12">
-              <nav className="flex space-x-1">
-                <button className="px-3 py-2 rounded-md text-neutral-600 hover:bg-neutral-100">
-                  Anterior
-                </button>
-                <button className="px-3 py-2 rounded-md bg-primary-600 text-white">
-                  1
-                </button>
-                <button className="px-3 py-2 rounded-md text-neutral-600 hover:bg-neutral-100">
-                  2
-                </button>
-                <button className="px-3 py-2 rounded-md text-neutral-600 hover:bg-neutral-100">
-                  3
-                </button>
-                <button className="px-3 py-2 rounded-md text-neutral-600 hover:bg-neutral-100">
-                  Siguiente
-                </button>
-              </nav>
             </div>
           )}
         </div>

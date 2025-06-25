@@ -1,20 +1,36 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, User, DollarSign, Clock, Eye, PenSquare } from 'lucide-react';
-import { properties } from '../../data/properties';
+import { PropertyService } from '../../services/propertyService';
+import { Property } from '../../types';
 
 const AdminDashboard: React.FC = () => {
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     document.title = 'Panel de Administración | Nova Hestia';
+    
+    const fetchProperties = async () => {
+      try {
+        const data = await PropertyService.getProperties();
+        setProperties(data);
+      } catch (error) {
+        console.error('Error fetching properties:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
   }, []);
 
-  // Mock stats for dashboard
+  // Calculate stats from actual data
   const stats = {
     totalProperties: properties.length,
     activeListings: properties.length,
     pendingReviews: 2,
     totalUsers: 5,
-    // For a real app, these would be calculated from actual data
     propertySales: {
       venta: properties.filter(p => p.operation === 'venta').length,
       renta: properties.filter(p => p.operation === 'renta').length,
@@ -120,7 +136,7 @@ const AdminDashboard: React.FC = () => {
                     <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-primary-600 rounded-full" 
-                        style={{ width: `${(stats.propertySales.venta / stats.totalProperties) * 100}%` }}
+                        style={{ width: `${stats.totalProperties > 0 ? (stats.propertySales.venta / stats.totalProperties) * 100 : 0}%` }}
                       ></div>
                     </div>
                   </div>
@@ -133,7 +149,7 @@ const AdminDashboard: React.FC = () => {
                     <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-secondary-500 rounded-full" 
-                        style={{ width: `${(stats.propertySales.renta / stats.totalProperties) * 100}%` }}
+                        style={{ width: `${stats.totalProperties > 0 ? (stats.propertySales.renta / stats.totalProperties) * 100 : 0}%` }}
                       ></div>
                     </div>
                   </div>
@@ -152,7 +168,7 @@ const AdminDashboard: React.FC = () => {
                     <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-blue-500 rounded-full" 
-                        style={{ width: `${(stats.propertyTypes.casa / stats.totalProperties) * 100}%` }}
+                        style={{ width: `${stats.totalProperties > 0 ? (stats.propertyTypes.casa / stats.totalProperties) * 100 : 0}%` }}
                       ></div>
                     </div>
                   </div>
@@ -165,7 +181,7 @@ const AdminDashboard: React.FC = () => {
                     <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-green-500 rounded-full" 
-                        style={{ width: `${(stats.propertyTypes.departamento / stats.totalProperties) * 100}%` }}
+                        style={{ width: `${stats.totalProperties > 0 ? (stats.propertyTypes.departamento / stats.totalProperties) * 100 : 0}%` }}
                       ></div>
                     </div>
                   </div>
@@ -178,7 +194,7 @@ const AdminDashboard: React.FC = () => {
                     <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-purple-500 rounded-full" 
-                        style={{ width: `${(stats.propertyTypes.local / stats.totalProperties) * 100}%` }}
+                        style={{ width: `${stats.totalProperties > 0 ? (stats.propertyTypes.local / stats.totalProperties) * 100 : 0}%` }}
                       ></div>
                     </div>
                   </div>
@@ -191,7 +207,7 @@ const AdminDashboard: React.FC = () => {
                     <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
                       <div 
                         className="h-full bg-orange-500 rounded-full" 
-                        style={{ width: `${(stats.propertyTypes.terreno / stats.totalProperties) * 100}%` }}
+                        style={{ width: `${stats.totalProperties > 0 ? (stats.propertyTypes.terreno / stats.totalProperties) * 100 : 0}%` }}
                       ></div>
                     </div>
                   </div>
@@ -209,77 +225,87 @@ const AdminDashboard: React.FC = () => {
               </Link>
             </div>
             
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-neutral-200">
-                <thead>
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                      Propiedad
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                      Precio
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                      Operación
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                      Fecha
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-neutral-500 uppercase tracking-wider">
-                      Acciones
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-neutral-200">
-                  {properties.map((property) => (
-                    <tr key={property.id} className="hover:bg-neutral-50">
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="h-10 w-10 flex-shrink-0">
-                            <img className="h-10 w-10 rounded-md object-cover" src={property.images[0]} alt={property.title} />
-                          </div>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-neutral-900 line-clamp-1">{property.title}</div>
-                            <div className="text-xs text-neutral-500">{property.location.city}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <div className="text-sm text-neutral-900">
-                          {new Intl.NumberFormat('es-MX', {
-                            style: 'currency',
-                            currency: 'MXN',
-                            maximumFractionDigits: 0,
-                          }).format(property.price)}
-                        </div>
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          property.operation === 'venta' 
-                            ? 'bg-primary-100 text-primary-800' 
-                            : 'bg-secondary-100 text-secondary-800'
-                        }`}>
-                          {property.operation === 'venta' ? 'Venta' : 'Renta'}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-neutral-500">
-                        {new Date(property.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex justify-end space-x-3">
-                          <Link to={`/propiedades/${property.id}`} className="text-primary-600 hover:text-primary-900">
-                            <Eye className="h-4 w-4" />
-                          </Link>
-                          <Link to={`/admin/propiedades/${property.id}`} className="text-neutral-600 hover:text-neutral-900">
-                            <PenSquare className="h-4 w-4" />
-                          </Link>
-                        </div>
-                      </td>
+            {loading ? (
+              <div className="flex justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-neutral-200">
+                  <thead>
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                        Propiedad
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                        Precio
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                        Operación
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                        Fecha
+                      </th>
+                      <th className="px-4 py-3 text-right text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                        Acciones
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-neutral-200">
+                    {properties.slice(0, 5).map((property) => (
+                      <tr key={property.id} className="hover:bg-neutral-50">
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="h-10 w-10 flex-shrink-0">
+                              <img 
+                                className="h-10 w-10 rounded-md object-cover" 
+                                src={property.images[0] || 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg'} 
+                                alt={property.title} 
+                              />
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-neutral-900 line-clamp-1">{property.title}</div>
+                              <div className="text-xs text-neutral-500">{property.city}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <div className="text-sm text-neutral-900">
+                            {new Intl.NumberFormat('es-MX', {
+                              style: 'currency',
+                              currency: 'MXN',
+                              maximumFractionDigits: 0,
+                            }).format(property.price)}
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            property.operation === 'venta' 
+                              ? 'bg-primary-100 text-primary-800' 
+                              : 'bg-secondary-100 text-secondary-800'
+                          }`}>
+                            {property.operation === 'venta' ? 'Venta' : 'Renta'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-neutral-500">
+                          {property.created_at ? new Date(property.created_at).toLocaleDateString() : 'N/A'}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <div className="flex justify-end space-x-3">
+                            <Link to={`/propiedades/${property.id}`} className="text-primary-600 hover:text-primary-900">
+                              <Eye className="h-4 w-4" />
+                            </Link>
+                            <Link to={`/admin/propiedades/${property.id}`} className="text-neutral-600 hover:text-neutral-900">
+                              <PenSquare className="h-4 w-4" />
+                            </Link>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         </div>
         

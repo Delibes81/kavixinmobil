@@ -1,38 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Home, Calendar, Tag } from 'lucide-react';
 import PropertyGallery from '../components/property-detail/PropertyGallery';
 import PropertyFeatures from '../components/property-detail/PropertyFeatures';
 import PropertyMap from '../components/property-detail/PropertyMap';
 import PropertyContact from '../components/property-detail/PropertyContact';
-import { properties } from '../data/properties';
-import { Property } from '../types';
+import { useProperty } from '../hooks/useProperties';
 import NotFoundPage from './NotFoundPage';
 
 const PropertyDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [property, setProperty] = useState<Property | undefined>();
+  const { property, loading, error } = useProperty(id!);
   
   useEffect(() => {
-    console.log('ID de la propiedad recibido:', id);
-    const foundProperty = properties.find(p => p.id === id);
-    console.log('Propiedad encontrada:', foundProperty);
-    
-    // Find the property with the matching ID
-    setProperty(foundProperty);
-    
-    // Update the page title
-    if (foundProperty) {
-      document.title = `${foundProperty.title} | Nova Hestia`;
+    if (property) {
+      document.title = `${property.title} | Nova Hestia`;
     } else {
       document.title = 'Propiedad no encontrada | Nova Hestia';
     }
-  }, [id]);
+  }, [property]);
   
-  if (!property) {
-    return <NotFoundPage />;
-  }
-
   // Format price to Mexican Pesos
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('es-MX', {
@@ -41,6 +28,18 @@ const PropertyDetailPage: React.FC = () => {
       maximumFractionDigits: 0,
     }).format(price);
   };
+
+  if (loading) {
+    return (
+      <div className="pt-20 min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
+
+  if (error || !property) {
+    return <NotFoundPage />;
+  }
 
   return (
     <div className="pt-20">
@@ -71,17 +70,17 @@ const PropertyDetailPage: React.FC = () => {
                 {formatPrice(property.price)}
                 {property.operation === 'renta' && <span className="text-sm font-normal text-neutral-300">/mes</span>}
               </p>
-              <p className="text-white/80">{property.location.address}, {property.location.city}</p>
+              <p className="text-white/80">{property.address}, {property.city}</p>
             </div>
             
             <div className="mt-4 md:mt-0 flex items-center">
               <span className="text-neutral-300 flex items-center">
                 <Calendar className="h-4 w-4 mr-1" />
-                Publicado: {new Date(property.createdAt).toLocaleDateString('es-MX', { 
+                Publicado: {property.created_at ? new Date(property.created_at).toLocaleDateString('es-MX', { 
                   year: 'numeric', 
                   month: 'long', 
                   day: 'numeric' 
-                })}
+                }) : 'Fecha no disponible'}
               </span>
             </div>
           </div>
@@ -113,11 +112,11 @@ const PropertyDetailPage: React.FC = () => {
             <div className="bg-white rounded-lg shadow-md p-6 mb-8">
               <h3 className="text-xl font-semibold mb-4">Ubicación</h3>
               <p className="text-neutral-600 mb-4">
-                {property.location.address}, {property.location.city}, {property.location.state}
+                {property.address}, {property.city}, {property.state}
               </p>
               <PropertyMap 
-                position={[property.location.lat, property.location.lng]} 
-                address={property.location.address}
+                position={[property.latitude, property.longitude]} 
+                address={property.address}
               />
             </div>
           </div>

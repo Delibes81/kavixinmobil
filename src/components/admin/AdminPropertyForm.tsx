@@ -1,15 +1,33 @@
 import React, { useState } from 'react';
-import { Property } from '../../types';
+import { Property, PropertyFormData } from '../../types';
 import { Plus, X, Upload } from 'lucide-react';
 
 interface AdminPropertyFormProps {
   property?: Property;
-  onSubmit: (property: Partial<Property>) => void;
+  onSubmit: (property: PropertyFormData) => void;
 }
 
 const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmit }) => {
-  const [formData, setFormData] = useState<Partial<Property>>(
-    property || {
+  const [formData, setFormData] = useState<PropertyFormData>(
+    property ? {
+      title: property.title,
+      description: property.description,
+      price: property.price,
+      operation: property.operation,
+      type: property.type,
+      area: property.area,
+      bedrooms: property.bedrooms,
+      bathrooms: property.bathrooms,
+      parking: property.parking,
+      is_furnished: property.is_furnished,
+      address: property.address,
+      city: property.city,
+      state: property.state,
+      latitude: property.latitude,
+      longitude: property.longitude,
+      images: property.images,
+      features: property.features,
+    } : {
       title: '',
       description: '',
       price: 0,
@@ -19,14 +37,12 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
       bedrooms: 0,
       bathrooms: 0,
       parking: 0,
-      isFurnished: false,
-      location: {
-        address: '',
-        city: '',
-        state: '',
-        lat: 0,
-        lng: 0,
-      },
+      is_furnished: false,
+      address: '',
+      city: '',
+      state: '',
+      latitude: 0,
+      longitude: 0,
       images: [],
       features: [],
     }
@@ -37,21 +53,10 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     
-    if (name.startsWith('location.')) {
-      const locationField = name.split('.')[1];
-      setFormData({
-        ...formData,
-        location: {
-          ...formData.location!,
-          [locationField]: type === 'number' ? parseFloat(value) : value,
-        },
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: type === 'number' ? parseFloat(value) : value,
-      });
-    }
+    setFormData({
+      ...formData,
+      [name]: type === 'number' ? parseFloat(value) || 0 : value,
+    });
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,8 +97,11 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
     if (!formData.description) validationErrors.description = 'La descripción es requerida';
     if (!formData.price || formData.price <= 0) validationErrors.price = 'El precio debe ser mayor a cero';
     if (!formData.area || formData.area <= 0) validationErrors.area = 'La superficie debe ser mayor a cero';
-    if (!formData.location?.address) validationErrors['location.address'] = 'La dirección es requerida';
-    if (!formData.images || formData.images.length === 0) validationErrors.images = 'Al menos una imagen es requerida';
+    if (!formData.address) validationErrors.address = 'La dirección es requerida';
+    if (!formData.city) validationErrors.city = 'La ciudad es requerida';
+    if (!formData.state) validationErrors.state = 'El estado es requerido';
+    if (!formData.latitude) validationErrors.latitude = 'La latitud es requerida';
+    if (!formData.longitude) validationErrors.longitude = 'La longitud es requerida';
     
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
@@ -132,7 +140,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form id="property-form" onSubmit={handleSubmit} className="space-y-6">
       {/* Basic Information */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <h3 className="text-xl font-semibold mb-4">Información Básica</h3>
@@ -212,13 +220,13 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
             <div className="flex items-center h-full pt-6">
               <input
                 type="checkbox"
-                id="isFurnished"
-                name="isFurnished"
-                checked={formData.isFurnished}
+                id="is_furnished"
+                name="is_furnished"
+                checked={formData.is_furnished}
                 onChange={handleCheckboxChange}
                 className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
               />
-              <label htmlFor="isFurnished" className="ml-2 block text-neutral-700">
+              <label htmlFor="is_furnished" className="ml-2 block text-neutral-700">
                 Amueblado
               </label>
             </div>
@@ -365,83 +373,87 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Address */}
           <div className="col-span-2">
-            <label htmlFor="location.address" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="address" className="block text-sm font-medium text-neutral-700 mb-1">
               Dirección <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              id="location.address"
-              name="location.address"
-              value={formData.location?.address}
+              id="address"
+              name="address"
+              value={formData.address}
               onChange={handleInputChange}
-              className={`input-field ${errors['location.address'] ? 'border-red-500' : ''}`}
+              className={`input-field ${errors.address ? 'border-red-500' : ''}`}
               placeholder="Ej. Av. Paseo de la Reforma 222"
             />
-            {errors['location.address'] && <p className="mt-1 text-sm text-red-500">{errors['location.address']}</p>}
+            {errors.address && <p className="mt-1 text-sm text-red-500">{errors.address}</p>}
           </div>
           
           {/* City & State */}
           <div>
-            <label htmlFor="location.city" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="city" className="block text-sm font-medium text-neutral-700 mb-1">
               Ciudad <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              id="location.city"
-              name="location.city"
-              value={formData.location?.city}
+              id="city"
+              name="city"
+              value={formData.city}
               onChange={handleInputChange}
-              className="input-field"
+              className={`input-field ${errors.city ? 'border-red-500' : ''}`}
               placeholder="Ej. Ciudad de México"
             />
+            {errors.city && <p className="mt-1 text-sm text-red-500">{errors.city}</p>}
           </div>
           
           <div>
-            <label htmlFor="location.state" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="state" className="block text-sm font-medium text-neutral-700 mb-1">
               Estado <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              id="location.state"
-              name="location.state"
-              value={formData.location?.state}
+              id="state"
+              name="state"
+              value={formData.state}
               onChange={handleInputChange}
-              className="input-field"
+              className={`input-field ${errors.state ? 'border-red-500' : ''}`}
               placeholder="Ej. CDMX"
             />
+            {errors.state && <p className="mt-1 text-sm text-red-500">{errors.state}</p>}
           </div>
           
           {/* Coordinates */}
           <div>
-            <label htmlFor="location.lat" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="latitude" className="block text-sm font-medium text-neutral-700 mb-1">
               Latitud <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
-              id="location.lat"
-              name="location.lat"
-              value={formData.location?.lat}
+              id="latitude"
+              name="latitude"
+              value={formData.latitude}
               onChange={handleInputChange}
               step="0.0001"
-              className="input-field"
+              className={`input-field ${errors.latitude ? 'border-red-500' : ''}`}
               placeholder="Ej. 19.4326"
             />
+            {errors.latitude && <p className="mt-1 text-sm text-red-500">{errors.latitude}</p>}
           </div>
           
           <div>
-            <label htmlFor="location.lng" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="longitude" className="block text-sm font-medium text-neutral-700 mb-1">
               Longitud <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
-              id="location.lng"
-              name="location.lng"
-              value={formData.location?.lng}
+              id="longitude"
+              name="longitude"
+              value={formData.longitude}
               onChange={handleInputChange}
               step="0.0001"
-              className="input-field"
+              className={`input-field ${errors.longitude ? 'border-red-500' : ''}`}
               placeholder="Ej. -99.1332"
             />
+            {errors.longitude && <p className="mt-1 text-sm text-red-500">{errors.longitude}</p>}
           </div>
         </div>
       </div>
@@ -476,8 +488,6 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
           ) : (
             <p className="text-neutral-500 italic">No hay imágenes disponibles</p>
           )}
-          
-          {errors.images && <p className="mt-2 text-sm text-red-500">{errors.images}</p>}
         </div>
         
         {/* Upload New Images */}
@@ -499,13 +509,6 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
             />
           </label>
         </div>
-      </div>
-      
-      {/* Submit Button */}
-      <div className="flex justify-end">
-        <button type="submit" className="btn btn-primary">
-          {property ? 'Actualizar propiedad' : 'Crear propiedad'}
-        </button>
       </div>
     </form>
   );

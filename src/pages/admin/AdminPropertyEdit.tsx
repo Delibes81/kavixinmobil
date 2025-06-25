@@ -2,19 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
 import AdminPropertyForm from '../../components/admin/AdminPropertyForm';
-import { properties } from '../../data/properties';
-import { Property } from '../../types';
+import { Property, PropertyFormData } from '../../types';
+import { PropertyService } from '../../services/propertyService';
 
 const AdminPropertyEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [property, setProperty] = useState<Property | undefined>();
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const isNewProperty = id === 'nueva';
   
   useEffect(() => {
-    if (!isNewProperty) {
-      const foundProperty = properties.find(p => p.id === id);
-      setProperty(foundProperty);
+    if (!isNewProperty && id) {
+      fetchProperty();
     }
     
     document.title = isNewProperty 
@@ -22,31 +23,66 @@ const AdminPropertyEdit: React.FC = () => {
       : 'Editar Propiedad | Nova Hestia';
   }, [id, isNewProperty]);
 
-  const handleSubmit = (formData: Partial<Property>) => {
-    // In a real app, this would save to a database
-    console.log('Property data submitted:', formData);
+  const fetchProperty = async () => {
+    if (!id) return;
     
-    // Show success message
-    alert(isNewProperty 
-      ? 'Propiedad creada correctamente' 
-      : 'Propiedad actualizada correctamente');
-    
-    // Redirect to properties list
-    navigate('/admin/propiedades');
-  };
-
-  const handleDelete = () => {
-    if (window.confirm('¿Estás seguro de que deseas eliminar esta propiedad? Esta acción no se puede deshacer.')) {
-      // In a real app, this would delete from a database
-      console.log('Property deleted:', property?.id);
-      
-      // Show success message
-      alert('Propiedad eliminada correctamente');
-      
-      // Redirect to properties list
-      navigate('/admin/propiedades');
+    try {
+      setLoading(true);
+      const data = await PropertyService.getPropertyById(id);
+      setProperty(data || undefined);
+    } catch (error) {
+      console.error('Error fetching property:', error);
+      alert('Error al cargar la propiedad');
+    } finally {
+      setLoading(false);
     }
   };
+
+  const handleSubmit = async (formData: PropertyFormData) => {
+    try {
+      setSaving(true);
+      
+      if (isNewProperty) {
+        await PropertyService.createProperty(formData);
+        alert('Propiedad creada correctamente');
+      } else if (id) {
+        await PropertyService.updateProperty(id, formData);
+        alert('Propiedad actualizada correctamente');
+      }
+      
+      navigate('/admin/propiedades');
+    } catch (error) {
+      console.error('Error saving property:', error);
+      alert('Error al guardar la propiedad');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!property || !window.confirm('¿Estás seguro de que deseas eliminar esta propiedad? Esta acción no se puede deshacer.')) {
+      return;
+    }
+
+    try {
+      await PropertyService.deleteProperty(property.id);
+      alert('Propiedad eliminada correctamente');
+      navigate('/admin/propiedades');
+    } catch (error) {
+      console.error('Error deleting property:', error);
+      alert('Error al eliminar la propiedad');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="container-custom py-8">
+        <div className="flex justify-center items-center py-16">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container-custom py-8">
@@ -69,7 +105,7 @@ const AdminPropertyEdit: React.FC = () => {
       </div>
 
       <div className="mb-6 flex justify-between">
-        {!isNewProperty && (
+        {!isNewProperty && property && (
           <button 
             onClick={handleDelete}
             className="btn flex items-center bg-red-500 hover:bg-red-600 text-white focus:ring-red-500"
@@ -86,10 +122,11 @@ const AdminPropertyEdit: React.FC = () => {
           <button 
             type="submit"
             form="property-form"
+            disabled={saving}
             className="btn btn-primary"
           >
             <Save className="h-5 w-5 mr-2" />
-            {isNewProperty ? 'Crear propiedad' : 'Guardar cambios'}
+            {saving ? 'Guardando...' : (isNewProperty ? 'Crear propiedad' : 'Guardar cambios')}
           </button>
         </div>
       </div>

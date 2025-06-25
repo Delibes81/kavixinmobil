@@ -45,7 +45,7 @@ const PropertyFeatures: React.FC<PropertyFeaturesProps> = ({ property }) => {
               <span>{feature}</span>
             </div>
           ))}
-          {property.isFurnished && (
+          {property.is_furnished && (
             <div className="flex items-center py-1">
               <CheckCircle2 className="h-5 w-5 text-secondary-500 mr-2 flex-shrink-0" />
               <span>Amueblado</span>

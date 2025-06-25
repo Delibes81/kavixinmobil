@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, Search, Filter, Plus, Eye, PenSquare, Trash2, MoreHorizontal } from 'lucide-react';
-import { properties } from '../../data/properties';
-import { Property } from '../../types';
+import { Property, SearchFilters } from '../../types';
+import { PropertyService } from '../../services/propertyService';
 
 const AdminProperties: React.FC = () => {
-  const [filteredProperties, setFilteredProperties] = useState<Property[]>(properties);
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [operationFilter, setOperationFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
@@ -13,7 +15,21 @@ const AdminProperties: React.FC = () => {
 
   useEffect(() => {
     document.title = 'Gestionar Propiedades | Nova Hestia';
+    fetchProperties();
   }, []);
+
+  const fetchProperties = async () => {
+    try {
+      setLoading(true);
+      const data = await PropertyService.getProperties();
+      setProperties(data);
+      setFilteredProperties(data);
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     let result = [...properties];
@@ -24,8 +40,8 @@ const AdminProperties: React.FC = () => {
       result = result.filter(property => 
         property.title.toLowerCase().includes(term) ||
         property.description.toLowerCase().includes(term) ||
-        property.location.address.toLowerCase().includes(term) ||
-        property.location.city.toLowerCase().includes(term)
+        property.address.toLowerCase().includes(term) ||
+        property.city.toLowerCase().includes(term)
       );
     }
     
@@ -40,7 +56,7 @@ const AdminProperties: React.FC = () => {
     }
     
     setFilteredProperties(result);
-  }, [searchTerm, operationFilter, typeFilter]);
+  }, [searchTerm, operationFilter, typeFilter, properties]);
 
   // Format price to Mexican Pesos
   const formatPrice = (price: number) => {
@@ -51,16 +67,33 @@ const AdminProperties: React.FC = () => {
     }).format(price);
   };
 
-  const handleDeleteProperty = (id: string) => {
-    // In a real app, this would delete the property from the database
-    // For this demo, we'll just filter it out from the UI
-    setFilteredProperties(filteredProperties.filter(property => property.id !== id));
-    setSelectedProperty(null);
+  const handleDeleteProperty = async (id: string) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar esta propiedad? Esta acción no se puede deshacer.')) {
+      try {
+        await PropertyService.deleteProperty(id);
+        setProperties(properties.filter(property => property.id !== id));
+        setSelectedProperty(null);
+        alert('Propiedad eliminada correctamente');
+      } catch (error) {
+        console.error('Error deleting property:', error);
+        alert('Error al eliminar la propiedad');
+      }
+    }
   };
 
   const toggleDropdown = (id: string) => {
     setSelectedProperty(selectedProperty === id ? null : id);
   };
+
+  if (loading) {
+    return (
+      <div className="container-custom py-8">
+        <div className="flex justify-center items-center py-16">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container-custom py-8">
@@ -163,7 +196,11 @@ const AdminProperties: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="h-12 w-12 flex-shrink-0">
-                          <img className="h-12 w-12 rounded-md object-cover" src={property.images[0]} alt={property.title} />
+                          <img 
+                            className="h-12 w-12 rounded-md object-cover" 
+                            src={property.images[0] || 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg'} 
+                            alt={property.title} 
+                          />
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-neutral-900 line-clamp-1">{property.title}</div>
@@ -172,8 +209,8 @@ const AdminProperties: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-neutral-900 line-clamp-1">{property.location.address}</div>
-                      <div className="text-xs text-neutral-500">{property.location.city}, {property.location.state}</div>
+                      <div className="text-sm text-neutral-900 line-clamp-1">{property.address}</div>
+                      <div className="text-xs text-neutral-500">{property.city}, {property.state}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-neutral-900">
@@ -198,7 +235,7 @@ const AdminProperties: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-neutral-500">
-                      {new Date(property.createdAt).toLocaleDateString()}
+                      {property.created_at ? new Date(property.created_at).toLocaleDateString() : 'N/A'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-3">

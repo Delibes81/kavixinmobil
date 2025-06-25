@@ -22,7 +22,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
       {/* Image container with overlay */}
       <div className="relative overflow-hidden h-64">
         <img
-          src={property.images[0]}
+          src={property.images[0] || 'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg'}
           alt={property.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
@@ -55,7 +55,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
 
         <div className="flex items-center text-neutral-600 mb-4">
           <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-          <span className="text-sm truncate">{property.location.address}, {property.location.city}</span>
+          <span className="text-sm truncate">{property.address}, {property.city}</span>
         </div>
 
         <p className="text-neutral-600 mb-4 line-clamp-2">{property.description}</p>
