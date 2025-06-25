@@ -8,6 +8,7 @@ const AdminProperties: React.FC = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [operationFilter, setOperationFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
@@ -21,11 +22,13 @@ const AdminProperties: React.FC = () => {
   const fetchProperties = async () => {
     try {
       setLoading(true);
+      setError(null);
       const data = await PropertyService.getProperties();
       setProperties(data);
       setFilteredProperties(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching properties:', error);
+      setError(error.message || 'Error al cargar las propiedades');
     } finally {
       setLoading(false);
     }
@@ -74,9 +77,9 @@ const AdminProperties: React.FC = () => {
         setProperties(properties.filter(property => property.id !== id));
         setSelectedProperty(null);
         alert('Propiedad eliminada correctamente');
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error deleting property:', error);
-        alert('Error al eliminar la propiedad');
+        alert(error.message || 'Error al eliminar la propiedad');
       }
     }
   };
@@ -90,6 +93,22 @@ const AdminProperties: React.FC = () => {
       <div className="container-custom py-8">
         <div className="flex justify-center items-center py-16">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container-custom py-8">
+        <div className="text-center py-16">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={fetchProperties} 
+            className="btn btn-primary"
+          >
+            Intentar de nuevo
+          </button>
         </div>
       </div>
     );

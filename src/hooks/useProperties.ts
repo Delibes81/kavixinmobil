@@ -13,8 +13,8 @@ export const useProperties = (filters?: SearchFilters) => {
       setError(null);
       const data = await PropertyService.getProperties(filters);
       setProperties(data);
-    } catch (err) {
-      setError('Error al cargar las propiedades');
+    } catch (err: any) {
+      setError(err.message || 'Error al cargar las propiedades');
       console.error('Error fetching properties:', err);
       // Set empty array on error to prevent white screen
       setProperties([]);
@@ -52,8 +52,8 @@ export const useProperty = (id: string) => {
         if (data) {
           PropertyService.recordPropertyView(id);
         }
-      } catch (err) {
-        setError('Error al cargar la propiedad');
+      } catch (err: any) {
+        setError(err.message || 'Error al cargar la propiedad');
         console.error('Error fetching property:', err);
         setProperty(null);
       } finally {

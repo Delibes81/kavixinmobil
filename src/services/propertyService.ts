@@ -170,8 +170,11 @@ export class PropertyService {
       return data || [];
     } catch (error) {
       console.error('Error in getProperties:', error);
-      // Fallback to mock data on error
-      return this.filterMockProperties(mockProperties, filters);
+      // Only fallback to mock data if Supabase is not configured
+      if (!isSupabaseConfigured) {
+        return this.filterMockProperties(mockProperties, filters);
+      }
+      throw error;
     }
   }
 
@@ -221,8 +224,11 @@ export class PropertyService {
       return data;
     } catch (error) {
       console.error('Error in getPropertyById:', error);
-      // Fallback to mock data
-      return mockProperties.find(p => p.id === id) || null;
+      // Only fallback to mock data if Supabase is not configured
+      if (!isSupabaseConfigured) {
+        return mockProperties.find(p => p.id === id) || null;
+      }
+      throw error;
     }
   }
 
@@ -230,15 +236,10 @@ export class PropertyService {
   static async createProperty(propertyData: PropertyFormData): Promise<Property> {
     try {
       if (!isSupabaseConfigured) {
-        console.warn('Supabase not configured, simulating property creation');
-        const newProperty: Property = {
-          id: `mock-${Date.now()}`,
-          ...propertyData,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
-        return newProperty;
+        throw new Error('Supabase no está configurado. No se pueden crear propiedades.');
       }
+
+      console.log('Creating property with data:', propertyData);
 
       const { data, error } = await supabase
         .from('properties')
@@ -248,9 +249,10 @@ export class PropertyService {
 
       if (error) {
         console.error('Error creating property:', error);
-        throw error;
+        throw new Error(`Error al crear la propiedad: ${error.message}`);
       }
 
+      console.log('Property created successfully:', data);
       return data;
     } catch (error) {
       console.error('Error in createProperty:', error);
@@ -262,29 +264,34 @@ export class PropertyService {
   static async updateProperty(id: string, propertyData: Partial<PropertyFormData>): Promise<Property> {
     try {
       if (!isSupabaseConfigured) {
-        console.warn('Supabase not configured, simulating property update');
-        const existingProperty = mockProperties.find(p => p.id === id);
-        if (!existingProperty) throw new Error('Property not found');
-        
-        return {
-          ...existingProperty,
-          ...propertyData,
-          updated_at: new Date().toISOString()
-        };
+        throw new Error('Supabase no está configurado. No se pueden actualizar propiedades.');
       }
+
+      console.log('Updating property with ID:', id, 'Data:', propertyData);
+
+      // Add updated_at timestamp
+      const updateData = {
+        ...propertyData,
+        updated_at: new Date().toISOString()
+      };
 
       const { data, error } = await supabase
         .from('properties')
-        .update(propertyData)
+        .update(updateData)
         .eq('id', id)
         .select()
         .single();
 
       if (error) {
         console.error('Error updating property:', error);
-        throw error;
+        throw new Error(`Error al actualizar la propiedad: ${error.message}`);
       }
 
+      if (!data) {
+        throw new Error('No se encontró la propiedad para actualizar');
+      }
+
+      console.log('Property updated successfully:', data);
       return data;
     } catch (error) {
       console.error('Error in updateProperty:', error);
@@ -296,9 +303,10 @@ export class PropertyService {
   static async deleteProperty(id: string): Promise<void> {
     try {
       if (!isSupabaseConfigured) {
-        console.warn('Supabase not configured, simulating property deletion');
-        return;
+        throw new Error('Supabase no está configurado. No se pueden eliminar propiedades.');
       }
+
+      console.log('Deleting property with ID:', id);
 
       const { error } = await supabase
         .from('properties')
@@ -307,8 +315,10 @@ export class PropertyService {
 
       if (error) {
         console.error('Error deleting property:', error);
-        throw error;
+        throw new Error(`Error al eliminar la propiedad: ${error.message}`);
       }
+
+      console.log('Property deleted successfully');
     } catch (error) {
       console.error('Error in deleteProperty:', error);
       throw error;
@@ -350,8 +360,11 @@ export class PropertyService {
       return data || [];
     } catch (error) {
       console.error('Error in searchProperties:', error);
-      // Fallback to mock data
-      return this.filterMockProperties(mockProperties, filters);
+      // Only fallback to mock data if Supabase is not configured
+      if (!isSupabaseConfigured) {
+        return this.filterMockProperties(mockProperties, filters);
+      }
+      throw error;
     }
   }
 
@@ -377,8 +390,11 @@ export class PropertyService {
       return data || [];
     } catch (error) {
       console.error('Error in getFeaturedProperties:', error);
-      // Fallback to mock data
-      return mockProperties.slice(0, limit);
+      // Only fallback to mock data if Supabase is not configured
+      if (!isSupabaseConfigured) {
+        return mockProperties.slice(0, limit);
+      }
+      throw error;
     }
   }
 

@@ -11,6 +11,7 @@ const AdminPropertyEdit: React.FC = () => {
   const [property, setProperty] = useState<Property | undefined>();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const isNewProperty = id === 'nueva';
   
   useEffect(() => {
@@ -28,11 +29,12 @@ const AdminPropertyEdit: React.FC = () => {
     
     try {
       setLoading(true);
+      setError(null);
       const data = await PropertyService.getPropertyById(id);
       setProperty(data || undefined);
     } catch (error) {
       console.error('Error fetching property:', error);
-      alert('Error al cargar la propiedad');
+      setError('Error al cargar la propiedad');
     } finally {
       setLoading(false);
     }
@@ -41,19 +43,23 @@ const AdminPropertyEdit: React.FC = () => {
   const handleSubmit = async (formData: PropertyFormData) => {
     try {
       setSaving(true);
+      setError(null);
       
       if (isNewProperty) {
+        console.log('Creating new property with data:', formData);
         await PropertyService.createProperty(formData);
         alert('Propiedad creada correctamente');
       } else if (id) {
+        console.log('Updating property with ID:', id, 'Data:', formData);
         await PropertyService.updateProperty(id, formData);
         alert('Propiedad actualizada correctamente');
       }
       
       navigate('/admin/propiedades');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving property:', error);
-      alert('Error al guardar la propiedad');
+      setError(error.message || 'Error al guardar la propiedad');
+      alert(error.message || 'Error al guardar la propiedad');
     } finally {
       setSaving(false);
     }
@@ -65,12 +71,14 @@ const AdminPropertyEdit: React.FC = () => {
     }
 
     try {
+      setError(null);
       await PropertyService.deleteProperty(property.id);
       alert('Propiedad eliminada correctamente');
       navigate('/admin/propiedades');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting property:', error);
-      alert('Error al eliminar la propiedad');
+      setError(error.message || 'Error al eliminar la propiedad');
+      alert(error.message || 'Error al eliminar la propiedad');
     }
   };
 
@@ -102,6 +110,12 @@ const AdminPropertyEdit: React.FC = () => {
             ? 'Crea una nueva propiedad para tu inventario' 
             : 'Actualiza la información de la propiedad'}
         </p>
+        
+        {error && (
+          <div className="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            {error}
+          </div>
+        )}
       </div>
 
       <div className="mb-6 flex justify-between">
