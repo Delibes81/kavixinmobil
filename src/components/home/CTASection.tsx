@@ -25,7 +25,7 @@ const CTASection: React.FC = () => {
           
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <a 
-              href="https://wa.me/5215512345678" 
+              href="https://wa.me/525544488414" 
               target="_blank" 
               rel="noopener noreferrer"
               className="btn btn-secondary"

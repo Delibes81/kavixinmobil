@@ -100,8 +100,9 @@ const ContactPage: React.FC = () => {
                 <div>
                   <h4 className="text-lg font-medium mb-1">Dirección</h4>
                   <p className="text-neutral-700">
-                    Av. Paseo de la Reforma 222<br />
-                    Col. Juárez, 06600<br />
+                    José Azueta 29<br />
+                    Colonia Avante<br />
+                    Alcaldía Coyoacán, 04460<br />
                     Ciudad de México, CDMX
                   </p>
                 </div>
@@ -114,11 +115,11 @@ const ContactPage: React.FC = () => {
                 <div>
                   <h4 className="text-lg font-medium mb-1">Teléfono</h4>
                   <p className="text-neutral-700">
-                    <a href="tel:+525512345678" className="hover:text-primary-600 transition-colors block">
-                      +52 55 1234 5678
+                    <a href="tel:+525544488414" className="hover:text-primary-600 transition-colors block">
+                      +52 55 4448 8414
                     </a>
-                    <a href="https://wa.me/5215512345678" className="hover:text-primary-600 transition-colors block">
-                      WhatsApp: +52 1 55 1234 5678
+                    <a href="https://wa.me/525544488414" className="hover:text-primary-600 transition-colors block">
+                      WhatsApp: +52 55 4448 8414
                     </a>
                   </p>
                 </div>
@@ -311,7 +312,7 @@ const ContactPage: React.FC = () => {
         {/* Map */}
         <div className="mt-12 rounded-lg overflow-hidden shadow-md h-[400px]">
           <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3762.6610220892753!2d-99.17150268506912!3d19.42741498688978!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1ff35f5bd1563%3A0x6c366f0e2de02ff7!2sAv.%20Paseo%20de%20la%20Reforma%20222%2C%20Ju%C3%A1rez%2C%20Cuauht%C3%A9moc%2C%2006600%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses-419!2smx!4v1649288299241!5m2!1ses-419!2smx" 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3763.8!2d-99.1663!3d19.3434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85ce01a4b9b6b5b5%3A0x1234567890abcdef!2sJos%C3%A9%20Azueta%2029%2C%20Avante%2C%20Coyoac%C3%A1n%2C%2004460%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses-419!2smx!4v1649288299241!5m2!1ses-419!2smx" 
             width="100%" 
             height="100%" 
             style={{ border: 0 }} 

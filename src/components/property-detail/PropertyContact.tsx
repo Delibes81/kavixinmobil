@@ -11,7 +11,7 @@ const PropertyContact: React.FC<PropertyContactProps> = ({ propertyTitle, proper
     const message = encodeURIComponent(
       `Hola, estoy interesado en la propiedad "${propertyTitle}" (ID: ${propertyId}). ¿Podría obtener más información?`
     );
-    window.open(`https://wa.me/5215512345678?text=${message}`, '_blank');
+    window.open(`https://wa.me/525544488414?text=${message}`, '_blank');
   };
 
   const handleShareClick = () => {

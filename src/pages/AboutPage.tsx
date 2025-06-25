@@ -265,8 +265,9 @@ const AboutPage: React.FC = () => {
               </div>
               <h4 className="text-lg font-semibold mb-2">Dirección</h4>
               <p className="text-neutral-700">
-                Av. Paseo de la Reforma 222<br />
-                Col. Juárez, 06600<br />
+                José Azueta 29<br />
+                Colonia Avante<br />
+                Alcaldía Coyoacán, 04460<br />
                 Ciudad de México, CDMX
               </p>
             </div>
@@ -277,12 +278,12 @@ const AboutPage: React.FC = () => {
               </div>
               <h4 className="text-lg font-semibold mb-2">Teléfono</h4>
               <p className="text-neutral-700">
-                <a href="tel:+525512345678" className="hover:text-primary-600 transition-colors">
-                  +52 55 1234 5678
+                <a href="tel:+525544488414" className="hover:text-primary-600 transition-colors">
+                  +52 55 4448 8414
                 </a>
                 <br />
-                <a href="https://wa.me/5215512345678" className="hover:text-primary-600 transition-colors">
-                  WhatsApp: +52 1 55 1234 5678
+                <a href="https://wa.me/525544488414" className="hover:text-primary-600 transition-colors">
+                  WhatsApp: +52 55 4448 8414
                 </a>
               </p>
             </div>

@@ -92,12 +92,12 @@ const Footer: React.FC = () => {
             <ul className="space-y-4">
               <li className="flex items-start">
                 <MapPin className="h-5 w-5 text-secondary-400 mr-3 mt-0.5" />
-                <span className="text-neutral-300">Av. Paseo de la Reforma 222, Juárez, 06600 Ciudad de México, CDMX</span>
+                <span className="text-neutral-300">José Azueta 29, Colonia Avante, Alcaldía Coyoacán, 04460 Ciudad de México, CDMX</span>
               </li>
               <li className="flex items-center">
                 <Phone className="h-5 w-5 text-secondary-400 mr-3" />
-                <a href="tel:+525512345678" className="text-neutral-300 hover:text-secondary-400 transition-colors">
-                  +52 55 1234 5678
+                <a href="tel:+525544488414" className="text-neutral-300 hover:text-secondary-400 transition-colors">
+                  +52 55 4448 8414
                 </a>
               </li>
               <li className="flex items-center">

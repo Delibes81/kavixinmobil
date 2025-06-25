@@ -76,7 +76,7 @@ const Navbar: React.FC = () => {
         {/* Contact Button */}
         <div className="hidden lg:block">
           <a 
-            href="https://wa.me/5215512345678" 
+            href="https://wa.me/525544488414" 
             target="_blank" 
             rel="noopener noreferrer"
             className={`btn ${isScrolled || !isHomePage ? 'btn-primary' : 'btn-white'}`}
@@ -129,7 +129,7 @@ const Navbar: React.FC = () => {
               </NavLink>
               <div className="mt-auto">
                 <a 
-                  href="https://wa.me/5215512345678" 
+                  href="https://wa.me/525544488414" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="btn btn-primary w-full"
