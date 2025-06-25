@@ -29,32 +29,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Check for existing session on mount
   useEffect(() => {
-    const savedUser = localStorage.getItem('nova_hestia_admin');
-    if (savedUser) {
+    const checkAuthStatus = () => {
       try {
-        const userData = JSON.parse(savedUser);
-        setUser(userData);
+        const savedUser = localStorage.getItem('nova_hestia_admin');
+        if (savedUser) {
+          const userData = JSON.parse(savedUser);
+          // Validate the saved user data
+          if (userData && userData.username && userData.role) {
+            setUser(userData);
+          } else {
+            // Invalid data, remove it
+            localStorage.removeItem('nova_hestia_admin');
+          }
+        }
       } catch (error) {
+        console.error('Error parsing saved user data:', error);
         localStorage.removeItem('nova_hestia_admin');
+      } finally {
+        setIsLoading(false);
       }
-    }
-    setIsLoading(false);
+    };
+
+    checkAuthStatus();
   }, []);
 
   const login = async (username: string, password: string): Promise<boolean> => {
-    // Hardcoded credentials for now
-    if (username === 'administrador' && password === 'cY~1NV663}2_') {
-      const userData: User = {
-        username: 'administrador',
-        role: 'admin'
-      };
+    try {
+      // Hardcoded credentials for now
+      if (username === 'administrador' && password === 'cY~1NV663}2_') {
+        const userData: User = {
+          username: 'administrador',
+          role: 'admin'
+        };
+        
+        setUser(userData);
+        localStorage.setItem('nova_hestia_admin', JSON.stringify(userData));
+        return true;
+      }
       
-      setUser(userData);
-      localStorage.setItem('nova_hestia_admin', JSON.stringify(userData));
-      return true;
+      return false;
+    } catch (error) {
+      console.error('Error during login:', error);
+      return false;
     }
-    
-    return false;
   };
 
   const logout = () => {

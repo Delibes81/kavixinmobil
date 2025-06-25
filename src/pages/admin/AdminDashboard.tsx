@@ -7,16 +7,20 @@ import { Property } from '../../types';
 const AdminDashboard: React.FC = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = 'Panel de Administración | Nova Hestia';
     
     const fetchProperties = async () => {
       try {
+        setLoading(true);
+        setError(null);
         const data = await PropertyService.getProperties();
         setProperties(data);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching properties:', error);
+        setError(error.message || 'Error al cargar las propiedades');
       } finally {
         setLoading(false);
       }
@@ -29,8 +33,8 @@ const AdminDashboard: React.FC = () => {
   const stats = {
     totalProperties: properties.length,
     activeListings: properties.length,
-    pendingReviews: 2,
-    totalUsers: 5,
+    pendingReviews: 0, // This would come from a contacts/reviews table
+    totalUsers: 5, // This would come from user profiles table
     propertySales: {
       venta: properties.filter(p => p.operation === 'venta').length,
       renta: properties.filter(p => p.operation === 'renta').length,
@@ -43,13 +47,29 @@ const AdminDashboard: React.FC = () => {
     },
   };
 
+  if (error) {
+    return (
+      <div className="container-custom py-8">
+        <div className="text-center py-16">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="btn btn-primary"
+          >
+            Intentar de nuevo
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container-custom py-8">
       {/* Welcome Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-primary-800 mb-2">Panel de Administración</h1>
         <p className="text-neutral-600">
-          Bienvenido al sistema de gestión de Nova Hestia. Aquí puedes administrar propiedades, usuarios y más.
+          Bienvenido al sistema de gestión de Nova Hestia. Aquí puedes administrar propiedades y más.
         </p>
       </div>
 
@@ -66,7 +86,7 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
           <div className="text-sm text-neutral-600">
-            <span className="text-green-600 font-medium">+5%</span> desde el mes pasado
+            <span className="text-green-600 font-medium">Activas</span> en el sistema
           </div>
         </div>
         
@@ -81,7 +101,7 @@ const AdminDashboard: React.FC = () => {
             </div>
           </div>
           <div className="text-sm text-neutral-600">
-            <span className="text-green-600 font-medium">+2%</span> desde el mes pasado
+            <span className="text-green-600 font-medium">Disponibles</span> para mostrar
           </div>
         </div>
         
@@ -91,12 +111,12 @@ const AdminDashboard: React.FC = () => {
               <Clock className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-neutral-600 text-sm">Pendientes de Revisión</p>
-              <h3 className="text-2xl font-semibold">{stats.pendingReviews}</h3>
+              <p className="text-neutral-600 text-sm">En Venta</p>
+              <h3 className="text-2xl font-semibold">{stats.propertySales.venta}</h3>
             </div>
           </div>
           <div className="text-sm text-neutral-600">
-            <span className="text-red-600 font-medium">+1</span> desde ayer
+            <span className="text-blue-600 font-medium">Propiedades</span> en venta
           </div>
         </div>
         
@@ -106,12 +126,12 @@ const AdminDashboard: React.FC = () => {
               <User className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-neutral-600 text-sm">Total de Usuarios</p>
-              <h3 className="text-2xl font-semibold">{stats.totalUsers}</h3>
+              <p className="text-neutral-600 text-sm">En Renta</p>
+              <h3 className="text-2xl font-semibold">{stats.propertySales.renta}</h3>
             </div>
           </div>
           <div className="text-sm text-neutral-600">
-            <span className="text-green-600 font-medium">+1</span> desde la semana pasada
+            <span className="text-purple-600 font-medium">Propiedades</span> en renta
           </div>
         </div>
       </div>
@@ -229,7 +249,7 @@ const AdminDashboard: React.FC = () => {
               <div className="flex justify-center py-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
               </div>
-            ) : (
+            ) : properties.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-neutral-200">
                   <thead>
@@ -305,6 +325,14 @@ const AdminDashboard: React.FC = () => {
                   </tbody>
                 </table>
               </div>
+            ) : (
+              <div className="text-center py-8">
+                <Building2 className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
+                <p className="text-neutral-600">No hay propiedades disponibles</p>
+                <Link to="/admin/propiedades/nueva" className="btn btn-primary mt-4">
+                  Agregar primera propiedad
+                </Link>
+              </div>
             )}
           </div>
         </div>
@@ -329,10 +357,6 @@ const AdminDashboard: React.FC = () => {
               >
                 Gestionar propiedades
               </Link>
-              
-              <button className="btn btn-white w-full justify-center">
-                Ver mensajes (3)
-              </button>
             </div>
           </div>
           
@@ -346,9 +370,9 @@ const AdminDashboard: React.FC = () => {
                   <User className="h-5 w-5 text-primary-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium">Ana García</p>
-                  <p className="text-xs text-neutral-500">Agregó una nueva propiedad</p>
-                  <p className="text-xs text-neutral-400 mt-1">Hace 2 horas</p>
+                  <p className="text-sm font-medium">Sistema</p>
+                  <p className="text-xs text-neutral-500">Conexión a Supabase establecida</p>
+                  <p className="text-xs text-neutral-400 mt-1">Hace 1 hora</p>
                 </div>
               </div>
               
@@ -357,9 +381,9 @@ const AdminDashboard: React.FC = () => {
                   <PenSquare className="h-5 w-5 text-secondary-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium">Carlos Rodríguez</p>
-                  <p className="text-xs text-neutral-500">Actualizó información de propiedad</p>
-                  <p className="text-xs text-neutral-400 mt-1">Hace 5 horas</p>
+                  <p className="text-sm font-medium">Administrador</p>
+                  <p className="text-xs text-neutral-500">Configuración actualizada</p>
+                  <p className="text-xs text-neutral-400 mt-1">Hace 2 horas</p>
                 </div>
               </div>
               
@@ -368,9 +392,9 @@ const AdminDashboard: React.FC = () => {
                   <DollarSign className="h-5 w-5 text-green-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium">Laura Sánchez</p>
-                  <p className="text-xs text-neutral-500">Marcó propiedad como vendida</p>
-                  <p className="text-xs text-neutral-400 mt-1">Hace 1 día</p>
+                  <p className="text-sm font-medium">Sistema</p>
+                  <p className="text-xs text-neutral-500">Base de datos sincronizada</p>
+                  <p className="text-xs text-neutral-400 mt-1">Hace 3 horas</p>
                 </div>
               </div>
               
@@ -379,16 +403,12 @@ const AdminDashboard: React.FC = () => {
                   <Building2 className="h-5 w-5 text-purple-600" />
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium">Roberto Méndez</p>
-                  <p className="text-xs text-neutral-500">Agregó 5 imágenes a una propiedad</p>
-                  <p className="text-xs text-neutral-400 mt-1">Hace 2 días</p>
+                  <p className="text-sm font-medium">Administrador</p>
+                  <p className="text-xs text-neutral-500">Panel de administración iniciado</p>
+                  <p className="text-xs text-neutral-400 mt-1">Hace 4 horas</p>
                 </div>
               </div>
             </div>
-            
-            <button className="text-primary-600 hover:text-primary-700 text-sm font-medium mt-6 w-full text-center">
-              Ver todas las actividades
-            </button>
           </div>
         </div>
       </div>
