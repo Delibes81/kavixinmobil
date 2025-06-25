@@ -1,62 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import PropertyCard from '../properties/PropertyCard';
-import { PropertyService } from '../../services/propertyService';
-import { Property } from '../../types';
+import { properties } from '../../data/properties';
 
 const FeaturedProperties: React.FC = () => {
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchFeaturedProperties = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await PropertyService.getFeaturedProperties(3);
-        setProperties(data);
-      } catch (error: any) {
-        console.error('Error fetching featured properties:', error);
-        setError(error.message || 'Error al cargar las propiedades destacadas');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFeaturedProperties();
-  }, []);
-
-  if (loading) {
-    return (
-      <section className="section bg-white">
-        <div className="container-custom">
-          <div className="flex justify-center items-center py-16">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section className="section bg-white">
-        <div className="container-custom">
-          <div className="text-center py-16">
-            <p className="text-red-600 mb-4">{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="btn btn-primary"
-            >
-              Intentar de nuevo
-            </button>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  // Get 3 featured properties
+  const featuredProperties = properties.slice(0, 3);
 
   return (
     <section className="section bg-white">
@@ -77,20 +27,11 @@ const FeaturedProperties: React.FC = () => {
           </Link>
         </div>
 
-        {properties.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {properties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-16">
-            <p className="text-neutral-600 mb-4">No hay propiedades destacadas disponibles en este momento.</p>
-            <Link to="/admin/propiedades/nueva" className="btn btn-primary">
-              Agregar primera propiedad
-            </Link>
-          </div>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {featuredProperties.map((property) => (
+            <PropertyCard key={property.id} property={property} />
+          ))}
+        </div>
       </div>
     </section>
   );
