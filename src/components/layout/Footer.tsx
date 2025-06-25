@@ -96,14 +96,14 @@ const Footer: React.FC = () => {
               </li>
               <li className="flex items-center">
                 <Phone className="h-5 w-5 text-secondary-400 mr-3" />
-                <a href="tel:+525544488414" className="text-neutral-300 hover:text-secondary-400 transition-colors">
-                  +52 55 4448 8414
+                <a href="tel:5544488414" className="text-neutral-300 hover:text-secondary-400 transition-colors">
+                  55 4448 8414
                 </a>
               </li>
               <li className="flex items-center">
                 <Mail className="h-5 w-5 text-secondary-400 mr-3" />
-                <a href="mailto:info@novahestia.com" className="text-neutral-300 hover:text-secondary-400 transition-colors">
-                  info@novahestia.com
+                <a href="mailto:contacto@novahestia.com" className="text-neutral-300 hover:text-secondary-400 transition-colors">
+                  contacto@novahestia.com
                 </a>
               </li>
             </ul>

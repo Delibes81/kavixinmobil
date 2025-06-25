@@ -278,12 +278,12 @@ const AboutPage: React.FC = () => {
               </div>
               <h4 className="text-lg font-semibold mb-2">Teléfono</h4>
               <p className="text-neutral-700">
-                <a href="tel:+525544488414" className="hover:text-primary-600 transition-colors">
-                  +52 55 4448 8414
+                <a href="tel:5544488414" className="hover:text-primary-600 transition-colors">
+                  55 4448 8414
                 </a>
                 <br />
                 <a href="https://wa.me/525544488414" className="hover:text-primary-600 transition-colors">
-                  WhatsApp: +52 55 4448 8414
+                  WhatsApp: 55 4448 8414
                 </a>
               </p>
             </div>
@@ -294,12 +294,8 @@ const AboutPage: React.FC = () => {
               </div>
               <h4 className="text-lg font-semibold mb-2">Correo Electrónico</h4>
               <p className="text-neutral-700">
-                <a href="mailto:info@novahestia.com" className="hover:text-primary-600 transition-colors">
-                  info@novahestia.com
-                </a>
-                <br />
-                <a href="mailto:ventas@novahestia.com" className="hover:text-primary-600 transition-colors">
-                  ventas@novahestia.com
+                <a href="mailto:contacto@novahestia.com" className="hover:text-primary-600 transition-colors">
+                  contacto@novahestia.com
                 </a>
               </p>
             </div>
