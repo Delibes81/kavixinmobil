@@ -5,29 +5,39 @@ import PropertyGallery from '../components/property-detail/PropertyGallery';
 import PropertyFeatures from '../components/property-detail/PropertyFeatures';
 import PropertyMap from '../components/property-detail/PropertyMap';
 import PropertyContact from '../components/property-detail/PropertyContact';
-import { properties } from '../data/properties';
+import { useProperties } from '../hooks/useProperties';
 import { Property } from '../types';
 import NotFoundPage from './NotFoundPage';
 
 const PropertyDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { properties, loading } = useProperties();
   const [property, setProperty] = useState<Property | undefined>();
   
   useEffect(() => {
-    console.log('ID de la propiedad recibido:', id);
-    const foundProperty = properties.find(p => p.id === id);
-    console.log('Propiedad encontrada:', foundProperty);
-    
-    // Find the property with the matching ID
-    setProperty(foundProperty);
-    
-    // Update the page title
-    if (foundProperty) {
-      document.title = `${foundProperty.title} | Nova Hestia`;
-    } else {
-      document.title = 'Propiedad no encontrada | Nova Hestia';
+    if (properties.length > 0 && id) {
+      const foundProperty = properties.find(p => p.id === id);
+      setProperty(foundProperty);
+      
+      // Update the page title
+      if (foundProperty) {
+        document.title = `${foundProperty.title} | Nova Hestia`;
+      } else {
+        document.title = 'Propiedad no encontrada | Nova Hestia';
+      }
     }
-  }, [id]);
+  }, [id, properties]);
+  
+  if (loading) {
+    return (
+      <div className="pt-20 min-h-screen bg-neutral-50 flex items-center">
+        <div className="container-custom py-16 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-neutral-600">Cargando propiedad...</p>
+        </div>
+      </div>
+    );
+  }
   
   if (!property) {
     return <NotFoundPage />;

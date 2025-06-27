@@ -1,20 +1,21 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, User, DollarSign, Clock, Eye, PenSquare } from 'lucide-react';
-import { properties } from '../../data/properties';
+import { useProperties } from '../../hooks/useProperties';
 
 const AdminDashboard: React.FC = () => {
+  const { properties, loading } = useProperties();
+
   useEffect(() => {
     document.title = 'Panel de Administración | Nova Hestia';
   }, []);
 
-  // Mock stats for dashboard
+  // Calculate stats from real data
   const stats = {
     totalProperties: properties.length,
     activeListings: properties.length,
     pendingReviews: 2,
     totalUsers: 5,
-    // For a real app, these would be calculated from actual data
     propertySales: {
       venta: properties.filter(p => p.operation === 'venta').length,
       renta: properties.filter(p => p.operation === 'renta').length,
@@ -26,6 +27,25 @@ const AdminDashboard: React.FC = () => {
       terreno: properties.filter(p => p.type === 'terreno').length,
     },
   };
+
+  if (loading) {
+    return (
+      <div className="pt-20">
+        <div className="bg-primary-800 text-white py-8">
+          <div className="container-custom">
+            <h1 className="text-white mb-2">Panel de Administración</h1>
+            <p className="text-white/80">
+              Gestiona propiedades, usuarios y más desde un solo lugar.
+            </p>
+          </div>
+        </div>
+        <div className="container-custom py-16 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-neutral-600">Cargando dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-20">
@@ -123,7 +143,7 @@ const AdminDashboard: React.FC = () => {
                       <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-primary-600 rounded-full" 
-                          style={{ width: `${(stats.propertySales.venta / stats.totalProperties) * 100}%` }}
+                          style={{ width: `${stats.totalProperties > 0 ? (stats.propertySales.venta / stats.totalProperties) * 100 : 0}%` }}
                         ></div>
                       </div>
                     </div>
@@ -136,7 +156,7 @@ const AdminDashboard: React.FC = () => {
                       <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-secondary-500 rounded-full" 
-                          style={{ width: `${(stats.propertySales.renta / stats.totalProperties) * 100}%` }}
+                          style={{ width: `${stats.totalProperties > 0 ? (stats.propertySales.renta / stats.totalProperties) * 100 : 0}%` }}
                         ></div>
                       </div>
                     </div>
@@ -155,7 +175,7 @@ const AdminDashboard: React.FC = () => {
                       <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-blue-500 rounded-full" 
-                          style={{ width: `${(stats.propertyTypes.casa / stats.totalProperties) * 100}%` }}
+                          style={{ width: `${stats.totalProperties > 0 ? (stats.propertyTypes.casa / stats.totalProperties) * 100 : 0}%` }}
                         ></div>
                       </div>
                     </div>
@@ -168,7 +188,7 @@ const AdminDashboard: React.FC = () => {
                       <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-green-500 rounded-full" 
-                          style={{ width: `${(stats.propertyTypes.departamento / stats.totalProperties) * 100}%` }}
+                          style={{ width: `${stats.totalProperties > 0 ? (stats.propertyTypes.departamento / stats.totalProperties) * 100 : 0}%` }}
                         ></div>
                       </div>
                     </div>
@@ -181,7 +201,7 @@ const AdminDashboard: React.FC = () => {
                       <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-purple-500 rounded-full" 
-                          style={{ width: `${(stats.propertyTypes.local / stats.totalProperties) * 100}%` }}
+                          style={{ width: `${stats.totalProperties > 0 ? (stats.propertyTypes.local / stats.totalProperties) * 100 : 0}%` }}
                         ></div>
                       </div>
                     </div>
@@ -194,7 +214,7 @@ const AdminDashboard: React.FC = () => {
                       <div className="w-full h-2 bg-neutral-200 rounded-full overflow-hidden">
                         <div 
                           className="h-full bg-orange-500 rounded-full" 
-                          style={{ width: `${(stats.propertyTypes.terreno / stats.totalProperties) * 100}%` }}
+                          style={{ width: `${stats.totalProperties > 0 ? (stats.propertyTypes.terreno / stats.totalProperties) * 100 : 0}%` }}
                         ></div>
                       </div>
                     </div>
@@ -234,7 +254,7 @@ const AdminDashboard: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-neutral-200">
-                    {properties.map((property) => (
+                    {properties.slice(0, 5).map((property) => (
                       <tr key={property.id} className="hover:bg-neutral-50">
                         <td className="px-4 py-4 whitespace-nowrap">
                           <div className="flex items-center">
@@ -243,7 +263,7 @@ const AdminDashboard: React.FC = () => {
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-neutral-900 line-clamp-1">{property.title}</div>
-                              <div className="text-xs text-neutral-500">{property.location.city}</div>
+                              <div className="text-xs text-neutral-500">{property.location.alcaldia}</div>
                             </div>
                           </div>
                         </td>

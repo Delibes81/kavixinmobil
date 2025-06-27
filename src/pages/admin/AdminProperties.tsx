@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, Search, Filter, Plus, Eye, PenSquare, Trash2, MoreHorizontal } from 'lucide-react';
-import { properties } from '../../data/properties';
+import { useProperties } from '../../hooks/useProperties';
 import { Property } from '../../types';
 
 const AdminProperties: React.FC = () => {
-  const [filteredProperties, setFilteredProperties] = useState<Property[]>(properties);
+  const { properties, loading, error, deleteProperty } = useProperties();
+  const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [operationFilter, setOperationFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
@@ -14,6 +15,10 @@ const AdminProperties: React.FC = () => {
   useEffect(() => {
     document.title = 'Gestionar Propiedades | Nova Hestia';
   }, []);
+
+  useEffect(() => {
+    setFilteredProperties(properties);
+  }, [properties]);
 
   useEffect(() => {
     let result = [...properties];
@@ -41,7 +46,7 @@ const AdminProperties: React.FC = () => {
     }
     
     setFilteredProperties(result);
-  }, [searchTerm, operationFilter, typeFilter]);
+  }, [searchTerm, operationFilter, typeFilter, properties]);
 
   // Format price to Mexican Pesos
   const formatPrice = (price: number) => {
@@ -62,16 +67,67 @@ const AdminProperties: React.FC = () => {
     return parts.join(', ');
   };
 
-  const handleDeleteProperty = (id: string) => {
-    // In a real app, this would delete the property from the database
-    // For this demo, we'll just filter it out from the UI
-    setFilteredProperties(filteredProperties.filter(property => property.id !== id));
-    setSelectedProperty(null);
+  const handleDeleteProperty = async (id: string) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar esta propiedad? Esta acción no se puede deshacer.')) {
+      try {
+        await deleteProperty(id);
+        setSelectedProperty(null);
+        alert('Propiedad eliminada correctamente');
+      } catch (err) {
+        alert('Error al eliminar la propiedad: ' + (err instanceof Error ? err.message : 'Error desconocido'));
+      }
+    }
   };
 
   const toggleDropdown = (id: string) => {
     setSelectedProperty(selectedProperty === id ? null : id);
   };
+
+  if (loading) {
+    return (
+      <div className="pt-20">
+        <div className="bg-primary-800 text-white py-8">
+          <div className="container-custom">
+            <div className="flex items-center mb-4">
+              <Building2 className="h-8 w-8 text-secondary-400 mr-3" />
+              <h1 className="text-white">Gestionar Propiedades</h1>
+            </div>
+            <p className="text-white/80">
+              Administra todas las propiedades de tu inventario en un solo lugar.
+            </p>
+          </div>
+        </div>
+        <div className="container-custom py-16 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-neutral-600">Cargando propiedades...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="pt-20">
+        <div className="bg-primary-800 text-white py-8">
+          <div className="container-custom">
+            <div className="flex items-center mb-4">
+              <Building2 className="h-8 w-8 text-secondary-400 mr-3" />
+              <h1 className="text-white">Gestionar Propiedades</h1>
+            </div>
+            <p className="text-white/80">
+              Administra todas las propiedades de tu inventario en un solo lugar.
+            </p>
+          </div>
+        </div>
+        <div className="container-custom py-16 text-center">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <p>Error al cargar las propiedades: {error}</p>
+          </div>
+          <p className="text-neutral-600">Por favor, intenta recargar la página.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-20">

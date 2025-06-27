@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Building2 } from 'lucide-react';
 import PropertySearchFilters from '../components/properties/PropertySearchFilters';
 import PropertyCard from '../components/properties/PropertyCard';
-import { properties } from '../data/properties';
+import { useProperties } from '../hooks/useProperties';
 import { Property, SearchFilters } from '../types';
 
 const PropertiesPage: React.FC = () => {
-  const [filteredProperties, setFilteredProperties] = useState<Property[]>(properties);
+  const { properties, loading, error } = useProperties();
+  const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [activeFilters, setActiveFilters] = useState<SearchFilters>({
     operation: '',
     type: '',
@@ -21,6 +22,10 @@ const PropertiesPage: React.FC = () => {
   useEffect(() => {
     document.title = 'Propiedades | Nova Hestia';
   }, []);
+
+  useEffect(() => {
+    setFilteredProperties(properties);
+  }, [properties]);
 
   const applyFilters = (filters: SearchFilters) => {
     setActiveFilters(filters);
@@ -68,6 +73,52 @@ const PropertiesPage: React.FC = () => {
     
     setFilteredProperties(filtered);
   };
+
+  if (loading) {
+    return (
+      <div className="pt-20">
+        <div className="bg-primary-800 text-white py-12">
+          <div className="container-custom">
+            <div className="flex items-center mb-4">
+              <Building2 className="h-8 w-8 text-secondary-400 mr-3" />
+              <h1 className="text-white">Propiedades</h1>
+            </div>
+            <p className="text-white/80 max-w-3xl">
+              Encuentra la propiedad perfecta para ti entre nuestra selección de casas, departamentos, locales y terrenos disponibles.
+            </p>
+          </div>
+        </div>
+        <div className="container-custom py-16 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-neutral-600">Cargando propiedades...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="pt-20">
+        <div className="bg-primary-800 text-white py-12">
+          <div className="container-custom">
+            <div className="flex items-center mb-4">
+              <Building2 className="h-8 w-8 text-secondary-400 mr-3" />
+              <h1 className="text-white">Propiedades</h1>
+            </div>
+            <p className="text-white/80 max-w-3xl">
+              Encuentra la propiedad perfecta para ti entre nuestra selección de casas, departamentos, locales y terrenos disponibles.
+            </p>
+          </div>
+        </div>
+        <div className="container-custom py-16 text-center">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <p>Error al cargar las propiedades: {error}</p>
+          </div>
+          <p className="text-neutral-600">Por favor, intenta recargar la página.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-20">
