@@ -29,33 +29,39 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
 
   return (
     <div className="card group overflow-hidden transition-all duration-300">
-      {/* Image container with overlay */}
-      <div className="relative overflow-hidden h-64">
-        <img
-          src={property.imagenes[0]}
-          alt={property.titulo}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        <div className="absolute top-4 left-4 z-10 flex gap-2">
-          <span className={`px-3 py-1 text-xs font-medium rounded-full text-white ${
-            property.operacion === 'venta' ? 'bg-primary-600' : 'bg-secondary-500'
-          }`}>
-            {property.operacion === 'venta' ? 'Venta' : 'Renta'}
-          </span>
-          <span className="px-3 py-1 text-xs font-medium rounded-full bg-neutral-800 text-white">
-            {property.tipo === 'casa' ? 'Casa' : 
-             property.tipo === 'departamento' ? 'Departamento' : 
-             property.tipo === 'local' ? 'Local' : 
-             property.tipo === 'oficina' ? 'Oficina' : 'Terreno'}
-          </span>
+      {/* Image container with overlay - Now clickable */}
+      <Link to={`/propiedades/${property.id}`} className="block">
+        <div className="relative overflow-hidden h-64">
+          <img
+            src={property.imagenes[0]}
+            alt={property.titulo}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+          <div className="absolute top-4 left-4 z-10 flex gap-2">
+            <span className={`px-3 py-1 text-xs font-medium rounded-full text-white ${
+              property.operacion === 'venta' ? 'bg-primary-600' : 'bg-secondary-500'
+            }`}>
+              {property.operacion === 'venta' ? 'Venta' : 'Renta'}
+            </span>
+            <span className="px-3 py-1 text-xs font-medium rounded-full bg-neutral-800 text-white">
+              {property.tipo === 'casa' ? 'Casa' : 
+               property.tipo === 'departamento' ? 'Departamento' : 
+               property.tipo === 'local' ? 'Local' : 
+               property.tipo === 'oficina' ? 'Oficina' : 'Terreno'}
+            </span>
+          </div>
         </div>
-      </div>
+      </Link>
 
       {/* Content */}
       <div className="p-6">
         <div className="flex items-start justify-between mb-2">
-          <h3 className="text-xl font-medium text-primary-800 line-clamp-1">{property.titulo}</h3>
-          <div className="flex items-center">
+          <Link to={`/propiedades/${property.id}`} className="block flex-1">
+            <h3 className="text-xl font-medium text-primary-800 line-clamp-1 hover:text-primary-600 transition-colors">
+              {property.titulo}
+            </h3>
+          </Link>
+          <div className="flex items-center ml-2">
             <Tag className="h-4 w-4 text-secondary-500 mr-1" />
             <span className="font-bold text-primary-700">
               {formatPrice(property.precio)}
