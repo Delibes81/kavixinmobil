@@ -10,6 +10,7 @@ const AdminPropertyEdit: React.FC = () => {
   const navigate = useNavigate();
   const { properties, loading, createProperty, updateProperty, deleteProperty } = useProperties();
   const [property, setProperty] = useState<Property | undefined>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const isNewProperty = id === 'nueva';
   
   useEffect(() => {
@@ -24,26 +25,48 @@ const AdminPropertyEdit: React.FC = () => {
   }, [id, isNewProperty, properties]);
 
   const handleSubmit = async (formData: Partial<Property>, amenityIds: string[]) => {
+    if (isSubmitting) return; // Prevent double submission
+    
+    setIsSubmitting(true);
+    
     try {
+      console.log('Form submission started');
+      console.log('Form data:', formData);
+      console.log('Amenity IDs:', amenityIds);
+      console.log('Is new property:', isNewProperty);
+      
       if (isNewProperty) {
-        await createProperty(formData, amenityIds);
+        console.log('Creating new property...');
+        const result = await createProperty(formData, amenityIds);
+        console.log('Property created:', result);
         alert('Propiedad creada correctamente');
       } else {
-        await updateProperty(property!.id, formData, amenityIds);
+        if (!property) {
+          throw new Error('No se encontró la propiedad a actualizar');
+        }
+        console.log('Updating existing property with ID:', property.id);
+        const result = await updateProperty(property.id, formData, amenityIds);
+        console.log('Property updated:', result);
         alert('Propiedad actualizada correctamente');
       }
       
       // Redirect to properties list
       navigate('/admin/propiedades');
     } catch (err) {
-      alert('Error al guardar la propiedad: ' + (err instanceof Error ? err.message : 'Error desconocido'));
+      console.error('Error saving property:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+      alert('Error al guardar la propiedad: ' + errorMessage);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleDelete = async () => {
+    if (!property) return;
+    
     if (window.confirm('¿Estás seguro de que deseas eliminar esta propiedad? Esta acción no se puede deshacer.')) {
       try {
-        await deleteProperty(property!.id);
+        await deleteProperty(property.id);
         alert('Propiedad eliminada correctamente');
         navigate('/admin/propiedades');
       } catch (err) {
@@ -57,6 +80,20 @@ const AdminPropertyEdit: React.FC = () => {
       <div className="container-custom py-16 text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
         <p className="text-neutral-600">Cargando...</p>
+      </div>
+    );
+  }
+
+  // If trying to edit a property that doesn't exist
+  if (!isNewProperty && !property) {
+    return (
+      <div className="container-custom py-16 text-center">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <p>No se encontró la propiedad solicitada</p>
+        </div>
+        <Link to="/admin/propiedades" className="btn btn-primary">
+          Volver a propiedades
+        </Link>
       </div>
     );
   }
@@ -86,6 +123,7 @@ const AdminPropertyEdit: React.FC = () => {
           <button 
             onClick={handleDelete}
             className="btn flex items-center bg-red-500 hover:bg-red-600 text-white focus:ring-red-500"
+            disabled={isSubmitting}
           >
             <Trash2 className="h-5 w-5 mr-2" />
             Eliminar propiedad
@@ -100,9 +138,13 @@ const AdminPropertyEdit: React.FC = () => {
             type="submit"
             form="property-form"
             className="btn btn-primary"
+            disabled={isSubmitting}
           >
             <Save className="h-5 w-5 mr-2" />
-            {isNewProperty ? 'Crear propiedad' : 'Guardar cambios'}
+            {isSubmitting 
+              ? 'Guardando...' 
+              : (isNewProperty ? 'Crear propiedad' : 'Guardar cambios')
+            }
           </button>
         </div>
       </div>

@@ -119,44 +119,63 @@ export const useProperties = () => {
 
   const updateProperty = async (id: string, propertyData: Partial<Property>, amenityIds: string[] = []) => {
     try {
+      console.log('Updating property with ID:', id);
+      console.log('Property data:', propertyData);
+      console.log('Amenity IDs:', amenityIds);
+
+      // Prepare the update data, ensuring all fields are properly formatted
+      const updateData = {
+        titulo: propertyData.titulo || '',
+        descripcion: propertyData.descripcion || '',
+        precio: Number(propertyData.precio) || 0,
+        operacion: propertyData.operacion || 'venta',
+        tipo: propertyData.tipo || 'casa',
+        recamaras: Number(propertyData.recamaras) || 0,
+        banos: Number(propertyData.banos) || 0,
+        estacionamientos: Number(propertyData.estacionamientos) || 0,
+        metros_construccion: Number(propertyData.metros_construccion) || 0,
+        metros_terreno: Number(propertyData.metros_terreno) || 0,
+        antiguedad: Number(propertyData.antiguedad) || 0,
+        amueblado: Boolean(propertyData.amueblado),
+        direccion: propertyData.direccion || '',
+        colonia: propertyData.colonia || '',
+        ciudad: propertyData.ciudad || 'Ciudad de México',
+        estado: propertyData.estado || 'Ciudad de México',
+        codigo_postal: propertyData.codigo_postal || '',
+        latitud: Number(propertyData.latitud) || 0,
+        longitud: Number(propertyData.longitud) || 0,
+        imagenes: propertyData.imagenes || [],
+        disponible: propertyData.disponible ?? true,
+        destacado: Boolean(propertyData.destacado),
+      };
+
+      console.log('Formatted update data:', updateData);
+
       const { data, error } = await supabase
         .from('properties')
-        .update({
-          titulo: propertyData.titulo,
-          descripcion: propertyData.descripcion,
-          precio: propertyData.precio,
-          operacion: propertyData.operacion,
-          tipo: propertyData.tipo,
-          recamaras: propertyData.recamaras,
-          banos: propertyData.banos,
-          estacionamientos: propertyData.estacionamientos,
-          metros_construccion: propertyData.metros_construccion,
-          metros_terreno: propertyData.metros_terreno,
-          antiguedad: propertyData.antiguedad,
-          amueblado: propertyData.amueblado,
-          direccion: propertyData.direccion,
-          colonia: propertyData.colonia,
-          ciudad: propertyData.ciudad,
-          estado: propertyData.estado,
-          codigo_postal: propertyData.codigo_postal,
-          latitud: propertyData.latitud,
-          longitud: propertyData.longitud,
-          imagenes: propertyData.imagenes,
-          disponible: propertyData.disponible,
-          destacado: propertyData.destacado,
-        })
+        .update(updateData)
         .eq('id', id)
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase update error:', error);
+        throw error;
+      }
+
+      console.log('Property updated successfully:', data);
 
       // Update amenities relationships
       // First, delete existing relationships
-      await supabase
+      const { error: deleteError } = await supabase
         .from('property_amenities')
         .delete()
         .eq('property_id', id);
+
+      if (deleteError) {
+        console.error('Error deleting existing amenities:', deleteError);
+        throw deleteError;
+      }
 
       // Then, insert new relationships
       if (amenityIds.length > 0) {
@@ -169,13 +188,17 @@ export const useProperties = () => {
           .from('property_amenities')
           .insert(amenityRelations);
 
-        if (amenitiesError) throw amenitiesError;
+        if (amenitiesError) {
+          console.error('Error inserting new amenities:', amenitiesError);
+          throw amenitiesError;
+        }
       }
 
       // Refresh the properties list
       await fetchProperties();
       return data;
     } catch (err) {
+      console.error('Update property error:', err);
       throw new Error(err instanceof Error ? err.message : 'Error updating property');
     }
   };

@@ -41,60 +41,123 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Initialize selected amenities when property is loaded
+  // Initialize form data when property changes
   useEffect(() => {
-    if (property?.amenidades) {
-      setSelectedAmenities(property.amenidades.map(a => a.id));
+    if (property) {
+      console.log('Setting form data from property:', property);
+      setFormData({
+        titulo: property.titulo || '',
+        descripcion: property.descripcion || '',
+        precio: property.precio || 0,
+        operacion: property.operacion || 'venta',
+        tipo: property.tipo || 'casa',
+        recamaras: property.recamaras || 0,
+        banos: property.banos || 0,
+        estacionamientos: property.estacionamientos || 0,
+        metros_construccion: property.metros_construccion || 0,
+        metros_terreno: property.metros_terreno || 0,
+        antiguedad: property.antiguedad || 0,
+        amueblado: property.amueblado || false,
+        direccion: property.direccion || '',
+        colonia: property.colonia || '',
+        ciudad: property.ciudad || 'Ciudad de México',
+        estado: property.estado || 'Ciudad de México',
+        codigo_postal: property.codigo_postal || '',
+        latitud: property.latitud || 0,
+        longitud: property.longitud || 0,
+        imagenes: property.imagenes || [],
+        disponible: property.disponible ?? true,
+        destacado: property.destacado || false,
+      });
+      
+      // Set selected amenities
+      if (property.amenidades) {
+        setSelectedAmenities(property.amenidades.map(a => a.id));
+      }
     }
   }, [property]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     
-    setFormData({
-      ...formData,
-      [name]: type === 'number' ? parseFloat(value) || 0 : value,
+    console.log('Input change:', { name, value, type });
+    
+    let processedValue: any = value;
+    
+    if (type === 'number') {
+      processedValue = value === '' ? 0 : parseFloat(value);
+    }
+    
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [name]: processedValue,
+      };
+      console.log('Updated form data:', newData);
+      return newData;
     });
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: checked,
+    console.log('Checkbox change:', { name, checked });
+    
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        [name]: checked,
+      };
+      console.log('Updated form data:', newData);
+      return newData;
     });
   };
 
   const handleAmenityChange = (amenityId: string, checked: boolean) => {
-    if (checked) {
-      setSelectedAmenities([...selectedAmenities, amenityId]);
-    } else {
-      setSelectedAmenities(selectedAmenities.filter(id => id !== amenityId));
-    }
+    console.log('Amenity change:', { amenityId, checked });
+    
+    setSelectedAmenities(prev => {
+      const newAmenities = checked 
+        ? [...prev, amenityId]
+        : prev.filter(id => id !== amenityId);
+      console.log('Updated amenities:', newAmenities);
+      return newAmenities;
+    });
   };
 
   const handleImagesChange = (images: string[]) => {
-    setFormData({
-      ...formData,
-      imagenes: images,
+    console.log('Images change:', images);
+    setFormData(prev => {
+      const newData = {
+        ...prev,
+        imagenes: images,
+      };
+      console.log('Updated form data with images:', newData);
+      return newData;
     });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submit triggered');
+    console.log('Current form data:', formData);
+    console.log('Selected amenities:', selectedAmenities);
+    
     const validationErrors: Record<string, string> = {};
     
     // Basic validation
-    if (!formData.titulo) validationErrors.titulo = 'El título es requerido';
+    if (!formData.titulo?.trim()) validationErrors.titulo = 'El título es requerido';
     if (!formData.precio || formData.precio <= 0) validationErrors.precio = 'El precio debe ser mayor a cero';
-    if (!formData.direccion) validationErrors.direccion = 'La dirección es requerida';
-    if (!formData.colonia) validationErrors.colonia = 'La colonia es requerida';
+    if (!formData.direccion?.trim()) validationErrors.direccion = 'La dirección es requerida';
+    if (!formData.colonia?.trim()) validationErrors.colonia = 'La colonia es requerida';
     
     if (Object.keys(validationErrors).length > 0) {
+      console.log('Validation errors:', validationErrors);
       setErrors(validationErrors);
       return;
     }
     
+    console.log('Validation passed, calling onSubmit');
+    setErrors({});
     onSubmit(formData, selectedAmenities);
   };
 
@@ -132,7 +195,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="text"
               id="titulo"
               name="titulo"
-              value={formData.titulo}
+              value={formData.titulo || ''}
               onChange={handleInputChange}
               className={`input-field ${errors.titulo ? 'border-red-500' : ''}`}
               placeholder="Ej. Casa moderna en Polanco"
@@ -149,7 +212,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="number"
               id="precio"
               name="precio"
-              value={formData.precio}
+              value={formData.precio || ''}
               onChange={handleInputChange}
               className={`input-field ${errors.precio ? 'border-red-500' : ''}`}
               placeholder="Ej. 2500000"
@@ -166,7 +229,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
             <select
               id="operacion"
               name="operacion"
-              value={formData.operacion}
+              value={formData.operacion || 'venta'}
               onChange={handleInputChange}
               className="select-field"
             >
@@ -183,7 +246,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
             <select
               id="tipo"
               name="tipo"
-              value={formData.tipo}
+              value={formData.tipo || 'casa'}
               onChange={handleInputChange}
               className="select-field"
             >
@@ -202,7 +265,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
                 type="checkbox"
                 id="amueblado"
                 name="amueblado"
-                checked={formData.amueblado}
+                checked={formData.amueblado || false}
                 onChange={handleCheckboxChange}
                 className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
               />
@@ -216,7 +279,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
                 type="checkbox"
                 id="disponible"
                 name="disponible"
-                checked={formData.disponible}
+                checked={formData.disponible ?? true}
                 onChange={handleCheckboxChange}
                 className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
               />
@@ -230,7 +293,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
                 type="checkbox"
                 id="destacado"
                 name="destacado"
-                checked={formData.destacado}
+                checked={formData.destacado || false}
                 onChange={handleCheckboxChange}
                 className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
               />
@@ -248,7 +311,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
             <textarea
               id="descripcion"
               name="descripcion"
-              value={formData.descripcion}
+              value={formData.descripcion || ''}
               onChange={handleInputChange}
               rows={5}
               className="input-field"
@@ -272,7 +335,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="number"
               id="recamaras"
               name="recamaras"
-              value={formData.recamaras}
+              value={formData.recamaras || ''}
               onChange={handleInputChange}
               className="input-field"
               placeholder="Ej. 3"
@@ -289,7 +352,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="number"
               id="banos"
               name="banos"
-              value={formData.banos}
+              value={formData.banos || ''}
               onChange={handleInputChange}
               className="input-field"
               placeholder="Ej. 2"
@@ -306,7 +369,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="number"
               id="estacionamientos"
               name="estacionamientos"
-              value={formData.estacionamientos}
+              value={formData.estacionamientos || ''}
               onChange={handleInputChange}
               className="input-field"
               placeholder="Ej. 1"
@@ -323,7 +386,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="number"
               id="metros_construccion"
               name="metros_construccion"
-              value={formData.metros_construccion}
+              value={formData.metros_construccion || ''}
               onChange={handleInputChange}
               className="input-field"
               placeholder="Ej. 120"
@@ -341,7 +404,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="number"
               id="metros_terreno"
               name="metros_terreno"
-              value={formData.metros_terreno}
+              value={formData.metros_terreno || ''}
               onChange={handleInputChange}
               className="input-field"
               placeholder="Ej. 200"
@@ -359,7 +422,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="number"
               id="antiguedad"
               name="antiguedad"
-              value={formData.antiguedad}
+              value={formData.antiguedad || ''}
               onChange={handleInputChange}
               className="input-field"
               placeholder="Ej. 5"
@@ -383,7 +446,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="text"
               id="direccion"
               name="direccion"
-              value={formData.direccion}
+              value={formData.direccion || ''}
               onChange={handleInputChange}
               className={`input-field ${errors.direccion ? 'border-red-500' : ''}`}
               placeholder="Ej. Paseo de la Reforma 222, Depto 301"
@@ -400,7 +463,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="text"
               id="colonia"
               name="colonia"
-              value={formData.colonia}
+              value={formData.colonia || ''}
               onChange={handleInputChange}
               className={`input-field ${errors.colonia ? 'border-red-500' : ''}`}
               placeholder="Ej. Juárez"
@@ -417,7 +480,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="text"
               id="ciudad"
               name="ciudad"
-              value={formData.ciudad}
+              value={formData.ciudad || ''}
               onChange={handleInputChange}
               className="input-field"
               placeholder="Ej. Ciudad de México"
@@ -433,7 +496,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="text"
               id="estado"
               name="estado"
-              value={formData.estado}
+              value={formData.estado || ''}
               onChange={handleInputChange}
               className="input-field"
               placeholder="Ej. Ciudad de México"
@@ -449,7 +512,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="text"
               id="codigo_postal"
               name="codigo_postal"
-              value={formData.codigo_postal}
+              value={formData.codigo_postal || ''}
               onChange={handleInputChange}
               className="input-field"
               placeholder="Ej. 06600"
@@ -465,7 +528,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="number"
               id="latitud"
               name="latitud"
-              value={formData.latitud}
+              value={formData.latitud || ''}
               onChange={handleInputChange}
               step="0.0001"
               className="input-field"
@@ -481,7 +544,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="number"
               id="longitud"
               name="longitud"
-              value={formData.longitud}
+              value={formData.longitud || ''}
               onChange={handleInputChange}
               step="0.0001"
               className="input-field"
