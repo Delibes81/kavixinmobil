@@ -20,7 +20,7 @@ const AdminPropertyEdit: React.FC = () => {
     }
     
     document.title = isNewProperty 
-      ? 'Nueva Propiedad | Nova Hestia' 
+      ? 'Agregar Propiedad | Nova Hestia' 
       : 'Editar Propiedad | Nova Hestia';
   }, [id, isNewProperty, properties]);
 
@@ -98,6 +98,39 @@ const AdminPropertyEdit: React.FC = () => {
     );
   }
 
+  const ActionButtons = () => (
+    <div className="flex justify-between">
+      {!isNewProperty && property && (
+        <button 
+          onClick={handleDelete}
+          className="btn flex items-center bg-red-500 hover:bg-red-600 text-white focus:ring-red-500"
+          disabled={isSubmitting}
+        >
+          <Trash2 className="h-5 w-5 mr-2" />
+          Eliminar propiedad
+        </button>
+      )}
+      
+      <div className={`flex gap-3 ${isNewProperty ? 'w-full justify-end' : 'ml-auto'}`}>
+        <Link to="/admin/propiedades" className="btn btn-outline">
+          Cancelar
+        </Link>
+        <button 
+          type="submit"
+          form="property-form"
+          className="btn btn-primary"
+          disabled={isSubmitting}
+        >
+          <Save className="h-5 w-5 mr-2" />
+          {isSubmitting 
+            ? 'Guardando...' 
+            : (isNewProperty ? 'Agregar propiedad' : 'Guardar cambios')
+          }
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="container-custom py-8">
       {/* Header */}
@@ -108,51 +141,31 @@ const AdminPropertyEdit: React.FC = () => {
             Volver
           </Link>
           <h1 className="text-3xl font-bold text-primary-800">
-            {isNewProperty ? 'Nueva Propiedad' : 'Editar Propiedad'}
+            {isNewProperty ? 'Agregar Propiedad' : 'Editar Propiedad'}
           </h1>
         </div>
         <p className="text-neutral-600">
           {isNewProperty 
-            ? 'Crea una nueva propiedad para tu inventario' 
+            ? 'Agrega una nueva propiedad a tu inventario' 
             : 'Actualiza la información de la propiedad'}
         </p>
       </div>
 
-      <div className="mb-6 flex justify-between">
-        {!isNewProperty && property && (
-          <button 
-            onClick={handleDelete}
-            className="btn flex items-center bg-red-500 hover:bg-red-600 text-white focus:ring-red-500"
-            disabled={isSubmitting}
-          >
-            <Trash2 className="h-5 w-5 mr-2" />
-            Eliminar propiedad
-          </button>
-        )}
-        
-        <div className="ml-auto">
-          <Link to="/admin/propiedades" className="btn btn-outline mr-3">
-            Cancelar
-          </Link>
-          <button 
-            type="submit"
-            form="property-form"
-            className="btn btn-primary"
-            disabled={isSubmitting}
-          >
-            <Save className="h-5 w-5 mr-2" />
-            {isSubmitting 
-              ? 'Guardando...' 
-              : (isNewProperty ? 'Crear propiedad' : 'Guardar cambios')
-            }
-          </button>
-        </div>
+      {/* Action Buttons - Top */}
+      <div className="mb-6">
+        <ActionButtons />
       </div>
       
+      {/* Property Form */}
       <AdminPropertyForm 
         property={isNewProperty ? undefined : property} 
         onSubmit={handleSubmit} 
       />
+
+      {/* Action Buttons - Bottom */}
+      <div className="mt-6">
+        <ActionButtons />
+      </div>
     </div>
   );
 };
