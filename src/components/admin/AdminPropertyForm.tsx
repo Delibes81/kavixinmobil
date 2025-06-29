@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Property, Amenity } from '../../types';
-import { Plus, X, Upload } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { useAmenities } from '../../hooks/useProperties';
+import ImageUploadComponent from './ImageUploadComponent';
 
 interface AdminPropertyFormProps {
   property?: Property;
@@ -72,6 +73,13 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
     }
   };
 
+  const handleImagesChange = (images: string[]) => {
+    setFormData({
+      ...formData,
+      imagenes: images,
+    });
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const validationErrors: Record<string, string> = {};
@@ -88,32 +96,6 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
     }
     
     onSubmit(formData, selectedAmenities);
-  };
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      // In a real app, this would upload files to a server
-      const newImages = Array.from(files).map((_, index) => 
-        `https://images.pexels.com/photos/${1000000 + Math.floor(Math.random() * 1000000)}/pexels-photo.jpeg`
-      );
-      
-      setFormData({
-        ...formData,
-        imagenes: [...(formData.imagenes || []), ...newImages],
-      });
-    }
-  };
-
-  const removeImage = (index: number) => {
-    if (formData.imagenes) {
-      const updatedImages = [...formData.imagenes];
-      updatedImages.splice(index, 1);
-      setFormData({
-        ...formData,
-        imagenes: updatedImages,
-      });
-    }
   };
 
   // Group amenities by category
@@ -538,54 +520,12 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
       {/* Images */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <h3 className="text-xl font-semibold mb-4">Imágenes</h3>
-        
-        {/* Current Images */}
-        <div className="mb-6">
-          <p className="text-sm font-medium text-neutral-700 mb-2">Imágenes actuales</p>
-          
-          {formData.imagenes && formData.imagenes.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {formData.imagenes.map((image, index) => (
-                <div key={index} className="relative group">
-                  <img
-                    src={image}
-                    alt={`Propiedad ${index + 1}`}
-                    className="w-full h-32 object-cover rounded-md"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeImage(index)}
-                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-neutral-500 italic">No hay imágenes disponibles</p>
-          )}
-        </div>
-        
-        {/* Upload New Images */}
-        <div>
-          <p className="text-sm font-medium text-neutral-700 mb-2">Subir nuevas imágenes</p>
-          
-          <label className="block w-full border-2 border-neutral-300 border-dashed rounded-lg p-6 text-center cursor-pointer hover:bg-neutral-50 transition-colors">
-            <div className="flex flex-col items-center">
-              <Upload className="h-10 w-10 text-neutral-400 mb-2" />
-              <p className="text-neutral-600 mb-1">Arrastra y suelta las imágenes aquí o haz clic para buscar</p>
-              <p className="text-xs text-neutral-500">PNG, JPG, WEBP hasta 5MB</p>
-            </div>
-            <input 
-              type="file" 
-              className="hidden" 
-              accept="image/*" 
-              multiple 
-              onChange={handleImageUpload}
-            />
-          </label>
-        </div>
+        <ImageUploadComponent
+          images={formData.imagenes || []}
+          onImagesChange={handleImagesChange}
+          propertyId={property?.id}
+          maxImages={15}
+        />
       </div>
     </form>
   );

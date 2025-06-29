@@ -7,8 +7,9 @@ import { useProperties } from '../../hooks/useProperties';
 const FeaturedProperties: React.FC = () => {
   const { properties, loading } = useProperties();
   
-  // Get 3 featured properties
-  const featuredProperties = properties.slice(0, 3);
+  // Get 3 featured properties (destacado = true) or first 3 if none are featured
+  const featuredProperties = properties.filter(p => p.destacado).slice(0, 3);
+  const displayProperties = featuredProperties.length > 0 ? featuredProperties : properties.slice(0, 3);
 
   if (loading) {
     return (
@@ -43,7 +44,7 @@ const FeaturedProperties: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {featuredProperties.map((property) => (
+          {displayProperties.map((property) => (
             <PropertyCard key={property.id} property={property} />
           ))}
         </div>
