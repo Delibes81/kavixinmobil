@@ -109,31 +109,26 @@ export const useProperties = () => {
 
       console.log('Formatted insert data:', insertData);
 
-      const { data, error } = await supabase
-        .from('properties')
-        .insert([insertData])
-        .select()
-        .single();
+      // Use RPC function to bypass RLS for admin operations
+      const { data, error } = await supabase.rpc('admin_create_property', {
+        property_data: insertData
+      });
 
       if (error) {
-        console.error('Supabase insert error:', error);
+        console.error('Supabase RPC error:', error);
         throw error;
       }
 
       console.log('Property created successfully:', data);
 
-      // Insert amenities relationships
-      if (amenityIds.length > 0 && data) {
-        const amenityRelations = amenityIds.map(amenityId => ({
-          property_id: data.id,
-          amenity_id: amenityId,
-        }));
-
-        console.log('Inserting amenity relations:', amenityRelations);
-
-        const { error: amenitiesError } = await supabase
-          .from('property_amenities')
-          .insert(amenityRelations);
+      // Insert amenities relationships using RPC
+      if (amenityIds.length > 0 && data && data.length > 0) {
+        const propertyId = data[0].id;
+        
+        const { error: amenitiesError } = await supabase.rpc('admin_set_property_amenities', {
+          property_id: propertyId,
+          amenity_ids: amenityIds
+        });
 
         if (amenitiesError) {
           console.error('Error inserting amenities:', amenitiesError);
@@ -143,7 +138,7 @@ export const useProperties = () => {
 
       // Refresh the properties list
       await fetchProperties();
-      return data;
+      return data && data.length > 0 ? data[0] : null;
     } catch (err) {
       console.error('Create property error:', err);
       throw new Error(err instanceof Error ? err.message : 'Error creating property');
@@ -184,52 +179,33 @@ export const useProperties = () => {
 
       console.log('Formatted update data:', updateData);
 
-      const { data, error } = await supabase
-        .from('properties')
-        .update(updateData)
-        .eq('id', id)
-        .select()
-        .single();
+      // Use RPC function to bypass RLS for admin operations
+      const { data, error } = await supabase.rpc('admin_update_property', {
+        property_id: id,
+        property_data: updateData
+      });
 
       if (error) {
-        console.error('Supabase update error:', error);
+        console.error('Supabase RPC error:', error);
         throw error;
       }
 
       console.log('Property updated successfully:', data);
 
-      // Update amenities relationships
-      // First, delete existing relationships
-      const { error: deleteError } = await supabase
-        .from('property_amenities')
-        .delete()
-        .eq('property_id', id);
+      // Update amenities relationships using RPC
+      const { error: amenitiesError } = await supabase.rpc('admin_set_property_amenities', {
+        property_id: id,
+        amenity_ids: amenityIds
+      });
 
-      if (deleteError) {
-        console.error('Error deleting existing amenities:', deleteError);
-        throw deleteError;
-      }
-
-      // Then, insert new relationships
-      if (amenityIds.length > 0) {
-        const amenityRelations = amenityIds.map(amenityId => ({
-          property_id: id,
-          amenity_id: amenityId,
-        }));
-
-        const { error: amenitiesError } = await supabase
-          .from('property_amenities')
-          .insert(amenityRelations);
-
-        if (amenitiesError) {
-          console.error('Error inserting new amenities:', amenitiesError);
-          throw amenitiesError;
-        }
+      if (amenitiesError) {
+        console.error('Error updating amenities:', amenitiesError);
+        throw amenitiesError;
       }
 
       // Refresh the properties list
       await fetchProperties();
-      return data;
+      return data && data.length > 0 ? data[0] : null;
     } catch (err) {
       console.error('Update property error:', err);
       throw new Error(err instanceof Error ? err.message : 'Error updating property');
@@ -238,10 +214,10 @@ export const useProperties = () => {
 
   const deleteProperty = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('properties')
-        .delete()
-        .eq('id', id);
+      // Use RPC function to bypass RLS for admin operations
+      const { error } = await supabase.rpc('admin_delete_property', {
+        property_id: id
+      });
 
       if (error) throw error;
 
