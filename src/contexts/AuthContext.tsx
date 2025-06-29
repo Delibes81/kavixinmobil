@@ -25,20 +25,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const savedAuth = localStorage.getItem('nova_hestia_auth');
     if (savedAuth) {
-      const authData = JSON.parse(savedAuth);
-      setIsAuthenticated(true);
-      setUser(authData.user);
+      try {
+        const authData = JSON.parse(savedAuth);
+        // Check if the session is still valid (24 hours)
+        const sessionAge = Date.now() - authData.timestamp;
+        const maxAge = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+        
+        if (sessionAge < maxAge) {
+          setIsAuthenticated(true);
+          setUser(authData.user);
+        } else {
+          // Session expired, clear it
+          localStorage.removeItem('nova_hestia_auth');
+        }
+      } catch (error) {
+        // Invalid session data, clear it
+        localStorage.removeItem('nova_hestia_auth');
+      }
     }
   }, []);
 
   const login = (username: string, password: string): boolean => {
-    // Hardcoded credentials for MVP
-    if (username === 'Admin' && password === 'NovaHestia25**') {
-      const userData = { username: 'Admin', name: 'Administrador Nova Hestia' };
+    // Get credentials from environment variables
+    const validUsername = import.meta.env.VITE_ADMIN_USERNAME;
+    const validPassword = import.meta.env.VITE_ADMIN_PASSWORD;
+    
+    // Validate credentials
+    if (username === validUsername && password === validPassword) {
+      const userData = { username: validUsername, name: 'Administrador Nova Hestia' };
       setIsAuthenticated(true);
       setUser(userData);
       
-      // Save to localStorage
+      // Save to localStorage with timestamp for session management
       localStorage.setItem('nova_hestia_auth', JSON.stringify({
         isAuthenticated: true,
         user: userData,
