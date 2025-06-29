@@ -27,7 +27,7 @@ const LoginForm: React.FC = () => {
     }
 
     try {
-      const success = login(username, password);
+      const success = await login(username, password);
       
       if (success) {
         // Clear any previous errors and redirect

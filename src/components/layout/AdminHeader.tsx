@@ -11,14 +11,19 @@ const AdminHeader: React.FC = () => {
     setShowLogoutConfirm(true);
   };
 
-  const confirmLogout = () => {
-    logout();
+  const confirmLogout = async () => {
+    await logout();
     setShowLogoutConfirm(false);
   };
 
   const cancelLogout = () => {
     setShowLogoutConfirm(false);
   };
+
+  // Get display name from user metadata or email
+  const displayName = user?.user_metadata?.name || 
+                     user?.email?.split('@')[0] || 
+                     'Administrador';
 
   return (
     <>
@@ -39,7 +44,7 @@ const AdminHeader: React.FC = () => {
               <div className="flex items-center text-neutral-700 bg-neutral-50 rounded-lg px-3 py-2">
                 <Shield className="h-5 w-5 mr-2 text-primary-600" />
                 <div>
-                  <span className="text-sm font-medium block">{user?.name}</span>
+                  <span className="text-sm font-medium block">{displayName}</span>
                   <span className="text-xs text-neutral-500">Administrador</span>
                 </div>
               </div>
