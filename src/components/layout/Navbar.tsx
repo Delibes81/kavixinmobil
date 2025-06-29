@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Home, Building2, Users, Phone, Menu, X, ChevronDown } from 'lucide-react';
+import { Home, Building2, Users, Phone, Menu, X, ChevronDown, Lock } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -71,6 +71,10 @@ const Navbar: React.FC = () => {
             <Phone className="w-4 h-4 mr-1" />
             Contacto
           </NavLink>
+          <Link to="/login" className={`${linkClass} border border-current rounded-md ml-2`}>
+            <Lock className="w-4 h-4 mr-1" />
+            Admin
+          </Link>
         </nav>
 
         {/* Contact Button */}
@@ -127,6 +131,10 @@ const Navbar: React.FC = () => {
                 <Phone className="w-5 h-5 mr-2" />
                 Contacto
               </NavLink>
+              <Link to="/login" className="flex items-center py-2 text-lg font-medium text-primary-800 hover:text-primary-600 border border-primary-800 rounded-md px-4">
+                <Lock className="w-5 h-5 mr-2" />
+                Admin
+              </Link>
               <div className="mt-auto">
                 <a 
                   href="https://wa.me/5215512345678" 
