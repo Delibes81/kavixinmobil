@@ -64,36 +64,63 @@ export const useProperties = () => {
 
   const createProperty = async (propertyData: Partial<Property>, amenityIds: string[] = []) => {
     try {
+      console.log('Creating property with data:', propertyData);
+      console.log('Amenity IDs:', amenityIds);
+
+      // Prepare the insert data, ensuring all required fields are present
+      const insertData = {
+        titulo: propertyData.titulo?.trim() || '',
+        descripcion: propertyData.descripcion?.trim() || '',
+        precio: Number(propertyData.precio) || 0,
+        operacion: propertyData.operacion || 'venta',
+        tipo: propertyData.tipo || 'casa',
+        recamaras: Number(propertyData.recamaras) || 0,
+        banos: Number(propertyData.banos) || 0,
+        estacionamientos: Number(propertyData.estacionamientos) || 0,
+        metros_construccion: Number(propertyData.metros_construccion) || 0,
+        metros_terreno: Number(propertyData.metros_terreno) || 0,
+        antiguedad: Number(propertyData.antiguedad) || 0,
+        amueblado: Boolean(propertyData.amueblado),
+        direccion: propertyData.direccion?.trim() || '',
+        colonia: propertyData.colonia?.trim() || '',
+        ciudad: propertyData.ciudad?.trim() || 'Ciudad de México',
+        estado: propertyData.estado?.trim() || 'Ciudad de México',
+        codigo_postal: propertyData.codigo_postal?.trim() || '',
+        latitud: Number(propertyData.latitud) || 0,
+        longitud: Number(propertyData.longitud) || 0,
+        imagenes: Array.isArray(propertyData.imagenes) ? propertyData.imagenes : [],
+        disponible: propertyData.disponible ?? true,
+        destacado: Boolean(propertyData.destacado),
+      };
+
+      // Validate required fields
+      if (!insertData.titulo) {
+        throw new Error('El título es requerido');
+      }
+      if (insertData.precio <= 0) {
+        throw new Error('El precio debe ser mayor a cero');
+      }
+      if (!insertData.direccion) {
+        throw new Error('La dirección es requerida');
+      }
+      if (!insertData.colonia) {
+        throw new Error('La colonia es requerida');
+      }
+
+      console.log('Formatted insert data:', insertData);
+
       const { data, error } = await supabase
         .from('properties')
-        .insert([{
-          titulo: propertyData.titulo || '',
-          descripcion: propertyData.descripcion || '',
-          precio: propertyData.precio || 0,
-          operacion: propertyData.operacion || 'venta',
-          tipo: propertyData.tipo || 'casa',
-          recamaras: propertyData.recamaras || 0,
-          banos: propertyData.banos || 0,
-          estacionamientos: propertyData.estacionamientos || 0,
-          metros_construccion: propertyData.metros_construccion || 0,
-          metros_terreno: propertyData.metros_terreno || 0,
-          antiguedad: propertyData.antiguedad || 0,
-          amueblado: propertyData.amueblado || false,
-          direccion: propertyData.direccion || '',
-          colonia: propertyData.colonia || '',
-          ciudad: propertyData.ciudad || 'Ciudad de México',
-          estado: propertyData.estado || 'Ciudad de México',
-          codigo_postal: propertyData.codigo_postal || '',
-          latitud: propertyData.latitud || 0,
-          longitud: propertyData.longitud || 0,
-          imagenes: propertyData.imagenes || [],
-          disponible: propertyData.disponible ?? true,
-          destacado: propertyData.destacado || false,
-        }])
+        .insert([insertData])
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase insert error:', error);
+        throw error;
+      }
+
+      console.log('Property created successfully:', data);
 
       // Insert amenities relationships
       if (amenityIds.length > 0 && data) {
@@ -102,17 +129,23 @@ export const useProperties = () => {
           amenity_id: amenityId,
         }));
 
+        console.log('Inserting amenity relations:', amenityRelations);
+
         const { error: amenitiesError } = await supabase
           .from('property_amenities')
           .insert(amenityRelations);
 
-        if (amenitiesError) throw amenitiesError;
+        if (amenitiesError) {
+          console.error('Error inserting amenities:', amenitiesError);
+          throw amenitiesError;
+        }
       }
 
       // Refresh the properties list
       await fetchProperties();
       return data;
     } catch (err) {
+      console.error('Create property error:', err);
       throw new Error(err instanceof Error ? err.message : 'Error creating property');
     }
   };
@@ -125,8 +158,8 @@ export const useProperties = () => {
 
       // Prepare the update data, ensuring all fields are properly formatted
       const updateData = {
-        titulo: propertyData.titulo || '',
-        descripcion: propertyData.descripcion || '',
+        titulo: propertyData.titulo?.trim() || '',
+        descripcion: propertyData.descripcion?.trim() || '',
         precio: Number(propertyData.precio) || 0,
         operacion: propertyData.operacion || 'venta',
         tipo: propertyData.tipo || 'casa',
@@ -137,14 +170,14 @@ export const useProperties = () => {
         metros_terreno: Number(propertyData.metros_terreno) || 0,
         antiguedad: Number(propertyData.antiguedad) || 0,
         amueblado: Boolean(propertyData.amueblado),
-        direccion: propertyData.direccion || '',
-        colonia: propertyData.colonia || '',
-        ciudad: propertyData.ciudad || 'Ciudad de México',
-        estado: propertyData.estado || 'Ciudad de México',
-        codigo_postal: propertyData.codigo_postal || '',
+        direccion: propertyData.direccion?.trim() || '',
+        colonia: propertyData.colonia?.trim() || '',
+        ciudad: propertyData.ciudad?.trim() || 'Ciudad de México',
+        estado: propertyData.estado?.trim() || 'Ciudad de México',
+        codigo_postal: propertyData.codigo_postal?.trim() || '',
         latitud: Number(propertyData.latitud) || 0,
         longitud: Number(propertyData.longitud) || 0,
-        imagenes: propertyData.imagenes || [],
+        imagenes: Array.isArray(propertyData.imagenes) ? propertyData.imagenes : [],
         disponible: propertyData.disponible ?? true,
         destacado: Boolean(propertyData.destacado),
       };
