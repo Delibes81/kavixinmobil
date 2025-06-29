@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, User, DollarSign, Clock, Eye, PenSquare } from 'lucide-react';
+import { Building2, User, DollarSign, Clock, Eye, PenSquare, Home } from 'lucide-react';
 import { useProperties } from '../../hooks/useProperties';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -44,12 +44,26 @@ const AdminDashboard: React.FC = () => {
     <div className="container-custom py-8">
       {/* Welcome Message */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-primary-800 mb-2">
-          Bienvenido, {user?.name}
-        </h1>
-        <p className="text-neutral-600">
-          Gestiona propiedades, usuarios y más desde un solo lugar.
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-primary-800 mb-2">
+              Bienvenido, {user?.name}
+            </h1>
+            <p className="text-neutral-600">
+              Gestiona propiedades, usuarios y más desde un solo lugar.
+            </p>
+          </div>
+          
+          {/* Home Button */}
+          <Link 
+            to="/" 
+            className="btn btn-outline flex items-center"
+            title="Ir al sitio web"
+          >
+            <Home className="h-5 w-5 mr-2" />
+            Ver Sitio Web
+          </Link>
+        </div>
       </div>
 
       {/* Quick Stats */}
@@ -330,6 +344,14 @@ const AdminDashboard: React.FC = () => {
                 className="btn btn-outline w-full justify-center"
               >
                 Gestionar propiedades
+              </Link>
+              
+              <Link 
+                to="/" 
+                className="btn btn-white w-full justify-center"
+              >
+                <Home className="h-4 w-4 mr-2" />
+                Ver sitio web
               </Link>
               
               <button className="btn btn-white w-full justify-center">
