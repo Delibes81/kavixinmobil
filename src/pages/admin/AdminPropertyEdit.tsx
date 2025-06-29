@@ -14,7 +14,7 @@ const AdminPropertyEdit: React.FC = () => {
   const isNewProperty = id === 'nueva';
   
   useEffect(() => {
-    if (!isNewProperty && properties.length > 0) {
+    if (!isNewProperty && properties.length > 0 && id) {
       const foundProperty = properties.find(p => p.id === id);
       setProperty(foundProperty);
     }
@@ -84,12 +84,12 @@ const AdminPropertyEdit: React.FC = () => {
     );
   }
 
-  // If trying to edit a property that doesn't exist
-  if (!isNewProperty && !property) {
+  // Only show "property not found" error if we're trying to edit a specific property that doesn't exist
+  if (!isNewProperty && id && !property) {
     return (
       <div className="container-custom py-16 text-center">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <p>No se encontró la propiedad solicitada</p>
+          <p>No se encontró la propiedad con ID: {id}</p>
         </div>
         <Link to="/admin/propiedades" className="btn btn-primary">
           Volver a propiedades
@@ -150,7 +150,7 @@ const AdminPropertyEdit: React.FC = () => {
       </div>
       
       <AdminPropertyForm 
-        property={property} 
+        property={isNewProperty ? undefined : property} 
         onSubmit={handleSubmit} 
       />
     </div>
