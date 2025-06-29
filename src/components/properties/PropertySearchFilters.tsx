@@ -9,23 +9,31 @@ interface PropertySearchFiltersProps {
 const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFilters }) => {
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({
-    operation: '',
-    type: '',
-    minPrice: null,
-    maxPrice: null,
-    bedrooms: null,
-    bathrooms: null,
-    parking: null,
-    location: '',
+    operacion: '',
+    tipo: '',
+    precio_min: null,
+    precio_max: null,
+    recamaras: null,
+    banos: null,
+    estacionamientos: null,
+    ubicacion: '',
+    metros_construccion_min: null,
+    metros_construccion_max: null,
+    amueblado: null,
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
-    if (['minPrice', 'maxPrice', 'bedrooms', 'bathrooms', 'parking'].includes(name)) {
+    if (['precio_min', 'precio_max', 'recamaras', 'banos', 'estacionamientos', 'metros_construccion_min', 'metros_construccion_max'].includes(name)) {
       setFilters({
         ...filters,
         [name]: value === '' ? null : Number(value),
+      });
+    } else if (name === 'amueblado') {
+      setFilters({
+        ...filters,
+        [name]: value === '' ? null : value === 'true',
       });
     } else {
       setFilters({
@@ -41,26 +49,21 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
   };
 
   const handleReset = () => {
-    setFilters({
-      operation: '',
-      type: '',
-      minPrice: null,
-      maxPrice: null,
-      bedrooms: null,
-      bathrooms: null,
-      parking: null,
-      location: '',
-    });
-    onApplyFilters({
-      operation: '',
-      type: '',
-      minPrice: null,
-      maxPrice: null,
-      bedrooms: null,
-      bathrooms: null,
-      parking: null,
-      location: '',
-    });
+    const resetFilters: SearchFilters = {
+      operacion: '',
+      tipo: '',
+      precio_min: null,
+      precio_max: null,
+      recamaras: null,
+      banos: null,
+      estacionamientos: null,
+      ubicacion: '',
+      metros_construccion_min: null,
+      metros_construccion_max: null,
+      amueblado: null,
+    };
+    setFilters(resetFilters);
+    onApplyFilters(resetFilters);
   };
 
   const toggleAdvanced = () => {
@@ -73,13 +76,13 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           {/* Operation Type */}
           <div>
-            <label htmlFor="operation" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="operacion" className="block text-sm font-medium text-neutral-700 mb-1">
               Operación
             </label>
             <select
-              id="operation"
-              name="operation"
-              value={filters.operation}
+              id="operacion"
+              name="operacion"
+              value={filters.operacion}
               onChange={handleInputChange}
               className="select-field"
             >
@@ -91,13 +94,13 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
           
           {/* Property Type */}
           <div>
-            <label htmlFor="type" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="tipo" className="block text-sm font-medium text-neutral-700 mb-1">
               Tipo de propiedad
             </label>
             <select
-              id="type"
-              name="type"
-              value={filters.type}
+              id="tipo"
+              name="tipo"
+              value={filters.tipo}
               onChange={handleInputChange}
               className="select-field"
             >
@@ -106,20 +109,21 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
               <option value="departamento">Departamento</option>
               <option value="local">Local</option>
               <option value="terreno">Terreno</option>
+              <option value="oficina">Oficina</option>
             </select>
           </div>
           
           {/* Price Range */}
           <div>
-            <label htmlFor="minPrice" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="precio_min" className="block text-sm font-medium text-neutral-700 mb-1">
               Precio mínimo
             </label>
             <input
               type="number"
-              id="minPrice"
-              name="minPrice"
+              id="precio_min"
+              name="precio_min"
               placeholder="Desde"
-              value={filters.minPrice || ''}
+              value={filters.precio_min || ''}
               onChange={handleInputChange}
               className="input-field"
               min="0"
@@ -127,15 +131,15 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
           </div>
           
           <div>
-            <label htmlFor="maxPrice" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="precio_max" className="block text-sm font-medium text-neutral-700 mb-1">
               Precio máximo
             </label>
             <input
               type="number"
-              id="maxPrice"
-              name="maxPrice"
+              id="precio_max"
+              name="precio_max"
               placeholder="Hasta"
-              value={filters.maxPrice || ''}
+              value={filters.precio_max || ''}
               onChange={handleInputChange}
               className="input-field"
               min="0"
@@ -147,13 +151,13 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
         <div className={`grid grid-cols-1 md:grid-cols-4 gap-4 mb-4 ${isAdvancedOpen ? 'block' : 'hidden'}`}>
           {/* Bedrooms */}
           <div>
-            <label htmlFor="bedrooms" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="recamaras" className="block text-sm font-medium text-neutral-700 mb-1">
               Recámaras
             </label>
             <select
-              id="bedrooms"
-              name="bedrooms"
-              value={filters.bedrooms || ''}
+              id="recamaras"
+              name="recamaras"
+              value={filters.recamaras || ''}
               onChange={handleInputChange}
               className="select-field"
             >
@@ -168,13 +172,13 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
           
           {/* Bathrooms */}
           <div>
-            <label htmlFor="bathrooms" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="banos" className="block text-sm font-medium text-neutral-700 mb-1">
               Baños
             </label>
             <select
-              id="bathrooms"
-              name="bathrooms"
-              value={filters.bathrooms || ''}
+              id="banos"
+              name="banos"
+              value={filters.banos || ''}
               onChange={handleInputChange}
               className="select-field"
             >
@@ -188,13 +192,13 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
           
           {/* Parking */}
           <div>
-            <label htmlFor="parking" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="estacionamientos" className="block text-sm font-medium text-neutral-700 mb-1">
               Estacionamientos
             </label>
             <select
-              id="parking"
-              name="parking"
-              value={filters.parking || ''}
+              id="estacionamientos"
+              name="estacionamientos"
+              value={filters.estacionamientos || ''}
               onChange={handleInputChange}
               className="select-field"
             >
@@ -206,19 +210,70 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
             </select>
           </div>
           
+          {/* Furnished */}
+          <div>
+            <label htmlFor="amueblado" className="block text-sm font-medium text-neutral-700 mb-1">
+              Amueblado
+            </label>
+            <select
+              id="amueblado"
+              name="amueblado"
+              value={filters.amueblado === null ? '' : filters.amueblado.toString()}
+              onChange={handleInputChange}
+              className="select-field"
+            >
+              <option value="">Cualquiera</option>
+              <option value="true">Sí</option>
+              <option value="false">No</option>
+            </select>
+          </div>
+          
           {/* Location */}
           <div>
-            <label htmlFor="location" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="ubicacion" className="block text-sm font-medium text-neutral-700 mb-1">
               Ubicación
             </label>
             <input
               type="text"
-              id="location"
-              name="location"
+              id="ubicacion"
+              name="ubicacion"
               placeholder="Ciudad o zona"
-              value={filters.location}
+              value={filters.ubicacion}
               onChange={handleInputChange}
               className="input-field"
+            />
+          </div>
+          
+          {/* Construction Area Range */}
+          <div>
+            <label htmlFor="metros_construccion_min" className="block text-sm font-medium text-neutral-700 mb-1">
+              M² mínimos
+            </label>
+            <input
+              type="number"
+              id="metros_construccion_min"
+              name="metros_construccion_min"
+              placeholder="Desde"
+              value={filters.metros_construccion_min || ''}
+              onChange={handleInputChange}
+              className="input-field"
+              min="0"
+            />
+          </div>
+          
+          <div>
+            <label htmlFor="metros_construccion_max" className="block text-sm font-medium text-neutral-700 mb-1">
+              M² máximos
+            </label>
+            <input
+              type="number"
+              id="metros_construccion_max"
+              name="metros_construccion_max"
+              placeholder="Hasta"
+              value={filters.metros_construccion_max || ''}
+              onChange={handleInputChange}
+              className="input-field"
+              min="0"
             />
           </div>
         </div>
