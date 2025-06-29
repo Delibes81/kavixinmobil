@@ -1,104 +1,59 @@
-import React, { useState } from 'react';
-import { Property } from '../../types';
+import React, { useState, useEffect } from 'react';
+import { Property, Amenity } from '../../types';
 import { Plus, X, Upload } from 'lucide-react';
+import { useAmenities } from '../../hooks/useProperties';
 
 interface AdminPropertyFormProps {
   property?: Property;
-  onSubmit: (property: Partial<Property>) => void;
+  onSubmit: (property: Partial<Property>, amenityIds: string[]) => void;
 }
 
 const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmit }) => {
+  const { amenities } = useAmenities();
   const [formData, setFormData] = useState<Partial<Property>>(
     property || {
-      title: '',
-      description: '',
-      price: 0,
-      operation: 'venta',
-      type: 'casa',
-      area: 0,
-      bedrooms: 0,
-      bathrooms: 0,
-      parking: 0,
-      isFurnished: false,
-      location: {
-        calle: '',
-        numero: '',
-        colonia: '',
-        alcaldia: '',
-        codigoPostal: '',
-        estado: '',
-        lat: 0,
-        lng: 0,
-      },
-      images: [],
-      features: [],
+      titulo: '',
+      descripcion: '',
+      precio: 0,
+      operacion: 'venta',
+      tipo: 'casa',
+      recamaras: 0,
+      banos: 0,
+      estacionamientos: 0,
+      metros_construccion: 0,
+      metros_terreno: 0,
+      antiguedad: 0,
+      amueblado: false,
+      direccion: '',
+      colonia: '',
+      ciudad: 'Ciudad de México',
+      estado: 'Ciudad de México',
+      codigo_postal: '',
+      latitud: 0,
+      longitud: 0,
+      imagenes: [],
+      disponible: true,
+      destacado: false,
     }
   );
-  const [newFeature, setNewFeature] = useState('');
+  
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Lista predefinida de amenidades comunes
-  const commonAmenities = [
-    'Elevador',
-    'Seguridad 24/7',
-    'Gimnasio',
-    'Alberca',
-    'Terraza',
-    'Jardín',
-    'Cocina integral',
-    'Área de lavado',
-    'Estudio',
-    'Cuarto de servicio',
-    'Bodega',
-    'Cisterna',
-    'Roof garden',
-    'Pet friendly',
-    'Internet incluido',
-    'Vigilancia',
-    'Closets amplios',
-    'Aire acondicionado',
-    'Calefacción',
-    'Chimenea',
-    'Balcón',
-    'Vista panorámica',
-    'Acceso para discapacitados',
-    'Salón de eventos',
-    'Área de BBQ',
-    'Cancha de tenis',
-    'Cancha de paddle',
-    'Spa',
-    'Sauna',
-    'Jacuzzi',
-    'Área de juegos infantiles',
-    'Biblioteca',
-    'Sala de juntas',
-    'Coworking',
-    'Lavandería',
-    'Valet parking',
-    'Servicio de concierge',
-    'Cámaras de seguridad',
-    'Control de acceso',
-    'Intercomunicador'
-  ];
+  // Initialize selected amenities when property is loaded
+  useEffect(() => {
+    if (property?.amenidades) {
+      setSelectedAmenities(property.amenidades.map(a => a.id));
+    }
+  }, [property]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     
-    if (name.startsWith('location.')) {
-      const locationField = name.split('.')[1];
-      setFormData({
-        ...formData,
-        location: {
-          ...formData.location!,
-          [locationField]: type === 'number' ? parseFloat(value) : value,
-        },
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: type === 'number' ? parseFloat(value) : value,
-      });
-    }
+    setFormData({
+      ...formData,
+      [name]: type === 'number' ? parseFloat(value) || 0 : value,
+    });
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,45 +64,11 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
     });
   };
 
-  const handleAmenityChange = (amenity: string, checked: boolean) => {
-    const currentFeatures = formData.features || [];
-    
+  const handleAmenityChange = (amenityId: string, checked: boolean) => {
     if (checked) {
-      // Agregar amenidad si no existe
-      if (!currentFeatures.includes(amenity)) {
-        setFormData({
-          ...formData,
-          features: [...currentFeatures, amenity],
-        });
-      }
+      setSelectedAmenities([...selectedAmenities, amenityId]);
     } else {
-      // Remover amenidad
-      setFormData({
-        ...formData,
-        features: currentFeatures.filter(feature => feature !== amenity),
-      });
-    }
-  };
-
-  const addCustomFeature = () => {
-    if (newFeature.trim() && formData.features) {
-      const currentFeatures = formData.features || [];
-      if (!currentFeatures.includes(newFeature.trim())) {
-        setFormData({
-          ...formData,
-          features: [...currentFeatures, newFeature.trim()],
-        });
-        setNewFeature('');
-      }
-    }
-  };
-
-  const removeFeature = (featureToRemove: string) => {
-    if (formData.features) {
-      setFormData({
-        ...formData,
-        features: formData.features.filter(feature => feature !== featureToRemove),
-      });
+      setSelectedAmenities(selectedAmenities.filter(id => id !== amenityId));
     }
   };
 
@@ -155,48 +76,66 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
     e.preventDefault();
     const validationErrors: Record<string, string> = {};
     
-    // Basic validation - solo campos requeridos mínimos
-    if (!formData.title) validationErrors.title = 'El título es requerido';
-    if (!formData.price || formData.price <= 0) validationErrors.price = 'El precio debe ser mayor a cero';
+    // Basic validation
+    if (!formData.titulo) validationErrors.titulo = 'El título es requerido';
+    if (!formData.precio || formData.precio <= 0) validationErrors.precio = 'El precio debe ser mayor a cero';
+    if (!formData.direccion) validationErrors.direccion = 'La dirección es requerida';
+    if (!formData.colonia) validationErrors.colonia = 'La colonia es requerida';
     
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
     
-    onSubmit(formData);
+    onSubmit(formData, selectedAmenities);
   };
 
-  // Mock function for image upload (in a real app, this would handle actual uploads)
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       // In a real app, this would upload files to a server
-      // For this demo, we'll just use placeholder URLs
       const newImages = Array.from(files).map((_, index) => 
         `https://images.pexels.com/photos/${1000000 + Math.floor(Math.random() * 1000000)}/pexels-photo.jpeg`
       );
       
       setFormData({
         ...formData,
-        images: [...(formData.images || []), ...newImages],
+        imagenes: [...(formData.imagenes || []), ...newImages],
       });
     }
   };
 
   const removeImage = (index: number) => {
-    if (formData.images) {
-      const updatedImages = [...formData.images];
+    if (formData.imagenes) {
+      const updatedImages = [...formData.imagenes];
       updatedImages.splice(index, 1);
       setFormData({
         ...formData,
-        images: updatedImages,
+        imagenes: updatedImages,
       });
     }
   };
 
+  // Group amenities by category
+  const amenitiesByCategory = amenities.reduce((acc, amenity) => {
+    const category = amenity.categoria || 'otros';
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(amenity);
+    return acc;
+  }, {} as Record<string, Amenity[]>);
+
+  const categoryNames = {
+    seguridad: 'Seguridad',
+    recreacion: 'Recreación',
+    servicios: 'Servicios',
+    caracteristicas: 'Características',
+    otros: 'Otros'
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6" id="property-form">
       {/* Basic Information */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <h3 className="text-xl font-semibold mb-4">Información Básica</h3>
@@ -204,47 +143,48 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Title */}
           <div className="col-span-2">
-            <label htmlFor="title" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="titulo" className="block text-sm font-medium text-neutral-700 mb-1">
               Título <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              id="title"
-              name="title"
-              value={formData.title}
+              id="titulo"
+              name="titulo"
+              value={formData.titulo}
               onChange={handleInputChange}
-              className={`input-field ${errors.title ? 'border-red-500' : ''}`}
+              className={`input-field ${errors.titulo ? 'border-red-500' : ''}`}
               placeholder="Ej. Casa moderna en Polanco"
             />
-            {errors.title && <p className="mt-1 text-sm text-red-500">{errors.title}</p>}
+            {errors.titulo && <p className="mt-1 text-sm text-red-500">{errors.titulo}</p>}
           </div>
           
           {/* Price & Operation */}
           <div>
-            <label htmlFor="price" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="precio" className="block text-sm font-medium text-neutral-700 mb-1">
               Precio <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
-              id="price"
-              name="price"
-              value={formData.price}
+              id="precio"
+              name="precio"
+              value={formData.precio}
               onChange={handleInputChange}
-              className={`input-field ${errors.price ? 'border-red-500' : ''}`}
+              className={`input-field ${errors.precio ? 'border-red-500' : ''}`}
               placeholder="Ej. 2500000"
               min="0"
+              step="0.01"
             />
-            {errors.price && <p className="mt-1 text-sm text-red-500">{errors.price}</p>}
+            {errors.precio && <p className="mt-1 text-sm text-red-500">{errors.precio}</p>}
           </div>
           
           <div>
-            <label htmlFor="operation" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="operacion" className="block text-sm font-medium text-neutral-700 mb-1">
               Operación
             </label>
             <select
-              id="operation"
-              name="operation"
-              value={formData.operation}
+              id="operacion"
+              name="operacion"
+              value={formData.operacion}
               onChange={handleInputChange}
               className="select-field"
             >
@@ -253,15 +193,15 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
             </select>
           </div>
           
-          {/* Property Type & Furnished */}
+          {/* Property Type */}
           <div>
-            <label htmlFor="type" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="tipo" className="block text-sm font-medium text-neutral-700 mb-1">
               Tipo de propiedad
             </label>
             <select
-              id="type"
-              name="type"
-              value={formData.type}
+              id="tipo"
+              name="tipo"
+              value={formData.tipo}
               onChange={handleInputChange}
               className="select-field"
             >
@@ -269,34 +209,64 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               <option value="departamento">Departamento</option>
               <option value="local">Local</option>
               <option value="terreno">Terreno</option>
+              <option value="oficina">Oficina</option>
             </select>
           </div>
           
-          <div className="flex items-center">
-            <div className="flex items-center h-full pt-6">
+          {/* Furnished & Available */}
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center">
               <input
                 type="checkbox"
-                id="isFurnished"
-                name="isFurnished"
-                checked={formData.isFurnished}
+                id="amueblado"
+                name="amueblado"
+                checked={formData.amueblado}
                 onChange={handleCheckboxChange}
                 className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
               />
-              <label htmlFor="isFurnished" className="ml-2 block text-neutral-700">
+              <label htmlFor="amueblado" className="ml-2 block text-neutral-700">
                 Amueblado
+              </label>
+            </div>
+            
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="disponible"
+                name="disponible"
+                checked={formData.disponible}
+                onChange={handleCheckboxChange}
+                className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+              />
+              <label htmlFor="disponible" className="ml-2 block text-neutral-700">
+                Disponible
+              </label>
+            </div>
+            
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="destacado"
+                name="destacado"
+                checked={formData.destacado}
+                onChange={handleCheckboxChange}
+                className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+              />
+              <label htmlFor="destacado" className="ml-2 block text-neutral-700">
+                Destacado
               </label>
             </div>
           </div>
           
           {/* Description */}
           <div className="col-span-2">
-            <label htmlFor="description" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="descripcion" className="block text-sm font-medium text-neutral-700 mb-1">
               Descripción
             </label>
             <textarea
-              id="description"
-              name="description"
-              value={formData.description}
+              id="descripcion"
+              name="descripcion"
+              value={formData.descripcion}
               onChange={handleInputChange}
               rows={5}
               className="input-field"
@@ -310,34 +280,17 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
       <div className="bg-white rounded-lg shadow-md p-6">
         <h3 className="text-xl font-semibold mb-4">Características</h3>
         
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {/* Area */}
-          <div>
-            <label htmlFor="area" className="block text-sm font-medium text-neutral-700 mb-1">
-              Superficie (m²)
-            </label>
-            <input
-              type="number"
-              id="area"
-              name="area"
-              value={formData.area}
-              onChange={handleInputChange}
-              className="input-field"
-              placeholder="Ej. 120"
-              min="0"
-            />
-          </div>
-          
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {/* Bedrooms */}
           <div>
-            <label htmlFor="bedrooms" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="recamaras" className="block text-sm font-medium text-neutral-700 mb-1">
               Recámaras
             </label>
             <input
               type="number"
-              id="bedrooms"
-              name="bedrooms"
-              value={formData.bedrooms}
+              id="recamaras"
+              name="recamaras"
+              value={formData.recamaras}
               onChange={handleInputChange}
               className="input-field"
               placeholder="Ej. 3"
@@ -347,14 +300,14 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
           
           {/* Bathrooms */}
           <div>
-            <label htmlFor="bathrooms" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="banos" className="block text-sm font-medium text-neutral-700 mb-1">
               Baños
             </label>
             <input
               type="number"
-              id="bathrooms"
-              name="bathrooms"
-              value={formData.bathrooms}
+              id="banos"
+              name="banos"
+              value={formData.banos}
               onChange={handleInputChange}
               className="input-field"
               placeholder="Ej. 2"
@@ -364,92 +317,72 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
           
           {/* Parking */}
           <div>
-            <label htmlFor="parking" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="estacionamientos" className="block text-sm font-medium text-neutral-700 mb-1">
               Estacionamientos
             </label>
             <input
               type="number"
-              id="parking"
-              name="parking"
-              value={formData.parking}
+              id="estacionamientos"
+              name="estacionamientos"
+              value={formData.estacionamientos}
               onChange={handleInputChange}
               className="input-field"
               placeholder="Ej. 1"
               min="0"
             />
           </div>
-        </div>
-        
-        {/* Amenities Checklist */}
-        <div className="mt-6">
-          <label className="block text-sm font-medium text-neutral-700 mb-4">
-            Amenidades
-          </label>
           
-          {/* Selected Features Display */}
-          {formData.features && formData.features.length > 0 && (
-            <div className="mb-6">
-              <p className="text-sm font-medium text-neutral-700 mb-2">Amenidades seleccionadas:</p>
-              <div className="flex flex-wrap gap-2">
-                {formData.features.map((feature, index) => (
-                  <div key={index} className="bg-primary-100 text-primary-800 rounded-full px-3 py-1 flex items-center text-sm">
-                    <span>{feature}</span>
-                    <button
-                      type="button"
-                      onClick={() => removeFeature(feature)}
-                      className="ml-2 text-primary-600 hover:text-red-500"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Amenities Checklist */}
-          <div className="border border-neutral-200 rounded-lg p-4 max-h-64 overflow-y-auto">
-            <p className="text-sm font-medium text-neutral-700 mb-3">Selecciona las amenidades disponibles:</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-              {commonAmenities.map((amenity) => (
-                <label key={amenity} className="flex items-center space-x-2 p-2 hover:bg-neutral-50 rounded cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.features?.includes(amenity) || false}
-                    onChange={(e) => handleAmenityChange(amenity, e.target.checked)}
-                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
-                  />
-                  <span className="text-sm text-neutral-700">{amenity}</span>
-                </label>
-              ))}
-            </div>
+          {/* Construction Area */}
+          <div>
+            <label htmlFor="metros_construccion" className="block text-sm font-medium text-neutral-700 mb-1">
+              M² Construcción
+            </label>
+            <input
+              type="number"
+              id="metros_construccion"
+              name="metros_construccion"
+              value={formData.metros_construccion}
+              onChange={handleInputChange}
+              className="input-field"
+              placeholder="Ej. 120"
+              min="0"
+              step="0.01"
+            />
           </div>
           
-          {/* Custom Amenity Input */}
-          <div className="mt-4">
-            <p className="text-sm font-medium text-neutral-700 mb-2">¿No encuentras una amenidad? Agrégala manualmente:</p>
-            <div className="flex">
-              <input
-                type="text"
-                value={newFeature}
-                onChange={(e) => setNewFeature(e.target.value)}
-                className="input-field rounded-r-none flex-1"
-                placeholder="Escribir amenidad personalizada..."
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault();
-                    addCustomFeature();
-                  }
-                }}
-              />
-              <button
-                type="button"
-                onClick={addCustomFeature}
-                className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-r-md focus:outline-none"
-              >
-                <Plus className="h-5 w-5" />
-              </button>
-            </div>
+          {/* Land Area */}
+          <div>
+            <label htmlFor="metros_terreno" className="block text-sm font-medium text-neutral-700 mb-1">
+              M² Terreno
+            </label>
+            <input
+              type="number"
+              id="metros_terreno"
+              name="metros_terreno"
+              value={formData.metros_terreno}
+              onChange={handleInputChange}
+              className="input-field"
+              placeholder="Ej. 200"
+              min="0"
+              step="0.01"
+            />
+          </div>
+          
+          {/* Age */}
+          <div className="md:col-span-3 lg:col-span-1">
+            <label htmlFor="antiguedad" className="block text-sm font-medium text-neutral-700 mb-1">
+              Antigüedad (años)
+            </label>
+            <input
+              type="number"
+              id="antiguedad"
+              name="antiguedad"
+              value={formData.antiguedad}
+              onChange={handleInputChange}
+              className="input-field"
+              placeholder="Ej. 5"
+              min="0"
+            />
           </div>
         </div>
       </div>
@@ -459,112 +392,98 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
         <h3 className="text-xl font-semibold mb-4">Ubicación</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Calle */}
-          <div>
-            <label htmlFor="location.calle" className="block text-sm font-medium text-neutral-700 mb-1">
-              Calle
+          {/* Address */}
+          <div className="col-span-2">
+            <label htmlFor="direccion" className="block text-sm font-medium text-neutral-700 mb-1">
+              Dirección <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              id="location.calle"
-              name="location.calle"
-              value={formData.location?.calle}
+              id="direccion"
+              name="direccion"
+              value={formData.direccion}
               onChange={handleInputChange}
-              className="input-field"
-              placeholder="Ej. Paseo de la Reforma"
+              className={`input-field ${errors.direccion ? 'border-red-500' : ''}`}
+              placeholder="Ej. Paseo de la Reforma 222, Depto 301"
             />
+            {errors.direccion && <p className="mt-1 text-sm text-red-500">{errors.direccion}</p>}
           </div>
           
-          {/* Número */}
+          {/* Neighborhood */}
           <div>
-            <label htmlFor="location.numero" className="block text-sm font-medium text-neutral-700 mb-1">
-              Número
+            <label htmlFor="colonia" className="block text-sm font-medium text-neutral-700 mb-1">
+              Colonia <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
-              id="location.numero"
-              name="location.numero"
-              value={formData.location?.numero}
+              id="colonia"
+              name="colonia"
+              value={formData.colonia}
               onChange={handleInputChange}
-              className="input-field"
-              placeholder="Ej. 222"
-            />
-          </div>
-          
-          {/* Colonia */}
-          <div>
-            <label htmlFor="location.colonia" className="block text-sm font-medium text-neutral-700 mb-1">
-              Colonia
-            </label>
-            <input
-              type="text"
-              id="location.colonia"
-              name="location.colonia"
-              value={formData.location?.colonia}
-              onChange={handleInputChange}
-              className="input-field"
+              className={`input-field ${errors.colonia ? 'border-red-500' : ''}`}
               placeholder="Ej. Juárez"
             />
+            {errors.colonia && <p className="mt-1 text-sm text-red-500">{errors.colonia}</p>}
           </div>
           
-          {/* Alcaldía */}
+          {/* City */}
           <div>
-            <label htmlFor="location.alcaldia" className="block text-sm font-medium text-neutral-700 mb-1">
-              Alcaldía
+            <label htmlFor="ciudad" className="block text-sm font-medium text-neutral-700 mb-1">
+              Ciudad
             </label>
             <input
               type="text"
-              id="location.alcaldia"
-              name="location.alcaldia"
-              value={formData.location?.alcaldia}
-              onChange={handleInputChange}
-              className="input-field"
-              placeholder="Ej. Cuauhtémoc"
-            />
-          </div>
-          
-          {/* Código Postal */}
-          <div>
-            <label htmlFor="location.codigoPostal" className="block text-sm font-medium text-neutral-700 mb-1">
-              Código Postal
-            </label>
-            <input
-              type="text"
-              id="location.codigoPostal"
-              name="location.codigoPostal"
-              value={formData.location?.codigoPostal}
-              onChange={handleInputChange}
-              className="input-field"
-              placeholder="Ej. 06600"
-            />
-          </div>
-          
-          {/* Estado */}
-          <div>
-            <label htmlFor="location.estado" className="block text-sm font-medium text-neutral-700 mb-1">
-              Estado
-            </label>
-            <input
-              type="text"
-              id="location.estado"
-              name="location.estado"
-              value={formData.location?.estado}
+              id="ciudad"
+              name="ciudad"
+              value={formData.ciudad}
               onChange={handleInputChange}
               className="input-field"
               placeholder="Ej. Ciudad de México"
             />
           </div>
           
+          {/* State */}
+          <div>
+            <label htmlFor="estado" className="block text-sm font-medium text-neutral-700 mb-1">
+              Estado
+            </label>
+            <input
+              type="text"
+              id="estado"
+              name="estado"
+              value={formData.estado}
+              onChange={handleInputChange}
+              className="input-field"
+              placeholder="Ej. Ciudad de México"
+            />
+          </div>
+          
+          {/* Postal Code */}
+          <div>
+            <label htmlFor="codigo_postal" className="block text-sm font-medium text-neutral-700 mb-1">
+              Código Postal
+            </label>
+            <input
+              type="text"
+              id="codigo_postal"
+              name="codigo_postal"
+              value={formData.codigo_postal}
+              onChange={handleInputChange}
+              className="input-field"
+              placeholder="Ej. 06600"
+            />
+          </div>
+          
           {/* Coordinates */}
           <div>
-            <label htmlFor="location.lat" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="latitud" className="block text-sm font-medium text-neutral-700 mb-1">
               Latitud
             </label>
             <input
               type="number"
-              id="location.lat"
-              name="location.lat"
-              value={formData.location?.lat}
+              id="latitud"
+              name="latitud"
+              value={formData.latitud}
               onChange={handleInputChange}
               step="0.0001"
               className="input-field"
@@ -573,14 +492,14 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
           </div>
           
           <div>
-            <label htmlFor="location.lng" className="block text-sm font-medium text-neutral-700 mb-1">
+            <label htmlFor="longitud" className="block text-sm font-medium text-neutral-700 mb-1">
               Longitud
             </label>
             <input
               type="number"
-              id="location.lng"
-              name="location.lng"
-              value={formData.location?.lng}
+              id="longitud"
+              name="longitud"
+              value={formData.longitud}
               onChange={handleInputChange}
               step="0.0001"
               className="input-field"
@@ -588,6 +507,32 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
             />
           </div>
         </div>
+      </div>
+      
+      {/* Amenities */}
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <h3 className="text-xl font-semibold mb-4">Amenidades</h3>
+        
+        {Object.entries(amenitiesByCategory).map(([category, categoryAmenities]) => (
+          <div key={category} className="mb-6">
+            <h4 className="text-lg font-medium mb-3 text-primary-700">
+              {categoryNames[category as keyof typeof categoryNames] || category}
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {categoryAmenities.map((amenity) => (
+                <label key={amenity.id} className="flex items-center space-x-2 p-3 hover:bg-neutral-50 rounded cursor-pointer border border-neutral-200">
+                  <input
+                    type="checkbox"
+                    checked={selectedAmenities.includes(amenity.id)}
+                    onChange={(e) => handleAmenityChange(amenity.id, e.target.checked)}
+                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+                  />
+                  <span className="text-sm text-neutral-700">{amenity.nombre}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
       
       {/* Images */}
@@ -598,9 +543,9 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
         <div className="mb-6">
           <p className="text-sm font-medium text-neutral-700 mb-2">Imágenes actuales</p>
           
-          {formData.images && formData.images.length > 0 ? (
+          {formData.imagenes && formData.imagenes.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {formData.images.map((image, index) => (
+              {formData.imagenes.map((image, index) => (
                 <div key={index} className="relative group">
                   <img
                     src={image}
@@ -641,13 +586,6 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
             />
           </label>
         </div>
-      </div>
-      
-      {/* Submit Button */}
-      <div className="flex justify-end">
-        <button type="submit" className="btn btn-primary">
-          {property ? 'Actualizar propiedad' : 'Crear propiedad'}
-        </button>
       </div>
     </form>
   );
