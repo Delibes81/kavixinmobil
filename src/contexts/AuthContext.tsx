@@ -1,12 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import type { User } from '@supabase/supabase-js';
+
+interface AdminUser {
+  id: string;
+  username: string;
+  name: string;
+  role: string;
+}
 
 interface AuthContextType {
   isAuthenticated: boolean;
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
-  user: User | null;
+  user: AdminUser | null;
   loading: boolean;
 }
 
@@ -22,52 +28,48 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Check if user is already logged in on app start
   useEffect(() => {
-    const getSession = async () => {
+    const checkSession = () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user) {
-          setIsAuthenticated(true);
-          setUser(session.user);
+        const storedUser = localStorage.getItem('admin_user');
+        const sessionExpiry = localStorage.getItem('session_expiry');
+        
+        if (storedUser && sessionExpiry) {
+          const now = new Date().getTime();
+          const expiry = parseInt(sessionExpiry);
+          
+          if (now < expiry) {
+            const userData = JSON.parse(storedUser);
+            setIsAuthenticated(true);
+            setUser(userData);
+          } else {
+            // Session expired
+            localStorage.removeItem('admin_user');
+            localStorage.removeItem('session_expiry');
+          }
         }
       } catch (error) {
-        console.error('Error getting session:', error);
+        console.error('Error checking session:', error);
+        localStorage.removeItem('admin_user');
+        localStorage.removeItem('session_expiry');
       } finally {
         setLoading(false);
       }
     };
 
-    getSession();
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session?.user) {
-          setIsAuthenticated(true);
-          setUser(session.user);
-        } else {
-          setIsAuthenticated(false);
-          setUser(null);
-        }
-        setLoading(false);
-      }
-    );
-
-    return () => subscription.unsubscribe();
+    checkSession();
   }, []);
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
-      // Create a fake email from username for Supabase auth
-      const email = `${username}@novahestia.internal`;
-      
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      // Call the verify_admin_login function
+      const { data, error } = await supabase.rpc('verify_admin_login', {
+        p_username: username,
+        p_password: password
       });
 
       if (error) {
@@ -75,9 +77,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return false;
       }
 
-      if (data.user) {
+      // Check if login was successful
+      if (data && data.length > 0 && data[0].success) {
+        const userData: AdminUser = {
+          id: data[0].user_id,
+          username: data[0].username,
+          name: data[0].name,
+          role: data[0].role,
+        };
+
         setIsAuthenticated(true);
-        setUser(data.user);
+        setUser(userData);
+
+        // Store session in localStorage (expires in 8 hours)
+        const expiryTime = new Date().getTime() + (8 * 60 * 60 * 1000);
+        localStorage.setItem('admin_user', JSON.stringify(userData));
+        localStorage.setItem('session_expiry', expiryTime.toString());
+
         return true;
       }
 
@@ -90,9 +106,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     try {
-      await supabase.auth.signOut();
       setIsAuthenticated(false);
       setUser(null);
+      localStorage.removeItem('admin_user');
+      localStorage.removeItem('session_expiry');
     } catch (error) {
       console.error('Logout error:', error);
     }

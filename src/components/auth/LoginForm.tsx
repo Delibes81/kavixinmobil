@@ -166,6 +166,11 @@ const LoginForm: React.FC = () => {
             <p className="text-xs text-neutral-500">
               Sistema seguro de autenticación Nova Hestia
             </p>
+            <div className="mt-2 text-xs text-neutral-400">
+              <p>Usuarios de prueba:</p>
+              <p>admin / admin123 (Super Admin)</p>
+              <p>usuario1 / password123 (Admin)</p>
+            </div>
           </div>
         </form>
       </div>
