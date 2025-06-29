@@ -123,7 +123,7 @@ const AdminProperties: React.FC = () => {
             className="btn btn-primary w-full md:w-auto"
           >
             <Plus className="h-5 w-5 mr-2" />
-            Nueva propiedad
+            Agregar Nueva Propiedad
           </Link>
         </div>
         

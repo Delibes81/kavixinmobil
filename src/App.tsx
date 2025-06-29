@@ -13,6 +13,7 @@ import LoginPage from './pages/LoginPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminProperties from './pages/admin/AdminProperties';
 import AdminPropertyEdit from './pages/admin/AdminPropertyEdit';
+import AdminPropertyCreate from './pages/admin/AdminPropertyCreate';
 import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
@@ -40,7 +41,7 @@ function App() {
           <Route index element={<AdminDashboard />} />
           <Route path="propiedades" element={<AdminProperties />} />
           <Route path="propiedades/:id" element={<AdminPropertyEdit />} />
-          <Route path="propiedades/nueva" element={<AdminPropertyEdit />} />
+          <Route path="propiedades/nueva" element={<AdminPropertyCreate />} />
         </Route>
         
         {/* 404 route */}

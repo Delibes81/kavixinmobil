@@ -8,54 +8,39 @@ import { Property } from '../../types';
 const AdminPropertyEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { properties, loading, createProperty, updateProperty, deleteProperty } = useProperties();
+  const { properties, loading, updateProperty, deleteProperty } = useProperties();
   const [property, setProperty] = useState<Property | undefined>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const isNewProperty = id === 'nueva';
   
   useEffect(() => {
-    if (!isNewProperty && properties.length > 0 && id) {
+    if (properties.length > 0 && id) {
       const foundProperty = properties.find(p => p.id === id);
       setProperty(foundProperty);
     }
     
-    document.title = isNewProperty 
-      ? 'Nueva Propiedad | Nova Hestia' 
-      : 'Editar Propiedad | Nova Hestia';
-  }, [id, isNewProperty, properties]);
+    document.title = 'Editar Propiedad | Nova Hestia';
+  }, [id, properties]);
 
   const handleSubmit = async (formData: Partial<Property>, amenityIds: string[]) => {
-    if (isSubmitting) return; // Prevent double submission
+    if (isSubmitting || !property) return; // Prevent double submission
     
     setIsSubmitting(true);
     
     try {
-      console.log('Form submission started');
+      console.log('Updating existing property with ID:', property.id);
       console.log('Form data:', formData);
       console.log('Amenity IDs:', amenityIds);
-      console.log('Is new property:', isNewProperty);
       
-      if (isNewProperty) {
-        console.log('Creating new property...');
-        const result = await createProperty(formData, amenityIds);
-        console.log('Property created:', result);
-        alert('Propiedad creada correctamente');
-      } else {
-        if (!property) {
-          throw new Error('No se encontró la propiedad a actualizar');
-        }
-        console.log('Updating existing property with ID:', property.id);
-        const result = await updateProperty(property.id, formData, amenityIds);
-        console.log('Property updated:', result);
-        alert('Propiedad actualizada correctamente');
-      }
+      const result = await updateProperty(property.id, formData, amenityIds);
+      console.log('Property updated:', result);
+      alert('Propiedad actualizada correctamente');
       
       // Redirect to properties list
       navigate('/admin/propiedades');
     } catch (err) {
-      console.error('Error saving property:', err);
+      console.error('Error updating property:', err);
       const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
-      alert('Error al guardar la propiedad: ' + errorMessage);
+      alert('Error al actualizar la propiedad: ' + errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -79,13 +64,13 @@ const AdminPropertyEdit: React.FC = () => {
     return (
       <div className="container-custom py-16 text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
-        <p className="text-neutral-600">Cargando...</p>
+        <p className="text-neutral-600">Cargando propiedad...</p>
       </div>
     );
   }
 
-  // Only show "property not found" error if we're trying to edit a specific property that doesn't exist
-  if (!isNewProperty && id && !property) {
+  // Show "property not found" error if we can't find the property
+  if (!property) {
     return (
       <div className="container-custom py-16 text-center">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -107,31 +92,26 @@ const AdminPropertyEdit: React.FC = () => {
             <ArrowLeft className="h-5 w-5 mr-1" />
             Volver
           </Link>
-          <h1 className="text-3xl font-bold text-primary-800">
-            {isNewProperty ? 'Nueva Propiedad' : 'Editar Propiedad'}
-          </h1>
+          <h1 className="text-3xl font-bold text-primary-800">Editar Propiedad</h1>
         </div>
         <p className="text-neutral-600">
-          {isNewProperty 
-            ? 'Crea una nueva propiedad para tu inventario' 
-            : 'Actualiza la información de la propiedad'}
+          Actualiza la información de la propiedad: {property.titulo}
         </p>
       </div>
 
+      {/* Action Buttons - Top */}
       <div className="mb-6 flex justify-between">
-        {!isNewProperty && property && (
-          <button 
-            onClick={handleDelete}
-            className="btn flex items-center bg-red-500 hover:bg-red-600 text-white focus:ring-red-500"
-            disabled={isSubmitting}
-          >
-            <Trash2 className="h-5 w-5 mr-2" />
-            Eliminar propiedad
-          </button>
-        )}
+        <button 
+          onClick={handleDelete}
+          className="btn flex items-center bg-red-500 hover:bg-red-600 text-white focus:ring-red-500"
+          disabled={isSubmitting}
+        >
+          <Trash2 className="h-5 w-5 mr-2" />
+          Eliminar propiedad
+        </button>
         
-        <div className="ml-auto">
-          <Link to="/admin/propiedades" className="btn btn-outline mr-3">
+        <div className="flex items-center space-x-3">
+          <Link to="/admin/propiedades" className="btn btn-outline">
             Cancelar
           </Link>
           <button 
@@ -141,18 +121,43 @@ const AdminPropertyEdit: React.FC = () => {
             disabled={isSubmitting}
           >
             <Save className="h-5 w-5 mr-2" />
-            {isSubmitting 
-              ? 'Guardando...' 
-              : (isNewProperty ? 'Crear propiedad' : 'Guardar cambios')
-            }
+            {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
           </button>
         </div>
       </div>
       
+      {/* Property Form */}
       <AdminPropertyForm 
-        property={isNewProperty ? undefined : property} 
+        property={property} 
         onSubmit={handleSubmit} 
       />
+
+      {/* Action Buttons - Bottom */}
+      <div className="mt-8 flex justify-between">
+        <button 
+          onClick={handleDelete}
+          className="btn flex items-center bg-red-500 hover:bg-red-600 text-white focus:ring-red-500"
+          disabled={isSubmitting}
+        >
+          <Trash2 className="h-5 w-5 mr-2" />
+          Eliminar propiedad
+        </button>
+        
+        <div className="flex items-center space-x-3">
+          <Link to="/admin/propiedades" className="btn btn-outline">
+            Cancelar
+          </Link>
+          <button 
+            type="submit"
+            form="property-form"
+            className="btn btn-primary"
+            disabled={isSubmitting}
+          >
+            <Save className="h-5 w-5 mr-2" />
+            {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
