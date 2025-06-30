@@ -2,25 +2,33 @@ import React, { useState, useEffect } from 'react';
 import { Building2 } from 'lucide-react';
 import PropertySearchFilters from '../components/properties/PropertySearchFilters';
 import PropertyCard from '../components/properties/PropertyCard';
-import { properties } from '../data/properties';
+import { useProperties } from '../hooks/useProperties';
 import { Property, SearchFilters } from '../types';
 
 const PropertiesPage: React.FC = () => {
-  const [filteredProperties, setFilteredProperties] = useState<Property[]>(properties);
+  const { properties, loading, error } = useProperties();
+  const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [activeFilters, setActiveFilters] = useState<SearchFilters>({
-    operation: '',
-    type: '',
-    minPrice: null,
-    maxPrice: null,
-    bedrooms: null,
-    bathrooms: null,
-    parking: null,
-    location: '',
+    operacion: '',
+    tipo: '',
+    precio_min: null,
+    precio_max: null,
+    recamaras: null,
+    banos: null,
+    estacionamientos: null,
+    ubicacion: '',
+    metros_construccion_min: null,
+    metros_construccion_max: null,
+    amueblado: null,
   });
 
   useEffect(() => {
     document.title = 'Propiedades | Nova Hestia';
   }, []);
+
+  useEffect(() => {
+    setFilteredProperties(properties);
+  }, [properties]);
 
   const applyFilters = (filters: SearchFilters) => {
     setActiveFilters(filters);
@@ -28,45 +36,104 @@ const PropertiesPage: React.FC = () => {
     let filtered = [...properties];
     
     // Apply filters
-    if (filters.operation) {
-      filtered = filtered.filter(property => property.operation === filters.operation);
+    if (filters.operacion) {
+      filtered = filtered.filter(property => property.operacion === filters.operacion);
     }
     
-    if (filters.type) {
-      filtered = filtered.filter(property => property.type === filters.type);
+    if (filters.tipo) {
+      filtered = filtered.filter(property => property.tipo === filters.tipo);
     }
     
-    if (filters.minPrice) {
-      filtered = filtered.filter(property => property.price >= filters.minPrice!);
+    if (filters.precio_min) {
+      filtered = filtered.filter(property => property.precio >= filters.precio_min!);
     }
     
-    if (filters.maxPrice) {
-      filtered = filtered.filter(property => property.price <= filters.maxPrice!);
+    if (filters.precio_max) {
+      filtered = filtered.filter(property => property.precio <= filters.precio_max!);
     }
     
-    if (filters.bedrooms) {
-      filtered = filtered.filter(property => property.bedrooms >= filters.bedrooms!);
+    if (filters.recamaras) {
+      filtered = filtered.filter(property => property.recamaras >= filters.recamaras!);
     }
     
-    if (filters.bathrooms) {
-      filtered = filtered.filter(property => property.bathrooms >= filters.bathrooms!);
+    if (filters.banos) {
+      filtered = filtered.filter(property => property.banos >= filters.banos!);
     }
     
-    if (filters.parking) {
-      filtered = filtered.filter(property => property.parking >= filters.parking!);
+    if (filters.estacionamientos) {
+      filtered = filtered.filter(property => property.estacionamientos >= filters.estacionamientos!);
+    }
+
+    if (filters.metros_construccion_min) {
+      filtered = filtered.filter(property => property.metros_construccion >= filters.metros_construccion_min!);
+    }
+
+    if (filters.metros_construccion_max) {
+      filtered = filtered.filter(property => property.metros_construccion <= filters.metros_construccion_max!);
+    }
+
+    if (filters.amueblado !== null) {
+      filtered = filtered.filter(property => property.amueblado === filters.amueblado);
     }
     
-    if (filters.location) {
-      const searchTerm = filters.location.toLowerCase();
+    if (filters.ubicacion) {
+      const searchTerm = filters.ubicacion.toLowerCase();
       filtered = filtered.filter(property => 
-        property.location.address.toLowerCase().includes(searchTerm) ||
-        property.location.city.toLowerCase().includes(searchTerm) ||
-        property.location.state.toLowerCase().includes(searchTerm)
+        property.direccion.toLowerCase().includes(searchTerm) ||
+        property.colonia.toLowerCase().includes(searchTerm) ||
+        property.ciudad.toLowerCase().includes(searchTerm) ||
+        property.estado.toLowerCase().includes(searchTerm)
       );
     }
     
     setFilteredProperties(filtered);
   };
+
+  if (loading) {
+    return (
+      <div className="pt-20">
+        <div className="bg-primary-800 text-white py-12">
+          <div className="container-custom">
+            <div className="flex items-center mb-4">
+              <Building2 className="h-8 w-8 text-secondary-400 mr-3" />
+              <h1 className="text-white">Propiedades</h1>
+            </div>
+            <p className="text-white/80 max-w-3xl">
+              Encuentra la propiedad perfecta para ti entre nuestra selección de casas, departamentos, locales y terrenos disponibles.
+            </p>
+          </div>
+        </div>
+        <div className="container-custom py-16 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p className="text-neutral-600">Cargando propiedades...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="pt-20">
+        <div className="bg-primary-800 text-white py-12">
+          <div className="container-custom">
+            <div className="flex items-center mb-4">
+              <Building2 className="h-8 w-8 text-secondary-400 mr-3" />
+              <h1 className="text-white">Propiedades</h1>
+            </div>
+            <p className="text-white/80 max-w-3xl">
+              Encuentra la propiedad perfecta para ti entre nuestra selección de casas, departamentos, locales y terrenos disponibles.
+            </p>
+          </div>
+        </div>
+        <div className="container-custom py-16 text-center">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <p>Error al cargar las propiedades: {error}</p>
+          </div>
+          <p className="text-neutral-600">Por favor, intenta recargar la página.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-20">
@@ -110,53 +177,60 @@ const PropertiesPage: React.FC = () => {
             <div className="flex flex-wrap gap-2 mb-6 bg-neutral-50 p-4 rounded-lg">
               <span className="text-neutral-700 font-medium">Filtros activos:</span>
               
-              {activeFilters.operation && (
+              {activeFilters.operacion && (
                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  {activeFilters.operation === 'venta' ? 'Venta' : 'Renta'}
+                  {activeFilters.operacion === 'venta' ? 'Venta' : 'Renta'}
                 </span>
               )}
               
-              {activeFilters.type && (
+              {activeFilters.tipo && (
                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  {activeFilters.type === 'casa' ? 'Casa' : 
-                   activeFilters.type === 'departamento' ? 'Departamento' : 
-                   activeFilters.type === 'local' ? 'Local' : 'Terreno'}
+                  {activeFilters.tipo === 'casa' ? 'Casa' : 
+                   activeFilters.tipo === 'departamento' ? 'Departamento' : 
+                   activeFilters.tipo === 'local' ? 'Local' : 
+                   activeFilters.tipo === 'oficina' ? 'Oficina' : 'Terreno'}
                 </span>
               )}
               
-              {activeFilters.minPrice && (
+              {activeFilters.precio_min && (
                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  Desde ${activeFilters.minPrice.toLocaleString()}
+                  Desde ${activeFilters.precio_min.toLocaleString()}
                 </span>
               )}
               
-              {activeFilters.maxPrice && (
+              {activeFilters.precio_max && (
                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  Hasta ${activeFilters.maxPrice.toLocaleString()}
+                  Hasta ${activeFilters.precio_max.toLocaleString()}
                 </span>
               )}
               
-              {activeFilters.bedrooms && (
+              {activeFilters.recamaras && (
                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  {activeFilters.bedrooms}+ Recámaras
+                  {activeFilters.recamaras}+ Recámaras
                 </span>
               )}
               
-              {activeFilters.bathrooms && (
+              {activeFilters.banos && (
                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  {activeFilters.bathrooms}+ Baños
+                  {activeFilters.banos}+ Baños
                 </span>
               )}
               
-              {activeFilters.parking && (
+              {activeFilters.estacionamientos && (
                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  {activeFilters.parking}+ Estacionamientos
+                  {activeFilters.estacionamientos}+ Estacionamientos
+                </span>
+              )}
+
+              {activeFilters.amueblado !== null && (
+                <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
+                  {activeFilters.amueblado ? 'Amueblado' : 'Sin amueblar'}
                 </span>
               )}
               
-              {activeFilters.location && (
+              {activeFilters.ubicacion && (
                 <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  Ubicación: {activeFilters.location}
+                  Ubicación: {activeFilters.ubicacion}
                 </span>
               )}
             </div>
@@ -179,14 +253,17 @@ const PropertiesPage: React.FC = () => {
               </p>
               <button
                 onClick={() => applyFilters({
-                  operation: '',
-                  type: '',
-                  minPrice: null,
-                  maxPrice: null,
-                  bedrooms: null,
-                  bathrooms: null,
-                  parking: null,
-                  location: '',
+                  operacion: '',
+                  tipo: '',
+                  precio_min: null,
+                  precio_max: null,
+                  recamaras: null,
+                  banos: null,
+                  estacionamientos: null,
+                  ubicacion: '',
+                  metros_construccion_min: null,
+                  metros_construccion_max: null,
+                  amueblado: null,
                 })}
                 className="btn btn-primary"
               >

@@ -1,35 +1,59 @@
 export interface Property {
   id: string;
-  title: string;
-  description: string;
-  price: number;
-  operation: 'venta' | 'renta';
-  type: 'casa' | 'departamento' | 'local' | 'terreno';
-  area: number;
-  bedrooms: number;
-  bathrooms: number;
-  parking: number;
-  isFurnished: boolean;
-  location: {
-    address: string;
-    city: string;
-    state: string;
-    lat: number;
-    lng: number;
-  };
-  images: string[];
-  features: string[];
-  createdAt: string;
-  updatedAt: string;
+  titulo: string;
+  descripcion: string;
+  precio: number;
+  operacion: 'venta' | 'renta';
+  tipo: 'casa' | 'departamento' | 'local' | 'terreno' | 'oficina';
+  recamaras: number;
+  banos: number;
+  estacionamientos: number;
+  metros_construccion: number;
+  metros_terreno: number;
+  antiguedad: number;
+  amueblado: boolean;
+  direccion: string;
+  colonia: string;
+  ciudad: string;
+  estado: string;
+  codigo_postal: string;
+  latitud: number;
+  longitud: number;
+  imagenes: string[];
+  disponible: boolean;
+  destacado: boolean;
+  fecha_creacion: string;
+  fecha_actualizacion: string;
+  amenidades?: Amenity[];
+}
+
+export interface Amenity {
+  id: string;
+  nombre: string;
+  descripcion?: string;
+  icono?: string;
+  categoria: string;
+  activo: boolean;
+  fecha_creacion: string;
+}
+
+export interface PropertyAmenity {
+  id: string;
+  property_id: string;
+  amenity_id: string;
+  fecha_creacion: string;
 }
 
 export interface SearchFilters {
-  operation: string;
-  type: string;
-  minPrice: number | null;
-  maxPrice: number | null;
-  bedrooms: number | null;
-  bathrooms: number | null;
-  parking: number | null;
-  location: string;
+  operacion: string;
+  tipo: string;
+  precio_min: number | null;
+  precio_max: number | null;
+  recamaras: number | null;
+  banos: number | null;
+  estacionamientos: number | null;
+  ubicacion: string;
+  metros_construccion_min: number | null;
+  metros_construccion_max: number | null;
+  amueblado?: boolean | null;
 }
