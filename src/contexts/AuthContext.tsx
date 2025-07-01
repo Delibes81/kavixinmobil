@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, supabaseConfig } from '../lib/supabase';
 
 interface AdminUser {
   id: string;
@@ -66,6 +66,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
+      // Check if Supabase is configured
+      if (!supabaseConfig.hasUrl || !supabaseConfig.hasKey) {
+        console.warn('Supabase not configured, using demo authentication');
+        
+        // Demo authentication for when Supabase is not configured
+        const demoUsers = [
+          { username: 'admin', password: 'admin123', name: 'Administrador Principal', role: 'super_admin' },
+          { username: 'usuario1', password: 'password123', name: 'Usuario de Prueba', role: 'admin' }
+        ];
+        
+        const demoUser = demoUsers.find(u => u.username === username && u.password === password);
+        
+        if (demoUser) {
+          const userData: AdminUser = {
+            id: 'demo-' + demoUser.username,
+            username: demoUser.username,
+            name: demoUser.name,
+            role: demoUser.role,
+          };
+
+          setIsAuthenticated(true);
+          setUser(userData);
+
+          // Store session in localStorage (expires in 8 hours)
+          const expiryTime = new Date().getTime() + (8 * 60 * 60 * 1000);
+          localStorage.setItem('admin_user', JSON.stringify(userData));
+          localStorage.setItem('session_expiry', expiryTime.toString());
+
+          return true;
+        }
+        
+        return false;
+      }
+
       // Call the verify_admin_login function
       const { data, error } = await supabase.rpc('verify_admin_login', {
         p_username: username,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, supabaseConfig } from '../lib/supabase';
 import { Property, Amenity } from '../types';
 
 export const useProperties = () => {
@@ -10,8 +10,117 @@ export const useProperties = () => {
   const fetchProperties = async () => {
     try {
       setLoading(true);
+      setError(null);
+
+      // Check if Supabase is properly configured
+      if (!supabaseConfig.hasUrl || !supabaseConfig.hasKey) {
+        console.warn('Supabase not configured, using mock data');
+        // Use mock data when Supabase is not configured
+        const mockProperties: Property[] = [
+          {
+            id: '1',
+            titulo: 'Exclusivo Departamento en Polanco',
+            descripcion: 'Hermoso departamento con acabados de lujo, ubicado en una de las zonas más exclusivas de la ciudad.',
+            precio: 8500000,
+            operacion: 'venta',
+            tipo: 'departamento',
+            recamaras: 2,
+            banos: 2,
+            estacionamientos: 1,
+            metros_construccion: 120,
+            metros_terreno: 0,
+            antiguedad: 5,
+            amueblado: false,
+            direccion: 'Emilio Castelar 135',
+            colonia: 'Polanco V Sección',
+            ciudad: 'Ciudad de México',
+            estado: 'Ciudad de México',
+            codigo_postal: '11560',
+            latitud: 19.4324,
+            longitud: -99.1962,
+            imagenes: [
+              'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg',
+              'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg',
+              'https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg'
+            ],
+            disponible: true,
+            destacado: true,
+            fecha_creacion: '2025-01-15T00:00:00Z',
+            fecha_actualizacion: '2025-01-15T00:00:00Z',
+            amenidades: []
+          },
+          {
+            id: '2',
+            titulo: 'Casa con jardín en Coyoacán',
+            descripcion: 'Encantadora casa estilo colonial con amplio jardín en una tranquila calle de Coyoacán.',
+            precio: 12500000,
+            operacion: 'venta',
+            tipo: 'casa',
+            recamaras: 4,
+            banos: 3,
+            estacionamientos: 2,
+            metros_construccion: 280,
+            metros_terreno: 350,
+            antiguedad: 15,
+            amueblado: false,
+            direccion: 'Francisco Sosa 205',
+            colonia: 'Del Carmen',
+            ciudad: 'Ciudad de México',
+            estado: 'Ciudad de México',
+            codigo_postal: '04100',
+            latitud: 19.3434,
+            longitud: -99.1663,
+            imagenes: [
+              'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg',
+              'https://images.pexels.com/photos/1643384/pexels-photo-1643384.jpeg',
+              'https://images.pexels.com/photos/1743227/pexels-photo-1743227.jpeg'
+            ],
+            disponible: true,
+            destacado: true,
+            fecha_creacion: '2025-01-10T00:00:00Z',
+            fecha_actualizacion: '2025-01-10T00:00:00Z',
+            amenidades: []
+          },
+          {
+            id: '3',
+            titulo: 'Moderno Loft en Condesa',
+            descripcion: 'Espectacular loft completamente amueblado en el corazón de la Condesa.',
+            precio: 18000,
+            operacion: 'renta',
+            tipo: 'departamento',
+            recamaras: 1,
+            banos: 1,
+            estacionamientos: 1,
+            metros_construccion: 75,
+            metros_terreno: 0,
+            antiguedad: 2,
+            amueblado: true,
+            direccion: 'Tamaulipas 66',
+            colonia: 'Condesa',
+            ciudad: 'Ciudad de México',
+            estado: 'Ciudad de México',
+            codigo_postal: '06140',
+            latitud: 19.4134,
+            longitud: -99.1763,
+            imagenes: [
+              'https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg',
+              'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg',
+              'https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg'
+            ],
+            disponible: true,
+            destacado: false,
+            fecha_creacion: '2025-02-25T00:00:00Z',
+            fecha_actualizacion: '2025-02-25T00:00:00Z',
+            amenidades: []
+          }
+        ];
+        
+        setProperties(mockProperties);
+        setLoading(false);
+        return;
+      }
       
-      // Fetch properties with their amenities
+      // Fetch properties with their amenities from Supabase
       const { data: propertiesData, error: propertiesError } = await supabase
         .from('properties')
         .select(`
@@ -56,6 +165,7 @@ export const useProperties = () => {
 
       setProperties(transformedProperties);
     } catch (err) {
+      console.error('Error fetching properties:', err);
       setError(err instanceof Error ? err.message : 'Error fetching properties');
     } finally {
       setLoading(false);
@@ -66,6 +176,11 @@ export const useProperties = () => {
     try {
       console.log('Creating property with data:', propertyData);
       console.log('Amenity IDs:', amenityIds);
+
+      // Check if Supabase is configured
+      if (!supabaseConfig.hasUrl || !supabaseConfig.hasKey) {
+        throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
+      }
 
       // Prepare the insert data, ensuring all required fields are present
       const insertData = {
@@ -151,6 +266,11 @@ export const useProperties = () => {
       console.log('Property data:', propertyData);
       console.log('Amenity IDs:', amenityIds);
 
+      // Check if Supabase is configured
+      if (!supabaseConfig.hasUrl || !supabaseConfig.hasKey) {
+        throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
+      }
+
       // Prepare the update data, ensuring all fields are properly formatted
       const updateData = {
         titulo: propertyData.titulo?.trim() || '',
@@ -214,6 +334,11 @@ export const useProperties = () => {
 
   const deleteProperty = async (id: string) => {
     try {
+      // Check if Supabase is configured
+      if (!supabaseConfig.hasUrl || !supabaseConfig.hasKey) {
+        throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
+      }
+
       // Use RPC function to bypass RLS for admin operations
       const { error } = await supabase.rpc('admin_delete_property', {
         property_id: id
@@ -251,6 +376,15 @@ export const useAmenities = () => {
   const fetchAmenities = async () => {
     try {
       setLoading(true);
+
+      // Check if Supabase is configured
+      if (!supabaseConfig.hasUrl || !supabaseConfig.hasKey) {
+        console.warn('Supabase not configured, using mock amenities');
+        setAmenities([]);
+        setLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('amenities')
         .select('*')
@@ -272,6 +406,7 @@ export const useAmenities = () => {
 
       setAmenities(transformedAmenities);
     } catch (err) {
+      console.error('Error fetching amenities:', err);
       setError(err instanceof Error ? err.message : 'Error fetching amenities');
     } finally {
       setLoading(false);
