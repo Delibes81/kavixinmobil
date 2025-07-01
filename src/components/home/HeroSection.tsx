@@ -8,7 +8,7 @@ const HeroSection: React.FC = () => {
     <section className="relative h-screen min-h-[600px] flex items-center overflow-hidden">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary-900/80 to-primary-800/70"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-primary-900/80 to-primary-800/70 z-10"></div>
         <img
           src="https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg"
           alt="Luxury Home"
@@ -17,7 +17,7 @@ const HeroSection: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="container-custom relative z-10 pt-20">
+      <div className="container-custom relative z-20 pt-20">
         <div className="max-w-3xl">
           <FadeInSection delay={200}>
             <h1 className="text-white font-bold mb-4 leading-tight animate-fade-in-up">
