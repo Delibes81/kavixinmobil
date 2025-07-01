@@ -8,6 +8,8 @@ import CTASection from '../components/home/CTASection';
 const HomePage: React.FC = () => {
   useEffect(() => {
     document.title = 'Nova Hestia | Encuentra tu hogar ideal';
+    // Scroll to top when component mounts
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   return (

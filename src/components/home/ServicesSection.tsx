@@ -1,21 +1,25 @@
 import React from 'react';
 import { Home, Bookmark, Building, Lock, Search, MessageSquare } from 'lucide-react';
+import FadeInSection from '../ui/FadeInSection';
 
 interface ServiceProps {
   icon: React.ReactNode;
   title: string;
   description: string;
+  delay: number;
 }
 
-const ServiceCard: React.FC<ServiceProps> = ({ icon, title, description }) => {
+const ServiceCard: React.FC<ServiceProps> = ({ icon, title, description, delay }) => {
   return (
-    <div className="card p-6 hover:translate-y-[-5px] transition-all duration-300">
-      <div className="w-14 h-14 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mb-4">
-        {icon}
+    <FadeInSection delay={delay}>
+      <div className="card p-6 hover:translate-y-[-5px] transition-all duration-300 group">
+        <div className="w-14 h-14 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mb-4 group-hover:scale-110 transition-transform duration-300">
+          {icon}
+        </div>
+        <h3 className="text-xl font-semibold mb-3">{title}</h3>
+        <p className="text-neutral-600">{description}</p>
       </div>
-      <h3 className="text-xl font-semibold mb-3">{title}</h3>
-      <p className="text-neutral-600">{description}</p>
-    </div>
+    </FadeInSection>
   );
 };
 
@@ -56,13 +60,15 @@ const ServicesSection: React.FC = () => {
   return (
     <section className="section bg-neutral-50">
       <div className="container-custom">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <h2 className="mb-4">Nuestros servicios</h2>
-          <p className="text-neutral-600">
-            En Nova Hestia ofrecemos soluciones inmobiliarias integrales para satisfacer todas tus necesidades.
-            Contamos con un equipo de profesionales altamente capacitados para brindarte el mejor servicio.
-          </p>
-        </div>
+        <FadeInSection>
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <h2 className="mb-4">Nuestros servicios</h2>
+            <p className="text-neutral-600">
+              En Nova Hestia ofrecemos soluciones inmobiliarias integrales para satisfacer todas tus necesidades.
+              Contamos con un equipo de profesionales altamente capacitados para brindarte el mejor servicio.
+            </p>
+          </div>
+        </FadeInSection>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
@@ -71,6 +77,7 @@ const ServicesSection: React.FC = () => {
               icon={service.icon}
               title={service.title}
               description={service.description}
+              delay={index * 100}
             />
           ))}
         </div>

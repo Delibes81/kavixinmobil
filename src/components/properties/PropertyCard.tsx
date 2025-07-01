@@ -28,22 +28,23 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
   };
 
   return (
-    <div className="card group overflow-hidden transition-all duration-300">
+    <div className="card group overflow-hidden transition-all duration-500 hover:shadow-xl transform hover:-translate-y-2">
       {/* Image container with overlay - Now clickable */}
       <Link to={`/propiedades/${property.id}`} className="block">
         <div className="relative overflow-hidden h-64">
           <img
             src={property.imagenes[0]}
             alt={property.titulo}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="absolute top-4 left-4 z-10 flex gap-2">
-            <span className={`px-3 py-1 text-xs font-medium rounded-full text-white ${
+            <span className={`px-3 py-1 text-xs font-medium rounded-full text-white transform transition-all duration-300 group-hover:scale-105 ${
               property.operacion === 'venta' ? 'bg-primary-600' : 'bg-secondary-500'
             }`}>
               {property.operacion === 'venta' ? 'Venta' : 'Renta'}
             </span>
-            <span className="px-3 py-1 text-xs font-medium rounded-full bg-neutral-800 text-white">
+            <span className="px-3 py-1 text-xs font-medium rounded-full bg-neutral-800 text-white transform transition-all duration-300 group-hover:scale-105">
               {property.tipo === 'casa' ? 'Casa' : 
                property.tipo === 'departamento' ? 'Departamento' : 
                property.tipo === 'local' ? 'Local' : 
@@ -57,7 +58,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
       <div className="p-6">
         <div className="flex items-start justify-between mb-2">
           <Link to={`/propiedades/${property.id}`} className="block flex-1">
-            <h3 className="text-xl font-medium text-primary-800 line-clamp-1 hover:text-primary-600 transition-colors">
+            <h3 className="text-xl font-medium text-primary-800 line-clamp-1 hover:text-primary-600 transition-colors duration-200">
               {property.titulo}
             </h3>
           </Link>
@@ -79,19 +80,19 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
 
         {/* Features */}
         <div className="grid grid-cols-4 gap-2 mb-4">
-          <div className="flex flex-col items-center p-2 rounded-md bg-neutral-50">
+          <div className="flex flex-col items-center p-2 rounded-md bg-neutral-50 transform transition-all duration-200 hover:bg-neutral-100">
             <Move className="h-4 w-4 text-primary-600 mb-1" />
             <span className="text-xs text-neutral-600">{property.metros_construccion} m²</span>
           </div>
-          <div className="flex flex-col items-center p-2 rounded-md bg-neutral-50">
+          <div className="flex flex-col items-center p-2 rounded-md bg-neutral-50 transform transition-all duration-200 hover:bg-neutral-100">
             <Bed className="h-4 w-4 text-primary-600 mb-1" />
             <span className="text-xs text-neutral-600">{property.recamaras}</span>
           </div>
-          <div className="flex flex-col items-center p-2 rounded-md bg-neutral-50">
+          <div className="flex flex-col items-center p-2 rounded-md bg-neutral-50 transform transition-all duration-200 hover:bg-neutral-100">
             <Bath className="h-4 w-4 text-primary-600 mb-1" />
             <span className="text-xs text-neutral-600">{property.banos}</span>
           </div>
-          <div className="flex flex-col items-center p-2 rounded-md bg-neutral-50">
+          <div className="flex flex-col items-center p-2 rounded-md bg-neutral-50 transform transition-all duration-200 hover:bg-neutral-100">
             <Car className="h-4 w-4 text-primary-600 mb-1" />
             <span className="text-xs text-neutral-600">{property.estacionamientos}</span>
           </div>
@@ -99,7 +100,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
 
         <Link 
           to={`/propiedades/${property.id}`}
-          className="btn btn-primary w-full"
+          className="btn btn-primary w-full transform transition-all duration-200 hover:scale-105"
         >
           Ver detalles
         </Link>

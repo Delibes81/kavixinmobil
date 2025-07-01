@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Building2 } from 'lucide-react';
 import PropertySearchFilters from '../components/properties/PropertySearchFilters';
 import PropertyCard from '../components/properties/PropertyCard';
+import FadeInSection from '../components/ui/FadeInSection';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { useProperties } from '../hooks/useProperties';
 import { Property, SearchFilters } from '../types';
 
@@ -24,6 +26,8 @@ const PropertiesPage: React.FC = () => {
 
   useEffect(() => {
     document.title = 'Propiedades | Nova Hestia';
+    // Scroll to top when component mounts
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   useEffect(() => {
@@ -94,17 +98,19 @@ const PropertiesPage: React.FC = () => {
       <div className="pt-20">
         <div className="bg-primary-800 text-white py-12">
           <div className="container-custom">
-            <div className="flex items-center mb-4">
-              <Building2 className="h-8 w-8 text-secondary-400 mr-3" />
-              <h1 className="text-white">Propiedades</h1>
-            </div>
-            <p className="text-white/80 max-w-3xl">
-              Encuentra la propiedad perfecta para ti entre nuestra selección de casas, departamentos, locales y terrenos disponibles.
-            </p>
+            <FadeInSection>
+              <div className="flex items-center mb-4">
+                <Building2 className="h-8 w-8 text-secondary-400 mr-3" />
+                <h1 className="text-white">Propiedades</h1>
+              </div>
+              <p className="text-white/80 max-w-3xl">
+                Encuentra la propiedad perfecta para ti entre nuestra selección de casas, departamentos, locales y terrenos disponibles.
+              </p>
+            </FadeInSection>
           </div>
         </div>
         <div className="container-custom py-16 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <LoadingSpinner size="lg" className="mx-auto mb-4" />
           <p className="text-neutral-600">Cargando propiedades...</p>
         </div>
       </div>
@@ -116,13 +122,15 @@ const PropertiesPage: React.FC = () => {
       <div className="pt-20">
         <div className="bg-primary-800 text-white py-12">
           <div className="container-custom">
-            <div className="flex items-center mb-4">
-              <Building2 className="h-8 w-8 text-secondary-400 mr-3" />
-              <h1 className="text-white">Propiedades</h1>
-            </div>
-            <p className="text-white/80 max-w-3xl">
-              Encuentra la propiedad perfecta para ti entre nuestra selección de casas, departamentos, locales y terrenos disponibles.
-            </p>
+            <FadeInSection>
+              <div className="flex items-center mb-4">
+                <Building2 className="h-8 w-8 text-secondary-400 mr-3" />
+                <h1 className="text-white">Propiedades</h1>
+              </div>
+              <p className="text-white/80 max-w-3xl">
+                Encuentra la propiedad perfecta para ti entre nuestra selección de casas, departamentos, locales y terrenos disponibles.
+              </p>
+            </FadeInSection>
           </div>
         </div>
         <div className="container-custom py-16 text-center">
@@ -140,159 +148,173 @@ const PropertiesPage: React.FC = () => {
       {/* Page Header */}
       <div className="bg-primary-800 text-white py-12">
         <div className="container-custom">
-          <div className="flex items-center mb-4">
-            <Building2 className="h-8 w-8 text-secondary-400 mr-3" />
-            <h1 className="text-white">Propiedades</h1>
-          </div>
-          <p className="text-white/80 max-w-3xl">
-            Encuentra la propiedad perfecta para ti entre nuestra selección de casas, departamentos, locales y terrenos disponibles.
-          </p>
+          <FadeInSection>
+            <div className="flex items-center mb-4">
+              <Building2 className="h-8 w-8 text-secondary-400 mr-3" />
+              <h1 className="text-white">Propiedades</h1>
+            </div>
+            <p className="text-white/80 max-w-3xl">
+              Encuentra la propiedad perfecta para ti entre nuestra selección de casas, departamentos, locales y terrenos disponibles.
+            </p>
+          </FadeInSection>
         </div>
       </div>
 
       <div className="container-custom py-8">
         {/* Search Filters */}
-        <PropertySearchFilters onApplyFilters={applyFilters} />
+        <FadeInSection>
+          <PropertySearchFilters onApplyFilters={applyFilters} />
+        </FadeInSection>
         
         {/* Results Section */}
         <div className="mb-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold">
-              {filteredProperties.length} 
-              {filteredProperties.length === 1 ? ' propiedad encontrada' : ' propiedades encontradas'}
-            </h2>
-            <div>
-              <select className="select-field w-auto">
-                <option value="recent">Más recientes</option>
-                <option value="price_asc">Precio: menor a mayor</option>
-                <option value="price_desc">Precio: mayor a menor</option>
-                <option value="area_asc">Área: menor a mayor</option>
-                <option value="area_desc">Área: mayor a menor</option>
-              </select>
+          <FadeInSection>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-semibold">
+                {filteredProperties.length} 
+                {filteredProperties.length === 1 ? ' propiedad encontrada' : ' propiedades encontradas'}
+              </h2>
+              <div>
+                <select className="select-field w-auto">
+                  <option value="recent">Más recientes</option>
+                  <option value="price_asc">Precio: menor a mayor</option>
+                  <option value="price_desc">Precio: mayor a menor</option>
+                  <option value="area_asc">Área: menor a mayor</option>
+                  <option value="area_desc">Área: mayor a menor</option>
+                </select>
+              </div>
             </div>
-          </div>
+          </FadeInSection>
           
           {/* Active Filters */}
           {Object.values(activeFilters).some(value => value !== '' && value !== null) && (
-            <div className="flex flex-wrap gap-2 mb-6 bg-neutral-50 p-4 rounded-lg">
-              <span className="text-neutral-700 font-medium">Filtros activos:</span>
-              
-              {activeFilters.operacion && (
-                <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  {activeFilters.operacion === 'venta' ? 'Venta' : 'Renta'}
-                </span>
-              )}
-              
-              {activeFilters.tipo && (
-                <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  {activeFilters.tipo === 'casa' ? 'Casa' : 
-                   activeFilters.tipo === 'departamento' ? 'Departamento' : 
-                   activeFilters.tipo === 'local' ? 'Local' : 
-                   activeFilters.tipo === 'oficina' ? 'Oficina' : 'Terreno'}
-                </span>
-              )}
-              
-              {activeFilters.precio_min && (
-                <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  Desde ${activeFilters.precio_min.toLocaleString()}
-                </span>
-              )}
-              
-              {activeFilters.precio_max && (
-                <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  Hasta ${activeFilters.precio_max.toLocaleString()}
-                </span>
-              )}
-              
-              {activeFilters.recamaras && (
-                <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  {activeFilters.recamaras}+ Recámaras
-                </span>
-              )}
-              
-              {activeFilters.banos && (
-                <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  {activeFilters.banos}+ Baños
-                </span>
-              )}
-              
-              {activeFilters.estacionamientos && (
-                <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  {activeFilters.estacionamientos}+ Estacionamientos
-                </span>
-              )}
+            <FadeInSection>
+              <div className="flex flex-wrap gap-2 mb-6 bg-neutral-50 p-4 rounded-lg">
+                <span className="text-neutral-700 font-medium">Filtros activos:</span>
+                
+                {activeFilters.operacion && (
+                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
+                    {activeFilters.operacion === 'venta' ? 'Venta' : 'Renta'}
+                  </span>
+                )}
+                
+                {activeFilters.tipo && (
+                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
+                    {activeFilters.tipo === 'casa' ? 'Casa' : 
+                     activeFilters.tipo === 'departamento' ? 'Departamento' : 
+                     activeFilters.tipo === 'local' ? 'Local' : 
+                     activeFilters.tipo === 'oficina' ? 'Oficina' : 'Terreno'}
+                  </span>
+                )}
+                
+                {activeFilters.precio_min && (
+                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
+                    Desde ${activeFilters.precio_min.toLocaleString()}
+                  </span>
+                )}
+                
+                {activeFilters.precio_max && (
+                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
+                    Hasta ${activeFilters.precio_max.toLocaleString()}
+                  </span>
+                )}
+                
+                {activeFilters.recamaras && (
+                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
+                    {activeFilters.recamaras}+ Recámaras
+                  </span>
+                )}
+                
+                {activeFilters.banos && (
+                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
+                    {activeFilters.banos}+ Baños
+                  </span>
+                )}
+                
+                {activeFilters.estacionamientos && (
+                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
+                    {activeFilters.estacionamientos}+ Estacionamientos
+                  </span>
+                )}
 
-              {activeFilters.amueblado !== null && (
-                <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  {activeFilters.amueblado ? 'Amueblado' : 'Sin amueblar'}
-                </span>
-              )}
-              
-              {activeFilters.ubicacion && (
-                <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
-                  Ubicación: {activeFilters.ubicacion}
-                </span>
-              )}
-            </div>
+                {activeFilters.amueblado !== null && (
+                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
+                    {activeFilters.amueblado ? 'Amueblado' : 'Sin amueblar'}
+                  </span>
+                )}
+                
+                {activeFilters.ubicacion && (
+                  <span className="px-3 py-1 text-xs font-medium rounded-full bg-primary-100 text-primary-700">
+                    Ubicación: {activeFilters.ubicacion}
+                  </span>
+                )}
+              </div>
+            </FadeInSection>
           )}
           
           {/* Property Grid */}
           {filteredProperties.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredProperties.map((property) => (
-                <PropertyCard key={property.id} property={property} />
+              {filteredProperties.map((property, index) => (
+                <FadeInSection key={property.id} delay={index * 100}>
+                  <PropertyCard property={property} />
+                </FadeInSection>
               ))}
             </div>
           ) : (
-            <div className="text-center py-16">
-              <Building2 className="h-16 w-16 text-neutral-300 mx-auto mb-4" />
-              <h3 className="text-2xl font-semibold mb-2">No se encontraron propiedades</h3>
-              <p className="text-neutral-600 mb-6">
-                No hay propiedades que coincidan con los filtros seleccionados. 
-                Intenta modificar los criterios de búsqueda.
-              </p>
-              <button
-                onClick={() => applyFilters({
-                  operacion: '',
-                  tipo: '',
-                  precio_min: null,
-                  precio_max: null,
-                  recamaras: null,
-                  banos: null,
-                  estacionamientos: null,
-                  ubicacion: '',
-                  metros_construccion_min: null,
-                  metros_construccion_max: null,
-                  amueblado: null,
-                })}
-                className="btn btn-primary"
-              >
-                Limpiar filtros
-              </button>
-            </div>
+            <FadeInSection>
+              <div className="text-center py-16">
+                <Building2 className="h-16 w-16 text-neutral-300 mx-auto mb-4" />
+                <h3 className="text-2xl font-semibold mb-2">No se encontraron propiedades</h3>
+                <p className="text-neutral-600 mb-6">
+                  No hay propiedades que coincidan con los filtros seleccionados. 
+                  Intenta modificar los criterios de búsqueda.
+                </p>
+                <button
+                  onClick={() => applyFilters({
+                    operacion: '',
+                    tipo: '',
+                    precio_min: null,
+                    precio_max: null,
+                    recamaras: null,
+                    banos: null,
+                    estacionamientos: null,
+                    ubicacion: '',
+                    metros_construccion_min: null,
+                    metros_construccion_max: null,
+                    amueblado: null,
+                  })}
+                  className="btn btn-primary transform transition-all duration-200 hover:scale-105"
+                >
+                  Limpiar filtros
+                </button>
+              </div>
+            </FadeInSection>
           )}
           
           {/* Pagination (mockup) */}
           {filteredProperties.length > 0 && (
-            <div className="flex justify-center mt-12">
-              <nav className="flex space-x-1">
-                <button className="px-3 py-2 rounded-md text-neutral-600 hover:bg-neutral-100">
-                  Anterior
-                </button>
-                <button className="px-3 py-2 rounded-md bg-primary-600 text-white">
-                  1
-                </button>
-                <button className="px-3 py-2 rounded-md text-neutral-600 hover:bg-neutral-100">
-                  2
-                </button>
-                <button className="px-3 py-2 rounded-md text-neutral-600 hover:bg-neutral-100">
-                  3
-                </button>
-                <button className="px-3 py-2 rounded-md text-neutral-600 hover:bg-neutral-100">
-                  Siguiente
-                </button>
-              </nav>
-            </div>
+            <FadeInSection>
+              <div className="flex justify-center mt-12">
+                <nav className="flex space-x-1">
+                  <button className="px-3 py-2 rounded-md text-neutral-600 hover:bg-neutral-100 transition-colors duration-200">
+                    Anterior
+                  </button>
+                  <button className="px-3 py-2 rounded-md bg-primary-600 text-white">
+                    1
+                  </button>
+                  <button className="px-3 py-2 rounded-md text-neutral-600 hover:bg-neutral-100 transition-colors duration-200">
+                    2
+                  </button>
+                  <button className="px-3 py-2 rounded-md text-neutral-600 hover:bg-neutral-100 transition-colors duration-200">
+                    3
+                  </button>
+                  <button className="px-3 py-2 rounded-md text-neutral-600 hover:bg-neutral-100 transition-colors duration-200">
+                    Siguiente
+                  </button>
+                </nav>
+              </div>
+            </FadeInSection>
           )}
         </div>
       </div>
