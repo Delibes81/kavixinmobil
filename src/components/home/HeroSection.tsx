@@ -75,10 +75,11 @@ const HeroSection: React.FC = () => {
           {/* Search Bar */}
           <FadeInSection delay={600}>
             <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg mb-8 animate-slide-up">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* FIXED: Grid con padding extra para evitar recorte en hover */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-2">
                 {/* Operation Type */}
-                <div className="transform transition-all duration-300 hover:scale-105">
-                  <label htmlFor="operation" className="block text-sm font-medium text-neutral-700 mb-1">
+                <div className="transform transition-all duration-300 hover:scale-[1.02] hover:z-10 relative">
+                  <label htmlFor="operation" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                     Operación
                   </label>
                   <select 
@@ -95,8 +96,8 @@ const HeroSection: React.FC = () => {
                 </div>
                 
                 {/* Property Type */}
-                <div className="transform transition-all duration-300 hover:scale-105">
-                  <label htmlFor="propertyType" className="block text-sm font-medium text-neutral-700 mb-1">
+                <div className="transform transition-all duration-300 hover:scale-[1.02] hover:z-10 relative">
+                  <label htmlFor="propertyType" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                     Tipo de propiedad
                   </label>
                   <select 
@@ -116,8 +117,8 @@ const HeroSection: React.FC = () => {
                 </div>
                 
                 {/* Location */}
-                <div className="transform transition-all duration-300 hover:scale-105">
-                  <label htmlFor="location" className="block text-sm font-medium text-neutral-700 mb-1">
+                <div className="transform transition-all duration-300 hover:scale-[1.02] hover:z-10 relative">
+                  <label htmlFor="location" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                     Ubicación
                   </label>
                   <div className="relative">
@@ -140,10 +141,11 @@ const HeroSection: React.FC = () => {
                 showAdvancedFilters ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'
               }`}>
                 <div className="pt-4 border-t border-neutral-200">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* FIXED: Grid con padding extra para evitar recorte */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 p-2">
                     {/* Bedrooms */}
-                    <div className="transform transition-all duration-300 hover:scale-105">
-                      <label htmlFor="bedrooms" className="block text-sm font-medium text-neutral-700 mb-1">
+                    <div className="transform transition-all duration-300 hover:scale-[1.02] hover:z-10 relative">
+                      <label htmlFor="bedrooms" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                         Recámaras
                       </label>
                       <select 
@@ -163,8 +165,8 @@ const HeroSection: React.FC = () => {
                     </div>
 
                     {/* Bathrooms */}
-                    <div className="transform transition-all duration-300 hover:scale-105">
-                      <label htmlFor="bathrooms" className="block text-sm font-medium text-neutral-700 mb-1">
+                    <div className="transform transition-all duration-300 hover:scale-[1.02] hover:z-10 relative">
+                      <label htmlFor="bathrooms" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                         Baños
                       </label>
                       <select 
@@ -183,8 +185,8 @@ const HeroSection: React.FC = () => {
                     </div>
 
                     {/* Price Min */}
-                    <div className="transform transition-all duration-300 hover:scale-105">
-                      <label htmlFor="priceMin" className="block text-sm font-medium text-neutral-700 mb-1">
+                    <div className="transform transition-all duration-300 hover:scale-[1.02] hover:z-10 relative">
+                      <label htmlFor="priceMin" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                         Precio mínimo
                       </label>
                       <input
@@ -200,8 +202,8 @@ const HeroSection: React.FC = () => {
                     </div>
 
                     {/* Price Max */}
-                    <div className="transform transition-all duration-300 hover:scale-105">
-                      <label htmlFor="priceMax" className="block text-sm font-medium text-neutral-700 mb-1">
+                    <div className="transform transition-all duration-300 hover:scale-[1.02] hover:z-10 relative">
+                      <label htmlFor="priceMax" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                         Precio máximo
                       </label>
                       <input
@@ -220,11 +222,11 @@ const HeroSection: React.FC = () => {
               </div>
               
               {/* Advanced Filters Toggle & Search Button */}
-              <div className="flex flex-col sm:flex-row items-center justify-between mt-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between mt-6 px-2">
                 <button 
                   type="button" 
                   onClick={handleAdvancedFiltersToggle}
-                  className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center mb-3 sm:mb-0 transition-all duration-200 group transform hover:scale-105"
+                  className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center mb-3 sm:mb-0 transition-all duration-200 group transform hover:scale-105 px-3 py-2 rounded-md hover:bg-primary-50"
                 >
                   <Home className="h-4 w-4 mr-1 transition-transform duration-200 group-hover:scale-110" />
                   {showAdvancedFilters ? 'Ocultar filtros avanzados' : 'Filtros avanzados'}

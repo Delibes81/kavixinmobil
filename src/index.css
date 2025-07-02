@@ -67,12 +67,13 @@
     @apply bg-white hover:bg-neutral-100 text-primary-700 border border-neutral-200 focus:ring-primary-500;
   }
 
+  /* FIXED: Input y select fields con padding mejorado para hover scale */
   .input-field {
-    @apply w-full px-4 py-2.5 border border-neutral-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200;
+    @apply w-full px-4 py-3 border border-neutral-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200;
   }
 
   .select-field {
-    @apply w-full pl-4 pr-10 py-2.5 border border-neutral-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 bg-white;
+    @apply w-full pl-4 pr-10 py-3 border border-neutral-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all duration-200 bg-white;
   }
 
   .card {
@@ -112,6 +113,29 @@
     left: 0 !important;
     right: 0 !important;
     z-index: 50 !important;
+  }
+
+  /* FIXED: Hover scale improvements para evitar recorte de texto */
+  .hover-scale-container {
+    padding: 8px; /* Espacio extra para el escalado */
+    margin: -8px; /* Compensar el padding extra */
+  }
+
+  .hover-scale-element {
+    transition: transform 0.2s ease-in-out;
+    transform-origin: center;
+  }
+
+  .hover-scale-element:hover {
+    transform: scale(1.02);
+    z-index: 10;
+    position: relative;
+  }
+
+  /* Mejorar el padding de labels para evitar recorte */
+  .form-label-safe {
+    padding: 0 4px;
+    margin-bottom: 8px;
   }
 }
 
@@ -448,6 +472,11 @@ html {
     background-color: white !important;
     opacity: 1 !important;
   }
+
+  /* FIXED: Reducir hover scale en móvil para evitar problemas */
+  .hover-scale-element:hover {
+    transform: scale(1.01); /* Menor escala en móvil */
+  }
 }
 
 /* Ensure navbar is always on top */
@@ -460,5 +489,24 @@ header[class*="fixed"] {
   .mobile-menu-overlay {
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
+  }
+}
+
+/* FIXED: Mejoras específicas para hover scale */
+@media (min-width: 769px) {
+  /* Solo aplicar hover scale completo en desktop */
+  .hover-scale-safe {
+    padding: 12px;
+    margin: -12px;
+    border-radius: 8px;
+    transition: all 0.2s ease-in-out;
+  }
+
+  .hover-scale-safe:hover {
+    transform: scale(1.02);
+    z-index: 10;
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
 }

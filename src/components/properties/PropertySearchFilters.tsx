@@ -109,11 +109,11 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
           </div>
         )}
 
-        {/* Basic Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        {/* Basic Filters - FIXED: Padding extra para evitar recorte en hover */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4 p-2">
           {/* Operation Type */}
-          <div className="transform transition-all duration-200 hover:scale-[1.02]">
-            <label htmlFor="operacion" className="block text-sm font-medium text-neutral-700 mb-1">
+          <div className="transform transition-all duration-200 hover:scale-[1.02] hover:z-10 relative">
+            <label htmlFor="operacion" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
               Operación
             </label>
             <select
@@ -132,8 +132,8 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
           </div>
           
           {/* Property Type */}
-          <div className="transform transition-all duration-200 hover:scale-[1.02]">
-            <label htmlFor="tipo" className="block text-sm font-medium text-neutral-700 mb-1">
+          <div className="transform transition-all duration-200 hover:scale-[1.02] hover:z-10 relative">
+            <label htmlFor="tipo" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
               Tipo de propiedad
             </label>
             <select
@@ -155,8 +155,8 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
           </div>
           
           {/* Price Range */}
-          <div className="transform transition-all duration-200 hover:scale-[1.02]">
-            <label htmlFor="precio_min" className="block text-sm font-medium text-neutral-700 mb-1">
+          <div className="transform transition-all duration-200 hover:scale-[1.02] hover:z-10 relative">
+            <label htmlFor="precio_min" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
               Precio mínimo
             </label>
             <input
@@ -173,8 +173,8 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
             />
           </div>
           
-          <div className="transform transition-all duration-200 hover:scale-[1.02]">
-            <label htmlFor="precio_max" className="block text-sm font-medium text-neutral-700 mb-1">
+          <div className="transform transition-all duration-200 hover:scale-[1.02] hover:z-10 relative">
+            <label htmlFor="precio_max" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
               Precio máximo
             </label>
             <input
@@ -198,16 +198,17 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
         }`}>
           <div className="pt-4 border-t border-neutral-200">
             <div className="mb-4">
-              <h4 className="text-lg font-medium text-neutral-800 mb-3 flex items-center">
+              <h4 className="text-lg font-medium text-neutral-800 mb-3 flex items-center px-2">
                 <Sliders className="h-5 w-5 mr-2 text-primary-600" />
                 Filtros Avanzados
               </h4>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            {/* FIXED: Grid con padding extra para evitar recorte */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-4 p-2">
               {/* Bedrooms */}
-              <div className="transform transition-all duration-200 hover:scale-[1.02]">
-                <label htmlFor="recamaras" className="block text-sm font-medium text-neutral-700 mb-1">
+              <div className="transform transition-all duration-200 hover:scale-[1.02] hover:z-10 relative">
+                <label htmlFor="recamaras" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                   Recámaras
                 </label>
                 <select
@@ -229,8 +230,8 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
               </div>
               
               {/* Bathrooms */}
-              <div className="transform transition-all duration-200 hover:scale-[1.02]">
-                <label htmlFor="banos" className="block text-sm font-medium text-neutral-700 mb-1">
+              <div className="transform transition-all duration-200 hover:scale-[1.02] hover:z-10 relative">
+                <label htmlFor="banos" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                   Baños
                 </label>
                 <select
@@ -251,8 +252,8 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
               </div>
               
               {/* Parking */}
-              <div className="transform transition-all duration-200 hover:scale-[1.02]">
-                <label htmlFor="estacionamientos" className="block text-sm font-medium text-neutral-700 mb-1">
+              <div className="transform transition-all duration-200 hover:scale-[1.02] hover:z-10 relative">
+                <label htmlFor="estacionamientos" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                   Estacionamientos
                 </label>
                 <select
@@ -273,8 +274,8 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
               </div>
               
               {/* Furnished */}
-              <div className="transform transition-all duration-200 hover:scale-[1.02]">
-                <label htmlFor="amueblado" className="block text-sm font-medium text-neutral-700 mb-1">
+              <div className="transform transition-all duration-200 hover:scale-[1.02] hover:z-10 relative">
+                <label htmlFor="amueblado" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                   Amueblado
                 </label>
                 <select
@@ -293,11 +294,11 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
               </div>
             </div>
 
-            {/* Second row of advanced filters */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            {/* Second row of advanced filters - FIXED: Padding extra */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4 p-2">
               {/* Location */}
-              <div className="transform transition-all duration-200 hover:scale-[1.02]">
-                <label htmlFor="ubicacion" className="block text-sm font-medium text-neutral-700 mb-1">
+              <div className="transform transition-all duration-200 hover:scale-[1.02] hover:z-10 relative">
+                <label htmlFor="ubicacion" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                   Ubicación
                 </label>
                 <div className="relative">
@@ -317,8 +318,8 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
               </div>
               
               {/* Construction Area Range */}
-              <div className="transform transition-all duration-200 hover:scale-[1.02]">
-                <label htmlFor="metros_construccion_min" className="block text-sm font-medium text-neutral-700 mb-1">
+              <div className="transform transition-all duration-200 hover:scale-[1.02] hover:z-10 relative">
+                <label htmlFor="metros_construccion_min" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                   M² mínimos
                 </label>
                 <input
@@ -335,8 +336,8 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
                 />
               </div>
               
-              <div className="transform transition-all duration-200 hover:scale-[1.02]">
-                <label htmlFor="metros_construccion_max" className="block text-sm font-medium text-neutral-700 mb-1">
+              <div className="transform transition-all duration-200 hover:scale-[1.02] hover:z-10 relative">
+                <label htmlFor="metros_construccion_max" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                   M² máximos
                 </label>
                 <input
@@ -354,10 +355,10 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
               </div>
             </div>
 
-            {/* Quick filter presets */}
-            <div className="mb-4">
-              <h5 className="text-sm font-medium text-neutral-700 mb-2">Filtros rápidos:</h5>
-              <div className="flex flex-wrap gap-2">
+            {/* Quick filter presets - FIXED: Padding para botones */}
+            <div className="mb-4 px-2">
+              <h5 className="text-sm font-medium text-neutral-700 mb-3 px-1">Filtros rápidos:</h5>
+              <div className="flex flex-wrap gap-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -369,7 +370,7 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
                       banos: 2
                     });
                   }}
-                  className="px-3 py-1 text-xs bg-neutral-100 hover:bg-primary-100 text-neutral-700 hover:text-primary-700 rounded-full transition-all duration-200 transform hover:scale-105"
+                  className="px-4 py-2 text-xs bg-neutral-100 hover:bg-primary-100 text-neutral-700 hover:text-primary-700 rounded-full transition-all duration-200 transform hover:scale-105 hover:shadow-md"
                 >
                   Casa familiar (3+ rec, 2+ baños)
                 </button>
@@ -383,7 +384,7 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
                       amueblado: true
                     });
                   }}
-                  className="px-3 py-1 text-xs bg-neutral-100 hover:bg-primary-100 text-neutral-700 hover:text-primary-700 rounded-full transition-all duration-200 transform hover:scale-105"
+                  className="px-4 py-2 text-xs bg-neutral-100 hover:bg-primary-100 text-neutral-700 hover:text-primary-700 rounded-full transition-all duration-200 transform hover:scale-105 hover:shadow-md"
                 >
                   Depto amueblado
                 </button>
@@ -396,7 +397,7 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
                       operacion: 'venta'
                     });
                   }}
-                  className="px-3 py-1 text-xs bg-neutral-100 hover:bg-primary-100 text-neutral-700 hover:text-primary-700 rounded-full transition-all duration-200 transform hover:scale-105"
+                  className="px-4 py-2 text-xs bg-neutral-100 hover:bg-primary-100 text-neutral-700 hover:text-primary-700 rounded-full transition-all duration-200 transform hover:scale-105 hover:shadow-md"
                 >
                   Hasta $5M
                 </button>
@@ -409,7 +410,7 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
                       tipo: 'casa'
                     });
                   }}
-                  className="px-3 py-1 text-xs bg-neutral-100 hover:bg-primary-100 text-neutral-700 hover:text-primary-700 rounded-full transition-all duration-200 transform hover:scale-105"
+                  className="px-4 py-2 text-xs bg-neutral-100 hover:bg-primary-100 text-neutral-700 hover:text-primary-700 rounded-full transition-all duration-200 transform hover:scale-105 hover:shadow-md"
                 >
                   Casa grande (100+ m²)
                 </button>
@@ -419,11 +420,11 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
         </div>
         
         {/* Advanced Filters Toggle & Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-2">
           <button 
             type="button" 
             onClick={toggleAdvanced}
-            className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center mb-3 sm:mb-0 transition-all duration-200 group transform hover:scale-105"
+            className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center mb-3 sm:mb-0 transition-all duration-200 group transform hover:scale-105 px-2 py-1 rounded-md hover:bg-primary-50"
           >
             {isAdvancedOpen ? (
               <>
