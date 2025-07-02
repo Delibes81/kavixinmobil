@@ -18,7 +18,7 @@ const Layout: React.FC = () => {
       <Navbar />
       
       {/* Main content with proper top padding to account for fixed navbar */}
-      <main className="flex-grow pt-20">
+      <main className="flex-grow">
         <Outlet />
       </main>
       
