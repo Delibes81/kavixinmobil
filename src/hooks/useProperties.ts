@@ -39,9 +39,9 @@ export const useProperties = () => {
             latitud: 19.4324,
             longitud: -99.1962,
             imagenes: [
-              'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg',
-              'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg',
-              'https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg'
+              'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800',
+              'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800',
+              'https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=800'
             ],
             disponible: true,
             destacado: true,
@@ -71,9 +71,9 @@ export const useProperties = () => {
             latitud: 19.3434,
             longitud: -99.1663,
             imagenes: [
-              'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg',
-              'https://images.pexels.com/photos/1643384/pexels-photo-1643384.jpeg',
-              'https://images.pexels.com/photos/1743227/pexels-photo-1743227.jpeg'
+              'https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=800',
+              'https://images.pexels.com/photos/1643384/pexels-photo-1643384.jpeg?auto=compress&cs=tinysrgb&w=800',
+              'https://images.pexels.com/photos/1743227/pexels-photo-1743227.jpeg?auto=compress&cs=tinysrgb&w=800'
             ],
             disponible: true,
             destacado: true,
@@ -103,9 +103,9 @@ export const useProperties = () => {
             latitud: 19.4134,
             longitud: -99.1763,
             imagenes: [
-              'https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg',
-              'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg',
-              'https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg'
+              'https://images.pexels.com/photos/1918291/pexels-photo-1918291.jpeg?auto=compress&cs=tinysrgb&w=800',
+              'https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800',
+              'https://images.pexels.com/photos/1457842/pexels-photo-1457842.jpeg?auto=compress&cs=tinysrgb&w=800'
             ],
             disponible: true,
             destacado: false,
@@ -155,7 +155,9 @@ export const useProperties = () => {
         codigo_postal: item.codigo_postal || '',
         latitud: item.latitud || 0,
         longitud: item.longitud || 0,
-        imagenes: item.imagenes || [],
+        imagenes: (item.imagenes || []).map((img: string) => 
+          img.includes('?') ? img : `${img}?auto=compress&cs=tinysrgb&w=800`
+        ),
         disponible: item.disponible ?? true,
         destacado: item.destacado || false,
         fecha_creacion: item.fecha_creacion || new Date().toISOString(),

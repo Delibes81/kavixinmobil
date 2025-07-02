@@ -1,23 +1,37 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { usePageLoader } from './hooks/usePageLoader';
+import ErrorBoundary from './components/ui/ErrorBoundary';
 import Layout from './components/layout/Layout';
 import AdminLayout from './components/layout/AdminLayout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import PageLoader from './components/ui/PageLoader';
 import PageTransition from './components/ui/PageTransition';
-import HomePage from './pages/HomePage';
-import PropertiesPage from './pages/PropertiesPage';
-import PropertyDetailPage from './pages/PropertyDetailPage';
-import AboutPage from './pages/AboutPage';
-import ContactPage from './pages/ContactPage';
-import LoginPage from './pages/LoginPage';
-import AdminDashboard from './pages/admin/AdminDashboard';
-import AdminProperties from './pages/admin/AdminProperties';
-import AdminPropertyEdit from './pages/admin/AdminPropertyEdit';
-import AdminPropertyCreate from './pages/admin/AdminPropertyCreate';
-import NotFoundPage from './pages/NotFoundPage';
+import LoadingSpinner from './components/ui/LoadingSpinner';
+
+// Lazy load components for better performance
+const HomePage = React.lazy(() => import('./pages/HomePage'));
+const PropertiesPage = React.lazy(() => import('./pages/PropertiesPage'));
+const PropertyDetailPage = React.lazy(() => import('./pages/PropertyDetailPage'));
+const AboutPage = React.lazy(() => import('./pages/AboutPage'));
+const ContactPage = React.lazy(() => import('./pages/ContactPage'));
+const LoginPage = React.lazy(() => import('./pages/LoginPage'));
+const AdminDashboard = React.lazy(() => import('./pages/admin/AdminDashboard'));
+const AdminProperties = React.lazy(() => import('./pages/admin/AdminProperties'));
+const AdminPropertyEdit = React.lazy(() => import('./pages/admin/AdminPropertyEdit'));
+const AdminPropertyCreate = React.lazy(() => import('./pages/admin/AdminPropertyCreate'));
+const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
+
+// Loading fallback component
+const PageLoadingFallback = () => (
+  <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+    <div className="text-center">
+      <LoadingSpinner size="lg" className="mx-auto mb-4" />
+      <p className="text-neutral-600">Cargando página...</p>
+    </div>
+  </div>
+);
 
 function App() {
   const { showLoader, handleLoadingComplete } = usePageLoader();
@@ -27,38 +41,42 @@ function App() {
   }
 
   return (
-    <AuthProvider>
-      <PageTransition>
-        <Routes>
-          {/* Public routes */}
-          <Route path="/" element={<Layout />}>
-            <Route index element={<HomePage />} />
-            <Route path="propiedades" element={<PropertiesPage />} />
-            <Route path="propiedades/:id" element={<PropertyDetailPage />} />
-            <Route path="nosotros" element={<AboutPage />} />
-            <Route path="contacto" element={<ContactPage />} />
-          </Route>
-          
-          {/* Login route */}
-          <Route path="/login" element={<LoginPage />} />
-          
-          {/* Protected admin routes */}
-          <Route path="/admin" element={
-            <ProtectedRoute>
-              <AdminLayout />
-            </ProtectedRoute>
-          }>
-            <Route index element={<AdminDashboard />} />
-            <Route path="propiedades" element={<AdminProperties />} />
-            <Route path="propiedades/:id" element={<AdminPropertyEdit />} />
-            <Route path="propiedades/nueva" element={<AdminPropertyCreate />} />
-          </Route>
-          
-          {/* 404 route */}
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </PageTransition>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <PageTransition>
+          <Suspense fallback={<PageLoadingFallback />}>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<Layout />}>
+                <Route index element={<HomePage />} />
+                <Route path="propiedades" element={<PropertiesPage />} />
+                <Route path="propiedades/:id" element={<PropertyDetailPage />} />
+                <Route path="nosotros" element={<AboutPage />} />
+                <Route path="contacto" element={<ContactPage />} />
+              </Route>
+              
+              {/* Login route */}
+              <Route path="/login" element={<LoginPage />} />
+              
+              {/* Protected admin routes */}
+              <Route path="/admin" element={
+                <ProtectedRoute>
+                  <AdminLayout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<AdminDashboard />} />
+                <Route path="propiedades" element={<AdminProperties />} />
+                <Route path="propiedades/:id" element={<AdminPropertyEdit />} />
+                <Route path="propiedades/nueva" element={<AdminPropertyCreate />} />
+              </Route>
+              
+              {/* 404 route */}
+              <Route path="*" element={<NotFoundPage />} />
+            </Routes>
+          </Suspense>
+        </PageTransition>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

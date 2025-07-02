@@ -5,12 +5,116 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nova Hestia | Encuentra tu hogar ideal</title>
+    
+    <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://images.pexels.com">
+    <link rel="preconnect" href="https://unpkg.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <!-- Critical CSS - Load fonts with font-display: swap -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-    <link rel="stylesheet" type="text/css" charset="UTF-8" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css" />
+    
+    <!-- Defer non-critical CSS -->
+    <link rel="preload" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript>
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css"></noscript>
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css"></noscript>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Nova Hestia - Encuentra tu hogar ideal. Las mejores propiedades en venta y renta en Ciudad de México. Expertos inmobiliarios con más de 15 años de experiencia.">
+    <meta name="keywords" content="propiedades, inmobiliaria, casas, departamentos, venta, renta, Ciudad de México, bienes raíces">
+    <meta name="author" content="Nova Hestia">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Nova Hestia | Encuentra tu hogar ideal">
+    <meta property="og:description" content="Las mejores propiedades en venta y renta seleccionadas para ti en las zonas más exclusivas de la ciudad.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://novahestia.com">
+    <meta property="og:image" content="https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1200">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Nova Hestia | Encuentra tu hogar ideal">
+    <meta name="twitter:description" content="Las mejores propiedades en venta y renta seleccionadas para ti en las zonas más exclusivas de la ciudad.">
+    <meta name="twitter:image" content="https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1200">
+    
+    <!-- Performance optimizations -->
+    <meta name="theme-color" content="#0052a3">
+    <meta name="msapplication-TileColor" content="#0052a3">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/src/main.tsx" as="script">
+    
+    <!-- Critical inline CSS for above-the-fold content -->
+    <style>
+      /* Critical CSS for initial page load */
+      body {
+        margin: 0;
+        font-family: 'Roboto', sans-serif;
+        background-color: #f5f7fa;
+        color: #3f4552;
+      }
+      
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #001429, #003d7a, #0052a3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+      }
+      
+      .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid #e6b325;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      
+      /* Hide content until React loads */
+      #root:empty::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #001429, #003d7a, #0052a3);
+        z-index: 9999;
+      }
+      
+      #root:empty::after {
+        content: '';
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        width: 40px;
+        height: 40px;
+        margin: -20px 0 0 -20px;
+        border: 4px solid rgba(255, 255, 255, 0.3);
+        border-top: 4px solid #e6b325;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        z-index: 10000;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

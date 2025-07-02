@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Bed, Bath, Car, Move, Tag } from 'lucide-react';
 import { Property } from '../../types';
+import LazyImage from '../ui/LazyImage';
 
 interface PropertyCardProps {
   property: Property;
@@ -32,10 +33,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
       {/* Image container with overlay - Now clickable */}
       <Link to={`/propiedades/${property.id}`} className="block">
         <div className="relative overflow-hidden h-64">
-          <img
+          <LazyImage
             src={property.imagenes[0]}
             alt={property.titulo}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+            className="w-full h-full group-hover:scale-110 transition-transform duration-700"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="absolute top-4 left-4 z-10 flex gap-2">

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Slider from 'react-slick';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import LazyImage from '../ui/LazyImage';
 
 interface TestimonialProps {
   quote: string;
@@ -35,11 +36,13 @@ const Testimonial: React.FC<TestimonialProps> = ({ quote, author, position, rati
         
         {/* Author */}
         <div className="flex items-center mt-4">
-          <img
-            src={image}
-            alt={author}
-            className="w-12 h-12 rounded-full object-cover mr-4"
-          />
+          <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
+            <LazyImage
+              src={image}
+              alt={author}
+              className="w-full h-full object-cover"
+            />
+          </div>
           <div>
             <p className="font-medium text-primary-800">{author}</p>
             <p className="text-sm text-neutral-600">{position}</p>
