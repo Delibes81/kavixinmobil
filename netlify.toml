@@ -7,20 +7,39 @@
   to = "/index.html"
   status = 200
 
-# Environment variables for build
+# Environment variables for build (REMOVE SENSITIVE DATA)
 [build.environment]
   NODE_VERSION = "18"
-  VITE_SUPABASE_URL = "https://aqcwlonrebvdpagediwn.supabase.co"
-  VITE_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFxY3dsb25yZWJ2ZHBhZ2VkaXduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTExNzQxOTYsImV4cCI6MjA2Njc1MDE5Nn0.r2-Rj0mWSStxD56AeG4EtjwTqbTxbqzFeNR76tClhY8"
+  # IMPORTANT: Remove sensitive environment variables from here
+  # Set them in Netlify dashboard instead
 
-# Headers for better performance and security
+# Enhanced security headers
 [[headers]]
   for = "/*"
   [headers.values]
+    # Security headers
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    
+    # Content Security Policy
+    Content-Security-Policy = """
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://cdnjs.cloudflare.com;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com https://cdnjs.cloudflare.com;
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data: https: blob:;
+      connect-src 'self' https://*.supabase.co https://api.pexels.com;
+      frame-src 'none';
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+    """
+    
+    # HSTS (HTTP Strict Transport Security)
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
 
 [[headers]]
   for = "/static/*"
@@ -42,3 +61,16 @@
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
+
+# Security redirects
+[[redirects]]
+  from = "/admin"
+  to = "/admin/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/login"
+  to = "/login/"
+  status = 301
+  force = true

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Property, Amenity } from '../../types';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, AlertCircle } from 'lucide-react';
 import { useAmenities } from '../../hooks/useProperties';
 import ImageUploadComponent from './ImageUploadComponent';
+import { sanitizeInput, validatePropertyData } from '../../utils/security';
 
 interface AdminPropertyFormProps {
   property?: Property;
@@ -40,6 +41,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
   
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Initialize form data when property changes
   useEffect(() => {
@@ -84,8 +86,25 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
     
     let processedValue: any = value;
     
-    if (type === 'number') {
+    // Sanitize text inputs
+    if (type === 'text' || type === 'textarea') {
+      processedValue = sanitizeInput(value);
+    } else if (type === 'number') {
       processedValue = value === '' ? 0 : parseFloat(value);
+      // Validate numeric ranges
+      if (name === 'precio' && processedValue < 0) processedValue = 0;
+      if (name === 'recamaras' && processedValue < 0) processedValue = 0;
+      if (name === 'banos' && processedValue < 0) processedValue = 0;
+      if (name === 'estacionamientos' && processedValue < 0) processedValue = 0;
+      if (name === 'metros_construccion' && processedValue < 0) processedValue = 0;
+      if (name === 'metros_terreno' && processedValue < 0) processedValue = 0;
+      if (name === 'antiguedad' && processedValue < 0) processedValue = 0;
+      if (name === 'latitud' && (processedValue < -90 || processedValue > 90)) {
+        processedValue = Math.max(-90, Math.min(90, processedValue));
+      }
+      if (name === 'longitud' && (processedValue < -180 || processedValue > 180)) {
+        processedValue = Math.max(-180, Math.min(180, processedValue));
+      }
     }
     
     setFormData(prev => {
@@ -96,6 +115,15 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
       console.log('Updated form data:', newData);
       return newData;
     });
+
+    // Clear field-specific error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,29 +164,39 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isSubmitting) return; // Prevent double submission
+    
     console.log('Form submit triggered');
     console.log('Current form data:', formData);
     console.log('Selected amenities:', selectedAmenities);
     
-    const validationErrors: Record<string, string> = {};
+    setIsSubmitting(true);
     
-    // Basic validation
-    if (!formData.titulo?.trim()) validationErrors.titulo = 'El título es requerido';
-    if (!formData.precio || formData.precio <= 0) validationErrors.precio = 'El precio debe ser mayor a cero';
-    if (!formData.direccion?.trim()) validationErrors.direccion = 'La dirección es requerida';
-    if (!formData.colonia?.trim()) validationErrors.colonia = 'La colonia es requerida';
-    
-    if (Object.keys(validationErrors).length > 0) {
-      console.log('Validation errors:', validationErrors);
-      setErrors(validationErrors);
-      return;
+    try {
+      // Validate using security utility
+      const validation = validatePropertyData(formData);
+      
+      if (!validation.isValid) {
+        const validationErrors: Record<string, string> = {};
+        validation.errors.forEach((error, index) => {
+          validationErrors[`error_${index}`] = error;
+        });
+        setErrors(validationErrors);
+        return;
+      }
+      
+      console.log('Validation passed, calling onSubmit');
+      setErrors({});
+      await onSubmit(formData, selectedAmenities);
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setErrors({ submit: 'Error al procesar el formulario. Por favor, intenta de nuevo.' });
+    } finally {
+      setIsSubmitting(false);
     }
-    
-    console.log('Validation passed, calling onSubmit');
-    setErrors({});
-    onSubmit(formData, selectedAmenities);
   };
 
   // Group amenities by category
@@ -181,6 +219,23 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6" id="property-form">
+      {/* Display validation errors */}
+      {Object.keys(errors).length > 0 && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <div className="flex items-start">
+            <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-medium mb-1">Por favor, corrige los siguientes errores:</p>
+              <ul className="list-disc list-inside text-sm">
+                {Object.values(errors).map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Basic Information */}
       <div className="bg-white rounded-lg shadow-md p-6">
         <h3 className="text-xl font-semibold mb-4">Información Básica</h3>
@@ -199,6 +254,8 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               onChange={handleInputChange}
               className={`input-field ${errors.titulo ? 'border-red-500' : ''}`}
               placeholder="Ej. Casa moderna en Polanco"
+              maxLength={200}
+              disabled={isSubmitting}
             />
             {errors.titulo && <p className="mt-1 text-sm text-red-500">{errors.titulo}</p>}
           </div>
@@ -218,6 +275,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               placeholder="Ej. 2500000"
               min="0"
               step="0.01"
+              disabled={isSubmitting}
             />
             {errors.precio && <p className="mt-1 text-sm text-red-500">{errors.precio}</p>}
           </div>
@@ -232,6 +290,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               value={formData.operacion || 'venta'}
               onChange={handleInputChange}
               className="select-field"
+              disabled={isSubmitting}
             >
               <option value="venta">Venta</option>
               <option value="renta">Renta</option>
@@ -249,6 +308,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               value={formData.tipo || 'casa'}
               onChange={handleInputChange}
               className="select-field"
+              disabled={isSubmitting}
             >
               <option value="casa">Casa</option>
               <option value="departamento">Departamento</option>
@@ -268,6 +328,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
                 checked={formData.amueblado || false}
                 onChange={handleCheckboxChange}
                 className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+                disabled={isSubmitting}
               />
               <label htmlFor="amueblado" className="ml-2 block text-neutral-700">
                 Amueblado
@@ -282,6 +343,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
                 checked={formData.disponible ?? true}
                 onChange={handleCheckboxChange}
                 className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+                disabled={isSubmitting}
               />
               <label htmlFor="disponible" className="ml-2 block text-neutral-700">
                 Disponible
@@ -296,6 +358,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
                 checked={formData.destacado || false}
                 onChange={handleCheckboxChange}
                 className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+                disabled={isSubmitting}
               />
               <label htmlFor="destacado" className="ml-2 block text-neutral-700">
                 Destacado
@@ -316,6 +379,8 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               rows={5}
               className="input-field"
               placeholder="Descripción detallada de la propiedad..."
+              maxLength={2000}
+              disabled={isSubmitting}
             ></textarea>
           </div>
         </div>
@@ -340,6 +405,8 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               className="input-field"
               placeholder="Ej. 3"
               min="0"
+              max="20"
+              disabled={isSubmitting}
             />
           </div>
           
@@ -357,6 +424,8 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               className="input-field"
               placeholder="Ej. 2"
               min="0"
+              max="20"
+              disabled={isSubmitting}
             />
           </div>
           
@@ -374,6 +443,8 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               className="input-field"
               placeholder="Ej. 1"
               min="0"
+              max="20"
+              disabled={isSubmitting}
             />
           </div>
           
@@ -392,6 +463,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               placeholder="Ej. 120"
               min="0"
               step="0.01"
+              disabled={isSubmitting}
             />
           </div>
           
@@ -410,6 +482,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               placeholder="Ej. 200"
               min="0"
               step="0.01"
+              disabled={isSubmitting}
             />
           </div>
           
@@ -427,6 +500,8 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               className="input-field"
               placeholder="Ej. 5"
               min="0"
+              max="200"
+              disabled={isSubmitting}
             />
           </div>
         </div>
@@ -450,6 +525,8 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               onChange={handleInputChange}
               className={`input-field ${errors.direccion ? 'border-red-500' : ''}`}
               placeholder="Ej. Paseo de la Reforma 222, Depto 301"
+              maxLength={200}
+              disabled={isSubmitting}
             />
             {errors.direccion && <p className="mt-1 text-sm text-red-500">{errors.direccion}</p>}
           </div>
@@ -467,6 +544,8 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               onChange={handleInputChange}
               className={`input-field ${errors.colonia ? 'border-red-500' : ''}`}
               placeholder="Ej. Juárez"
+              maxLength={100}
+              disabled={isSubmitting}
             />
             {errors.colonia && <p className="mt-1 text-sm text-red-500">{errors.colonia}</p>}
           </div>
@@ -484,6 +563,8 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               onChange={handleInputChange}
               className="input-field"
               placeholder="Ej. Ciudad de México"
+              maxLength={100}
+              disabled={isSubmitting}
             />
           </div>
           
@@ -500,6 +581,8 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               onChange={handleInputChange}
               className="input-field"
               placeholder="Ej. Ciudad de México"
+              maxLength={100}
+              disabled={isSubmitting}
             />
           </div>
           
@@ -516,6 +599,8 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               onChange={handleInputChange}
               className="input-field"
               placeholder="Ej. 06600"
+              maxLength={10}
+              disabled={isSubmitting}
             />
           </div>
           
@@ -531,8 +616,11 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               value={formData.latitud || ''}
               onChange={handleInputChange}
               step="0.0001"
+              min="-90"
+              max="90"
               className="input-field"
               placeholder="Ej. 19.4326"
+              disabled={isSubmitting}
             />
           </div>
           
@@ -547,8 +635,11 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               value={formData.longitud || ''}
               onChange={handleInputChange}
               step="0.0001"
+              min="-180"
+              max="180"
               className="input-field"
               placeholder="Ej. -99.1332"
+              disabled={isSubmitting}
             />
           </div>
         </div>
@@ -571,6 +662,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
                     checked={selectedAmenities.includes(amenity.id)}
                     onChange={(e) => handleAmenityChange(amenity.id, e.target.checked)}
                     className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+                    disabled={isSubmitting}
                   />
                   <span className="text-sm text-neutral-700">{amenity.nombre}</span>
                 </label>

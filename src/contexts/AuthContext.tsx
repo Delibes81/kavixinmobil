@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase, supabaseConfig } from '../lib/supabase';
+import { secureStorage, loginRateLimiter, sanitizeInput } from '../utils/security';
 
 interface AdminUser {
   id: string;
@@ -10,10 +11,12 @@ interface AdminUser {
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<boolean>;
+  login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   user: AdminUser | null;
   loading: boolean;
+  remainingAttempts: number;
+  timeUntilReset: number;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,32 +33,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<AdminUser | null>(null);
   const [loading, setLoading] = useState(true);
+  const [remainingAttempts, setRemainingAttempts] = useState(5);
+  const [timeUntilReset, setTimeUntilReset] = useState(0);
+
+  // Update rate limiting info
+  const updateRateLimitInfo = (identifier: string) => {
+    setRemainingAttempts(loginRateLimiter.getRemainingAttempts(identifier));
+    setTimeUntilReset(loginRateLimiter.getTimeUntilReset(identifier));
+  };
 
   // Check if user is already logged in on app start
   useEffect(() => {
     const checkSession = () => {
       try {
-        const storedUser = localStorage.getItem('admin_user');
-        const sessionExpiry = localStorage.getItem('session_expiry');
+        const storedUser = secureStorage.getItem('admin_user');
         
-        if (storedUser && sessionExpiry) {
-          const now = new Date().getTime();
-          const expiry = parseInt(sessionExpiry);
-          
-          if (now < expiry) {
-            const userData = JSON.parse(storedUser);
-            setIsAuthenticated(true);
-            setUser(userData);
-          } else {
-            // Session expired
-            localStorage.removeItem('admin_user');
-            localStorage.removeItem('session_expiry');
-          }
+        if (storedUser) {
+          const userData = JSON.parse(storedUser);
+          setIsAuthenticated(true);
+          setUser(userData);
         }
       } catch (error) {
         console.error('Error checking session:', error);
-        localStorage.removeItem('admin_user');
-        localStorage.removeItem('session_expiry');
+        secureStorage.removeItem('admin_user');
       } finally {
         setLoading(false);
       }
@@ -64,8 +64,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     checkSession();
   }, []);
 
-  const login = async (username: string, password: string): Promise<boolean> => {
+  const login = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
     try {
+      // Sanitize inputs
+      const cleanUsername = sanitizeInput(username);
+      const identifier = `login_${cleanUsername}`;
+
+      // Check rate limiting
+      if (loginRateLimiter.isBlocked(identifier)) {
+        updateRateLimitInfo(identifier);
+        const timeLeft = Math.ceil(loginRateLimiter.getTimeUntilReset(identifier) / 1000 / 60);
+        return {
+          success: false,
+          error: `Demasiados intentos fallidos. Intenta de nuevo en ${timeLeft} minutos.`
+        };
+      }
+
+      // Basic validation
+      if (!cleanUsername.trim() || !password.trim()) {
+        return {
+          success: false,
+          error: 'Por favor, completa todos los campos'
+        };
+      }
+
       // Check if Supabase is configured
       if (!supabaseConfig.hasUrl || !supabaseConfig.hasKey) {
         console.warn('Supabase not configured, using demo authentication');
@@ -76,7 +98,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           { username: 'usuario1', password: 'password123', name: 'Usuario de Prueba', role: 'admin' }
         ];
         
-        const demoUser = demoUsers.find(u => u.username === username && u.password === password);
+        const demoUser = demoUsers.find(u => u.username === cleanUsername && u.password === password);
         
         if (demoUser) {
           const userData: AdminUser = {
@@ -89,26 +111,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setIsAuthenticated(true);
           setUser(userData);
 
-          // Store session in localStorage (expires in 8 hours)
-          const expiryTime = new Date().getTime() + (8 * 60 * 60 * 1000);
-          localStorage.setItem('admin_user', JSON.stringify(userData));
-          localStorage.setItem('session_expiry', expiryTime.toString());
+          // Store session securely
+          secureStorage.setItem('admin_user', JSON.stringify(userData), 8);
 
-          return true;
+          return { success: true };
+        } else {
+          // Record failed attempt
+          loginRateLimiter.recordAttempt(identifier);
+          updateRateLimitInfo(identifier);
+          
+          return {
+            success: false,
+            error: `Credenciales incorrectas. Intentos restantes: ${loginRateLimiter.getRemainingAttempts(identifier)}`
+          };
         }
-        
-        return false;
       }
 
       // Call the verify_admin_login function
       const { data, error } = await supabase.rpc('verify_admin_login', {
-        p_username: username,
+        p_username: cleanUsername,
         p_password: password
       });
 
       if (error) {
         console.error('Login error:', error);
-        return false;
+        loginRateLimiter.recordAttempt(identifier);
+        updateRateLimitInfo(identifier);
+        return {
+          success: false,
+          error: 'Error del sistema. Por favor, intenta más tarde.'
+        };
       }
 
       // Check if login was successful
@@ -123,18 +155,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsAuthenticated(true);
         setUser(userData);
 
-        // Store session in localStorage (expires in 8 hours)
-        const expiryTime = new Date().getTime() + (8 * 60 * 60 * 1000);
-        localStorage.setItem('admin_user', JSON.stringify(userData));
-        localStorage.setItem('session_expiry', expiryTime.toString());
+        // Store session securely
+        secureStorage.setItem('admin_user', JSON.stringify(userData), 8);
 
-        return true;
+        return { success: true };
+      } else {
+        // Record failed attempt
+        loginRateLimiter.recordAttempt(identifier);
+        updateRateLimitInfo(identifier);
+        
+        return {
+          success: false,
+          error: `Credenciales incorrectas. Intentos restantes: ${loginRateLimiter.getRemainingAttempts(identifier)}`
+        };
       }
-
-      return false;
     } catch (error) {
       console.error('Login error:', error);
-      return false;
+      return {
+        success: false,
+        error: 'Error del sistema. Por favor, intenta más tarde.'
+      };
     }
   };
 
@@ -142,15 +182,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsAuthenticated(false);
       setUser(null);
-      localStorage.removeItem('admin_user');
-      localStorage.removeItem('session_expiry');
+      secureStorage.clear();
     } catch (error) {
       console.error('Logout error:', error);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout, user, loading }}>
+    <AuthContext.Provider value={{ 
+      isAuthenticated, 
+      login, 
+      logout, 
+      user, 
+      loading,
+      remainingAttempts,
+      timeUntilReset
+    }}>
       {children}
     </AuthContext.Provider>
   );

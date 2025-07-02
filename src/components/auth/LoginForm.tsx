@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, User, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { Lock, User, Eye, EyeOff, AlertCircle, Shield } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { sanitizeInput } from '../../utils/security';
 
 const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -9,56 +10,59 @@ const LoginForm: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [attempts, setAttempts] = useState(0);
   
-  const { login } = useAuth();
+  const { login, remainingAttempts, timeUntilReset } = useAuth();
   const navigate = useNavigate();
+
+  // Update countdown timer
+  useEffect(() => {
+    if (timeUntilReset > 0) {
+      const timer = setInterval(() => {
+        // This will trigger a re-render and update the timeUntilReset from context
+      }, 1000);
+      
+      return () => clearInterval(timer);
+    }
+  }, [timeUntilReset]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
+    // Sanitize inputs
+    const cleanUsername = sanitizeInput(username);
+    const cleanPassword = password; // Don't sanitize password as it might contain special chars
+
     // Basic validation
-    if (!username.trim() || !password.trim()) {
+    if (!cleanUsername.trim() || !cleanPassword.trim()) {
       setError('Por favor, completa todos los campos');
       setIsLoading(false);
       return;
     }
 
     try {
-      const success = await login(username, password);
+      const result = await login(cleanUsername, cleanPassword);
       
-      if (success) {
+      if (result.success) {
         // Clear any previous errors and redirect
         setError('');
-        setAttempts(0);
         navigate('/admin');
       } else {
-        const newAttempts = attempts + 1;
-        setAttempts(newAttempts);
-        
-        if (newAttempts >= 3) {
-          setError('Demasiados intentos fallidos. Por favor, contacta al administrador del sistema.');
-          // Optional: Add a delay before allowing more attempts
-          setTimeout(() => {
-            setAttempts(0);
-          }, 300000); // 5 minutes
-        } else {
-          setError(`Credenciales incorrectas. Intentos restantes: ${3 - newAttempts}`);
-        }
-        
+        setError(result.error || 'Error de autenticación');
         // Clear password field for security
         setPassword('');
       }
     } catch (err) {
       setError('Error del sistema. Por favor, intenta más tarde.');
+      setPassword('');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const isBlocked = attempts >= 3;
+  const isBlocked = remainingAttempts <= 0 && timeUntilReset > 0;
+  const timeLeftMinutes = Math.ceil(timeUntilReset / 1000 / 60);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -94,8 +98,9 @@ const LoginForm: React.FC = () => {
                   onChange={(e) => setUsername(e.target.value)}
                   className="input-field pl-10"
                   placeholder="Ingresa tu usuario"
-                  disabled={isBlocked}
+                  disabled={isBlocked || isLoading}
                   autoComplete="username"
+                  maxLength={50}
                 />
               </div>
             </div>
@@ -117,14 +122,16 @@ const LoginForm: React.FC = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   className="input-field pl-10 pr-10"
                   placeholder="Ingresa tu contraseña"
-                  disabled={isBlocked}
+                  disabled={isBlocked || isLoading}
                   autoComplete="current-password"
+                  maxLength={100}
                 />
                 <button
                   type="button"
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   onClick={() => setShowPassword(!showPassword)}
-                  disabled={isBlocked}
+                  disabled={isBlocked || isLoading}
+                  tabIndex={-1}
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5 text-neutral-400 hover:text-neutral-600" />
@@ -135,6 +142,16 @@ const LoginForm: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Rate limiting info */}
+          {!isBlocked && remainingAttempts < 5 && (
+            <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded flex items-start">
+              <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+              <p className="text-sm">
+                Intentos restantes: {remainingAttempts}
+              </p>
+            </div>
+          )}
 
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded flex items-start">
@@ -155,7 +172,7 @@ const LoginForm: React.FC = () => {
                   Verificando credenciales...
                 </div>
               ) : isBlocked ? (
-                'Acceso temporalmente bloqueado'
+                `Bloqueado por ${timeLeftMinutes} minuto${timeLeftMinutes !== 1 ? 's' : ''}`
               ) : (
                 'Iniciar sesión'
               )}
@@ -163,9 +180,12 @@ const LoginForm: React.FC = () => {
           </div>
           
           <div className="text-center">
-            <p className="text-xs text-neutral-500">
-              Sistema seguro de autenticación Nova Hestia
-            </p>
+            <div className="flex items-center justify-center mb-2">
+              <Shield className="h-4 w-4 text-green-600 mr-1" />
+              <p className="text-xs text-neutral-500">
+                Conexión segura y encriptada
+              </p>
+            </div>
             <div className="mt-2 text-xs text-neutral-400">
               <p>Usuarios de prueba:</p>
               <p>admin / admin123 (Super Admin)</p>
