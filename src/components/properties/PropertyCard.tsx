@@ -29,7 +29,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
   };
 
   return (
-    <div className="card group overflow-hidden transition-all duration-500 hover:shadow-xl transform hover:-translate-y-2">
+    <div className="card group overflow-hidden transition-all duration-500 hover:shadow-xl transform hover:-translate-y-2 h-full flex flex-col">
       {/* Image container with overlay - Now clickable */}
       <Link to={`/propiedades/${property.id}`} className="block">
         <div className="relative overflow-hidden h-64">
@@ -55,8 +55,8 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
         </div>
       </Link>
 
-      {/* Content */}
-      <div className="p-6">
+      {/* Content - Now with flex-1 to fill remaining space */}
+      <div className="p-6 flex-1 flex flex-col">
         <div className="flex items-start justify-between mb-2">
           <Link to={`/propiedades/${property.id}`} className="block flex-1">
             <h3 className="text-xl font-medium text-primary-800 line-clamp-1 hover:text-primary-600 transition-colors duration-200">
@@ -77,7 +77,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
           <span className="text-sm truncate">{formatAddress()}</span>
         </div>
 
-        <p className="text-neutral-600 mb-4 line-clamp-2">{property.descripcion}</p>
+        {/* Description with fixed height */}
+        <div className="mb-4 flex-1">
+          <p className="text-neutral-600 line-clamp-2 h-12 leading-6">{property.descripcion}</p>
+        </div>
 
         {/* Features */}
         <div className="grid grid-cols-4 gap-2 mb-4">
@@ -99,9 +102,10 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
           </div>
         </div>
 
+        {/* Button at the bottom */}
         <Link 
           to={`/propiedades/${property.id}`}
-          className="btn btn-primary w-full transform transition-all duration-200 hover:scale-105"
+          className="btn btn-primary w-full transform transition-all duration-200 hover:scale-105 mt-auto"
         >
           Ver detalles
         </Link>
