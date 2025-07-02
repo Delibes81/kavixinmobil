@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Lock, User, Eye, EyeOff, AlertCircle, Shield } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Lock, User, Eye, EyeOff, AlertCircle, Shield, Home } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { sanitizeInput } from '../../utils/security';
 
@@ -65,15 +65,27 @@ const LoginForm: React.FC = () => {
   const timeLeftMinutes = Math.ceil(timeUntilReset / 1000 / 60);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
+      {/* Home Button - Top Right */}
+      <div className="absolute top-6 right-6 z-10">
+        <Link 
+          to="/" 
+          className="flex items-center px-4 py-2 bg-white/90 backdrop-blur-sm hover:bg-white text-primary-700 hover:text-primary-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 border border-primary-200"
+          title="Ir al sitio web"
+        >
+          <Home className="h-5 w-5 mr-2" />
+          <span className="font-medium">Sitio Web</span>
+        </Link>
+      </div>
+
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-primary-600">
             <Lock className="h-6 w-6 text-white" />
           </div>
-          <h2 className="mt-6 text-center text-3xl font-bold text-primary-800">
+          <h1 className="mt-6 text-center text-3xl font-bold text-primary-800">
             Acceso Administrativo
-          </h2>
+          </h1>
           <p className="mt-2 text-center text-sm text-neutral-600">
             Ingresa tus credenciales para acceder al panel de administración
           </p>
@@ -193,6 +205,17 @@ const LoginForm: React.FC = () => {
             </div>
           </div>
         </form>
+
+        {/* Additional Home Button at Bottom */}
+        <div className="text-center pt-4 border-t border-neutral-200">
+          <Link 
+            to="/" 
+            className="inline-flex items-center text-sm text-neutral-600 hover:text-primary-600 transition-colors duration-200"
+          >
+            <Home className="h-4 w-4 mr-1" />
+            Volver al sitio web
+          </Link>
+        </div>
       </div>
     </div>
   );
