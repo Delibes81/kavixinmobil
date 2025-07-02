@@ -5,6 +5,8 @@ import { Home, Building2, Users, Phone, Menu, X, Lock } from 'lucide-react';
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const location = useLocation();
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -12,12 +14,29 @@ const Navbar: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      const currentScrollY = window.scrollY;
+      
+      // Determinar si el navbar debe cambiar de estilo (transparente a blanco)
+      setIsScrolled(currentScrollY > 10);
+      
+      // Determinar si el navbar debe ser visible
+      if (currentScrollY < 10) {
+        // Siempre mostrar en la parte superior
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down - ocultar navbar
+        setIsVisible(false);
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolling up - mostrar navbar
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   useEffect(() => {
     closeMenu();
@@ -26,7 +45,9 @@ const Navbar: React.FC = () => {
   const isHomePage = location.pathname === '/';
 
   return (
-    <header className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${
+    <header className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 transform ${
+      isVisible ? 'translate-y-0' : '-translate-y-full'
+    } ${
       isScrolled || !isHomePage
         ? 'bg-white shadow-md py-3'
         : 'bg-transparent py-5'
