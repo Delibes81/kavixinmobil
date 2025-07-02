@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Home, Building2, Users, Phone, Menu, X, Lock } from 'lucide-react';
 
@@ -6,7 +6,7 @@ const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollY = useRef(0);
   const location = useLocation();
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -29,7 +29,7 @@ const Navbar: React.FC = () => {
             setIsVisible(true);
           } else {
             // Comparar con la posición anterior
-            if (currentScrollY > lastScrollY) {
+            if (currentScrollY > lastScrollY.current) {
               // Scroll hacia abajo - ocultar
               setIsVisible(false);
             } else {
@@ -38,7 +38,7 @@ const Navbar: React.FC = () => {
             }
           }
           
-          setLastScrollY(currentScrollY);
+          lastScrollY.current = currentScrollY;
           ticking = false;
         });
         ticking = true;
@@ -46,12 +46,12 @@ const Navbar: React.FC = () => {
     };
 
     // Inicializar valores
-    setLastScrollY(window.scrollY);
+    lastScrollY.current = window.scrollY;
     setIsScrolled(window.scrollY > 10);
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []); // Sin dependencias para evitar re-ejecución
 
   useEffect(() => {
     closeMenu();

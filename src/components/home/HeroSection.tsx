@@ -19,7 +19,7 @@ const HeroSection: React.FC = () => {
       </div>
 
       {/* Content */}
-      <div className="container-custom relative z-20 pt-20">
+      <div className="container-custom relative z-20">
         <div className="max-w-3xl">
           <FadeInSection delay={200}>
             <h1 className="text-white font-bold mb-4 leading-tight animate-fade-in-up">
