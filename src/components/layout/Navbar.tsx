@@ -24,7 +24,7 @@ const Navbar: React.FC = () => {
   }, [location]);
 
   const isHomePage = location.pathname === '/';
-  const navbarClass = `fixed w-full z-50 transition-all duration-300 will-change-transform ${
+  const navbarClass = `fixed top-0 w-full z-50 transition-all duration-300 will-change-transform ${
     isScrolled || !isHomePage
       ? 'bg-white shadow-md py-3'
       : 'bg-transparent py-5'
