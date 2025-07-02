@@ -1,9 +1,48 @@
-import React from 'react';
-import { Search, MapPin, Home } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Search, MapPin, Home, ChevronDown } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import FadeInSection from '../ui/FadeInSection';
 
 const HeroSection: React.FC = () => {
+  const navigate = useNavigate();
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [searchFilters, setSearchFilters] = useState({
+    operacion: '',
+    tipo: '',
+    ubicacion: '',
+    recamaras: '',
+    banos: '',
+    precio_min: '',
+    precio_max: ''
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setSearchFilters(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleAdvancedFiltersToggle = () => {
+    setShowAdvancedFilters(!showAdvancedFilters);
+  };
+
+  const handleSearch = () => {
+    // Create URL params from filters
+    const params = new URLSearchParams();
+    
+    Object.entries(searchFilters).forEach(([key, value]) => {
+      if (value && value.trim() !== '') {
+        params.append(key, value);
+      }
+    });
+
+    // Navigate to properties page with filters
+    const queryString = params.toString();
+    navigate(`/propiedades${queryString ? `?${queryString}` : ''}`);
+  };
+
   return (
     <section className="relative h-screen min-h-[600px] flex items-center overflow-hidden hero-section">
       {/* Background Image */}
@@ -42,7 +81,13 @@ const HeroSection: React.FC = () => {
                   <label htmlFor="operation" className="block text-sm font-medium text-neutral-700 mb-1">
                     Operación
                   </label>
-                  <select id="operation" className="select-field">
+                  <select 
+                    id="operation" 
+                    name="operacion"
+                    value={searchFilters.operacion}
+                    onChange={handleInputChange}
+                    className="select-field"
+                  >
                     <option value="">Todas</option>
                     <option value="venta">Venta</option>
                     <option value="renta">Renta</option>
@@ -54,12 +99,19 @@ const HeroSection: React.FC = () => {
                   <label htmlFor="propertyType" className="block text-sm font-medium text-neutral-700 mb-1">
                     Tipo de propiedad
                   </label>
-                  <select id="propertyType" className="select-field">
+                  <select 
+                    id="propertyType" 
+                    name="tipo"
+                    value={searchFilters.tipo}
+                    onChange={handleInputChange}
+                    className="select-field"
+                  >
                     <option value="">Todos</option>
                     <option value="casa">Casa</option>
                     <option value="departamento">Departamento</option>
                     <option value="local">Local</option>
                     <option value="terreno">Terreno</option>
+                    <option value="oficina">Oficina</option>
                   </select>
                 </div>
                 
@@ -72,10 +124,97 @@ const HeroSection: React.FC = () => {
                     <input
                       type="text"
                       id="location"
+                      name="ubicacion"
                       placeholder="Ciudad o zona"
+                      value={searchFilters.ubicacion}
+                      onChange={handleInputChange}
                       className="input-field pl-10"
                     />
                     <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-500" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Advanced Filters */}
+              <div className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                showAdvancedFilters ? 'max-h-96 opacity-100 mt-4' : 'max-h-0 opacity-0'
+              }`}>
+                <div className="pt-4 border-t border-neutral-200">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* Bedrooms */}
+                    <div className="transform transition-all duration-300 hover:scale-105">
+                      <label htmlFor="bedrooms" className="block text-sm font-medium text-neutral-700 mb-1">
+                        Recámaras
+                      </label>
+                      <select 
+                        id="bedrooms" 
+                        name="recamaras"
+                        value={searchFilters.recamaras}
+                        onChange={handleInputChange}
+                        className="select-field"
+                      >
+                        <option value="">Cualquiera</option>
+                        <option value="1">1+</option>
+                        <option value="2">2+</option>
+                        <option value="3">3+</option>
+                        <option value="4">4+</option>
+                        <option value="5">5+</option>
+                      </select>
+                    </div>
+
+                    {/* Bathrooms */}
+                    <div className="transform transition-all duration-300 hover:scale-105">
+                      <label htmlFor="bathrooms" className="block text-sm font-medium text-neutral-700 mb-1">
+                        Baños
+                      </label>
+                      <select 
+                        id="bathrooms" 
+                        name="banos"
+                        value={searchFilters.banos}
+                        onChange={handleInputChange}
+                        className="select-field"
+                      >
+                        <option value="">Cualquiera</option>
+                        <option value="1">1+</option>
+                        <option value="2">2+</option>
+                        <option value="3">3+</option>
+                        <option value="4">4+</option>
+                      </select>
+                    </div>
+
+                    {/* Price Min */}
+                    <div className="transform transition-all duration-300 hover:scale-105">
+                      <label htmlFor="priceMin" className="block text-sm font-medium text-neutral-700 mb-1">
+                        Precio mínimo
+                      </label>
+                      <input
+                        type="number"
+                        id="priceMin"
+                        name="precio_min"
+                        placeholder="Desde $"
+                        value={searchFilters.precio_min}
+                        onChange={handleInputChange}
+                        className="input-field"
+                        min="0"
+                      />
+                    </div>
+
+                    {/* Price Max */}
+                    <div className="transform transition-all duration-300 hover:scale-105">
+                      <label htmlFor="priceMax" className="block text-sm font-medium text-neutral-700 mb-1">
+                        Precio máximo
+                      </label>
+                      <input
+                        type="number"
+                        id="priceMax"
+                        name="precio_max"
+                        placeholder="Hasta $"
+                        value={searchFilters.precio_max}
+                        onChange={handleInputChange}
+                        className="input-field"
+                        min="0"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -84,15 +223,22 @@ const HeroSection: React.FC = () => {
               <div className="flex flex-col sm:flex-row items-center justify-between mt-4">
                 <button 
                   type="button" 
-                  className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center mb-3 sm:mb-0 transition-colors duration-200"
+                  onClick={handleAdvancedFiltersToggle}
+                  className="text-primary-600 hover:text-primary-700 text-sm font-medium flex items-center mb-3 sm:mb-0 transition-all duration-200 group transform hover:scale-105"
                 >
-                  <Home className="h-4 w-4 mr-1" />
-                  Filtros avanzados
+                  <Home className="h-4 w-4 mr-1 transition-transform duration-200 group-hover:scale-110" />
+                  {showAdvancedFilters ? 'Ocultar filtros avanzados' : 'Filtros avanzados'}
+                  <ChevronDown className={`h-4 w-4 ml-1 transition-transform duration-300 ${
+                    showAdvancedFilters ? 'rotate-180' : ''
+                  }`} />
                 </button>
-                <Link to="/propiedades" className="btn btn-primary w-full sm:w-auto transform transition-all duration-200 hover:scale-105">
+                <button 
+                  onClick={handleSearch}
+                  className="btn btn-primary w-full sm:w-auto transform transition-all duration-200 hover:scale-105"
+                >
                   <Search className="h-4 w-4 mr-2" />
                   Buscar propiedades
-                </Link>
+                </button>
               </div>
             </div>
           </FadeInSection>
