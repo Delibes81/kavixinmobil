@@ -13,26 +13,41 @@ const Navbar: React.FC = () => {
   const closeMenu = () => setIsOpen(false);
 
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      // Cambiar estilo del navbar (transparente a blanco)
-      setIsScrolled(currentScrollY > 10);
-      
-      // Controlar visibilidad del navbar
-      if (currentScrollY < 10) {
-        // En la parte superior, siempre visible
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        // Scroll hacia abajo - ocultar
-        setIsVisible(false);
-      } else if (currentScrollY < lastScrollY) {
-        // Scroll hacia arriba - mostrar
-        setIsVisible(true);
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          
+          // Cambiar estilo del navbar (transparente a blanco)
+          setIsScrolled(currentScrollY > 10);
+          
+          // Controlar visibilidad del navbar
+          if (currentScrollY <= 50) {
+            // En la parte superior, siempre visible
+            setIsVisible(true);
+          } else {
+            // Comparar con la posición anterior
+            if (currentScrollY > lastScrollY) {
+              // Scroll hacia abajo - ocultar
+              setIsVisible(false);
+            } else {
+              // Scroll hacia arriba - mostrar
+              setIsVisible(true);
+            }
+          }
+          
+          setLastScrollY(currentScrollY);
+          ticking = false;
+        });
+        ticking = true;
       }
-      
-      setLastScrollY(currentScrollY);
     };
+
+    // Inicializar valores
+    setLastScrollY(window.scrollY);
+    setIsScrolled(window.scrollY > 10);
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -45,8 +60,8 @@ const Navbar: React.FC = () => {
   const isHomePage = location.pathname === '/';
   
   // Clases para el navbar
-  const navbarClasses = `fixed w-full z-50 transition-all duration-300 ${
-    isVisible ? 'translate-y-0' : '-translate-y-full'
+  const navbarClasses = `fixed w-full z-50 transition-all duration-300 ease-in-out ${
+    isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
   } ${
     isScrolled || !isHomePage
       ? 'bg-white shadow-md py-3'
