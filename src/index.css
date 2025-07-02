@@ -430,3 +430,35 @@ html {
   font-family: 'Roboto';
   font-display: swap;
 }
+
+/* FIXED: Mobile responsive improvements */
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: 100vh;
+    padding-top: 80px; /* Extra padding for mobile navbar */
+  }
+  
+  .container-custom {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Ensure mobile menu is always visible */
+  .mobile-menu-panel {
+    background-color: white !important;
+    opacity: 1 !important;
+  }
+}
+
+/* Ensure navbar is always on top */
+header[class*="fixed"] {
+  z-index: 9999 !important;
+}
+
+/* Mobile menu specific styles */
+@media (max-width: 1024px) {
+  .mobile-menu-overlay {
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+}

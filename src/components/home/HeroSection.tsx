@@ -57,24 +57,24 @@ const HeroSection: React.FC = () => {
         />
       </div>
 
-      {/* Content */}
-      <div className="container-custom relative z-20 pt-20">
+      {/* Content - FIXED: Padding top adecuado para móvil */}
+      <div className="container-custom relative z-20 pt-24 md:pt-20">
         <div className="max-w-3xl">
           <FadeInSection delay={200}>
-            <h1 className="text-white font-bold mb-4 leading-tight animate-fade-in-up">
+            <h1 className="text-white font-bold mb-4 leading-tight animate-fade-in-up text-3xl md:text-4xl lg:text-5xl">
               Encuentra tu hogar ideal
             </h1>
           </FadeInSection>
           
           <FadeInSection delay={400}>
-            <p className="text-xl text-white/90 mb-8 animate-fade-in-up">
+            <p className="text-lg md:text-xl text-white/90 mb-8 animate-fade-in-up">
               Las mejores propiedades en venta y renta seleccionadas para ti en las zonas más exclusivas de la ciudad.
             </p>
           </FadeInSection>
 
           {/* Search Bar */}
           <FadeInSection delay={600}>
-            <div className="bg-white p-4 rounded-lg shadow-lg mb-8 animate-slide-up">
+            <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg mb-8 animate-slide-up">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* Operation Type */}
                 <div className="transform transition-all duration-300 hover:scale-105">
@@ -245,20 +245,20 @@ const HeroSection: React.FC = () => {
 
           {/* Social Proof */}
           <FadeInSection delay={800}>
-            <div className="flex flex-wrap items-center gap-6 text-white animate-fade-in-up">
+            <div className="flex flex-wrap items-center gap-4 md:gap-6 text-white animate-fade-in-up">
               <div className="flex items-center transform transition-all duration-300 hover:scale-110">
-                <span className="text-3xl font-bold text-secondary-400 animate-counter">500+</span>
-                <span className="ml-2 text-white/80">Propiedades</span>
+                <span className="text-2xl md:text-3xl font-bold text-secondary-400 animate-counter">500+</span>
+                <span className="ml-2 text-white/80 text-sm md:text-base">Propiedades</span>
               </div>
-              <div className="w-px h-8 bg-white/20"></div>
+              <div className="w-px h-6 md:h-8 bg-white/20"></div>
               <div className="flex items-center transform transition-all duration-300 hover:scale-110">
-                <span className="text-3xl font-bold text-secondary-400 animate-counter">300+</span>
-                <span className="ml-2 text-white/80">Clientes satisfechos</span>
+                <span className="text-2xl md:text-3xl font-bold text-secondary-400 animate-counter">300+</span>
+                <span className="ml-2 text-white/80 text-sm md:text-base">Clientes satisfechos</span>
               </div>
-              <div className="w-px h-8 bg-white/20"></div>
+              <div className="w-px h-6 md:h-8 bg-white/20"></div>
               <div className="flex items-center transform transition-all duration-300 hover:scale-110">
-                <span className="text-3xl font-bold text-secondary-400 animate-counter">15+</span>
-                <span className="ml-2 text-white/80">Años de experiencia</span>
+                <span className="text-2xl md:text-3xl font-bold text-secondary-400 animate-counter">15+</span>
+                <span className="ml-2 text-white/80 text-sm md:text-base">Años de experiencia</span>
               </div>
             </div>
           </FadeInSection>

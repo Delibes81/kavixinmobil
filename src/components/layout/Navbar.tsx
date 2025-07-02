@@ -169,10 +169,11 @@ const Navbar: React.FC = () => {
           )}
         </button>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - FIXED: Fondo sólido y visible */}
         {isOpen && (
           <div className="fixed inset-0 flex z-50 lg:hidden">
-            <div className="relative flex-1 bg-white/95 backdrop-blur-md">
+            {/* Menu Panel - FIXED: Fondo completamente opaco */}
+            <div className="relative flex-1 bg-white shadow-2xl">
               <div className="absolute top-0 right-0 p-4">
                 <button 
                   onClick={closeMenu}
@@ -237,6 +238,7 @@ const Navbar: React.FC = () => {
               </nav>
             </div>
             
+            {/* Overlay - FIXED: Fondo semi-transparente para cerrar */}
             <div onClick={closeMenu} className="flex-shrink-0 w-14 bg-black bg-opacity-50"></div>
           </div>
         )}
