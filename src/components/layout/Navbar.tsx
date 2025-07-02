@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Home, Building2, Users, Phone, Menu, X, ChevronDown, Lock } from 'lucide-react';
+import { Home, Building2, Users, Phone, Menu, X, Lock } from 'lucide-react';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,7 +15,7 @@ const Navbar: React.FC = () => {
       setIsScrolled(window.scrollY > 10);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -24,7 +24,7 @@ const Navbar: React.FC = () => {
   }, [location]);
 
   const isHomePage = location.pathname === '/';
-  const navbarClass = `fixed w-full z-50 transition-all duration-300 ${
+  const navbarClass = `fixed w-full z-50 transition-all duration-300 will-change-transform ${
     isScrolled || !isHomePage
       ? 'bg-white shadow-md py-3'
       : 'bg-transparent py-5'
@@ -47,8 +47,8 @@ const Navbar: React.FC = () => {
       <div className="container-custom flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center">
-          <Building2 className={`h-8 w-8 ${isScrolled || !isHomePage ? 'text-primary-600' : 'text-white'}`} />
-          <span className={`ml-2 text-xl font-heading font-bold ${isScrolled || !isHomePage ? 'text-primary-800' : 'text-white'}`}>
+          <Building2 className={`h-8 w-8 transition-colors duration-300 ${isScrolled || !isHomePage ? 'text-primary-600' : 'text-white'}`} />
+          <span className={`ml-2 text-xl font-heading font-bold transition-colors duration-300 ${isScrolled || !isHomePage ? 'text-primary-800' : 'text-white'}`}>
             Nova Hestia
           </span>
         </Link>
@@ -83,7 +83,7 @@ const Navbar: React.FC = () => {
             href="https://wa.me/525544488414" 
             target="_blank" 
             rel="noopener noreferrer"
-            className={`btn ${isScrolled || !isHomePage ? 'btn-primary' : 'btn-white'}`}
+            className={`btn transition-all duration-300 ${isScrolled || !isHomePage ? 'btn-primary' : 'btn-white'}`}
           >
             Contáctanos
           </a>
@@ -91,14 +91,14 @@ const Navbar: React.FC = () => {
 
         {/* Mobile Menu Button */}
         <button
-          className="lg:hidden p-2 rounded-md focus:outline-none"
+          className="lg:hidden p-2 rounded-md focus:outline-none transition-colors duration-300"
           onClick={toggleMenu}
           aria-label="Toggle menu"
         >
           {isOpen ? (
-            <X className={`h-6 w-6 ${isScrolled || !isHomePage ? 'text-primary-800' : 'text-white'}`} />
+            <X className={`h-6 w-6 transition-colors duration-300 ${isScrolled || !isHomePage ? 'text-primary-800' : 'text-white'}`} />
           ) : (
-            <Menu className={`h-6 w-6 ${isScrolled || !isHomePage ? 'text-primary-800' : 'text-white'}`} />
+            <Menu className={`h-6 w-6 transition-colors duration-300 ${isScrolled || !isHomePage ? 'text-primary-800' : 'text-white'}`} />
           )}
         </button>
 
@@ -108,30 +108,30 @@ const Navbar: React.FC = () => {
             <div className="absolute top-0 right-0 p-4">
               <button 
                 onClick={closeMenu}
-                className="p-2 rounded-md text-primary-800 hover:text-primary-600 focus:outline-none"
+                className="p-2 rounded-md text-primary-800 hover:text-primary-600 focus:outline-none transition-colors duration-200"
                 aria-label="Close menu"
               >
                 <X className="h-6 w-6" />
               </button>
             </div>
             <nav className="h-full flex flex-col pt-20 pb-6 px-6 space-y-6">
-              <NavLink to="/" className="flex items-center py-2 text-lg font-medium text-primary-800 hover:text-primary-600">
+              <NavLink to="/" className="flex items-center py-2 text-lg font-medium text-primary-800 hover:text-primary-600 transition-colors duration-200">
                 <Home className="w-5 h-5 mr-2" />
                 Inicio
               </NavLink>
-              <NavLink to="/propiedades" className="flex items-center py-2 text-lg font-medium text-primary-800 hover:text-primary-600">
+              <NavLink to="/propiedades" className="flex items-center py-2 text-lg font-medium text-primary-800 hover:text-primary-600 transition-colors duration-200">
                 <Building2 className="w-5 h-5 mr-2" />
                 Propiedades
               </NavLink>
-              <NavLink to="/nosotros" className="flex items-center py-2 text-lg font-medium text-primary-800 hover:text-primary-600">
+              <NavLink to="/nosotros" className="flex items-center py-2 text-lg font-medium text-primary-800 hover:text-primary-600 transition-colors duration-200">
                 <Users className="w-5 h-5 mr-2" />
                 Nosotros
               </NavLink>
-              <NavLink to="/contacto" className="flex items-center py-2 text-lg font-medium text-primary-800 hover:text-primary-600">
+              <NavLink to="/contacto" className="flex items-center py-2 text-lg font-medium text-primary-800 hover:text-primary-600 transition-colors duration-200">
                 <Phone className="w-5 h-5 mr-2" />
                 Contacto
               </NavLink>
-              <Link to="/login" className="flex items-center py-2 text-lg font-medium text-primary-800 hover:text-primary-600 border border-primary-800 rounded-md px-4">
+              <Link to="/login" className="flex items-center py-2 text-lg font-medium text-primary-800 hover:text-primary-600 border border-primary-800 rounded-md px-4 transition-colors duration-200">
                 <Lock className="w-5 h-5 mr-2" />
                 Admin
               </Link>
