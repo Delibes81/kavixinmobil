@@ -24,26 +24,13 @@ const Navbar: React.FC = () => {
   }, [location]);
 
   const isHomePage = location.pathname === '/';
-  const navbarClass = `fixed top-0 w-full z-50 transition-all duration-300 will-change-transform ${
-    isScrolled || !isHomePage
-      ? 'bg-white shadow-md py-3'
-      : 'bg-transparent py-5'
-  }`;
-
-  const linkClass = `relative flex items-center px-4 py-2 text-base font-medium transition-colors duration-200 ${
-    isScrolled || !isHomePage ? 'text-primary-800 hover:text-primary-600' : 'text-white hover:text-secondary-300'
-  }`;
-  
-  const activeLinkClass = `after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-secondary-500 ${
-    isScrolled || !isHomePage ? 'text-primary-600' : 'text-secondary-400'
-  }`;
-
-  const mobileMenuClass = `fixed inset-0 flex z-50 lg:hidden transform transition-transform duration-300 ease-in-out ${
-    isOpen ? 'translate-x-0' : '-translate-x-full'
-  }`;
 
   return (
-    <header className={navbarClass}>
+    <header className={`fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300 ${
+      isScrolled || !isHomePage
+        ? 'bg-white shadow-md py-3'
+        : 'bg-transparent py-5'
+    }`}>
       <div className="container-custom flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center">
@@ -55,23 +42,41 @@ const Navbar: React.FC = () => {
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center space-x-1">
-          <NavLink to="/" className={({isActive}) => `${linkClass} ${isActive ? activeLinkClass : ''}`}>
+          <NavLink to="/" className={({isActive}) => `relative flex items-center px-4 py-2 text-base font-medium transition-colors duration-200 ${
+            isScrolled || !isHomePage ? 'text-primary-800 hover:text-primary-600' : 'text-white hover:text-secondary-300'
+          } ${isActive ? `after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-secondary-500 ${
+            isScrolled || !isHomePage ? 'text-primary-600' : 'text-secondary-400'
+          }` : ''}`}>
             <Home className="w-4 h-4 mr-1" />
             Inicio
           </NavLink>
-          <NavLink to="/propiedades" className={({isActive}) => `${linkClass} ${isActive ? activeLinkClass : ''}`}>
+          <NavLink to="/propiedades" className={({isActive}) => `relative flex items-center px-4 py-2 text-base font-medium transition-colors duration-200 ${
+            isScrolled || !isHomePage ? 'text-primary-800 hover:text-primary-600' : 'text-white hover:text-secondary-300'
+          } ${isActive ? `after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-secondary-500 ${
+            isScrolled || !isHomePage ? 'text-primary-600' : 'text-secondary-400'
+          }` : ''}`}>
             <Building2 className="w-4 h-4 mr-1" />
             Propiedades
           </NavLink>
-          <NavLink to="/nosotros" className={({isActive}) => `${linkClass} ${isActive ? activeLinkClass : ''}`}>
+          <NavLink to="/nosotros" className={({isActive}) => `relative flex items-center px-4 py-2 text-base font-medium transition-colors duration-200 ${
+            isScrolled || !isHomePage ? 'text-primary-800 hover:text-primary-600' : 'text-white hover:text-secondary-300'
+          } ${isActive ? `after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-secondary-500 ${
+            isScrolled || !isHomePage ? 'text-primary-600' : 'text-secondary-400'
+          }` : ''}`}>
             <Users className="w-4 h-4 mr-1" />
             Nosotros
           </NavLink>
-          <NavLink to="/contacto" className={({isActive}) => `${linkClass} ${isActive ? activeLinkClass : ''}`}>
+          <NavLink to="/contacto" className={({isActive}) => `relative flex items-center px-4 py-2 text-base font-medium transition-colors duration-200 ${
+            isScrolled || !isHomePage ? 'text-primary-800 hover:text-primary-600' : 'text-white hover:text-secondary-300'
+          } ${isActive ? `after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-secondary-500 ${
+            isScrolled || !isHomePage ? 'text-primary-600' : 'text-secondary-400'
+          }` : ''}`}>
             <Phone className="w-4 h-4 mr-1" />
             Contacto
           </NavLink>
-          <Link to="/login" className={`${linkClass} border border-current rounded-md ml-2`}>
+          <Link to="/login" className={`relative flex items-center px-4 py-2 text-base font-medium transition-colors duration-200 border border-current rounded-md ml-2 ${
+            isScrolled || !isHomePage ? 'text-primary-800 hover:text-primary-600' : 'text-white hover:text-secondary-300'
+          }`}>
             <Lock className="w-4 h-4 mr-1" />
             Admin
           </Link>
@@ -103,7 +108,9 @@ const Navbar: React.FC = () => {
         </button>
 
         {/* Mobile Menu */}
-        <div className={mobileMenuClass}>
+        <div className={`fixed inset-0 flex z-50 lg:hidden transform transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}>
           <div className="relative flex-1 bg-white">
             <div className="absolute top-0 right-0 p-4">
               <button 
