@@ -16,7 +16,14 @@ export default defineConfig({
       compress: {
         drop_console: true,
         drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn']
       },
+      mangle: {
+        safari10: true
+      },
+      format: {
+        comments: false
+      }
     },
     rollupOptions: {
       output: {
@@ -34,7 +41,8 @@ export default defineConfig({
       }
     },
     chunkSizeWarningLimit: 1000,
-    reportCompressedSize: false
+    reportCompressedSize: false,
+    target: 'es2015'
   },
   server: {
     hmr: {
@@ -42,7 +50,6 @@ export default defineConfig({
     }
   },
   define: {
-    // Ensure environment variables are available at build time
     'process.env': {}
   }
 });
