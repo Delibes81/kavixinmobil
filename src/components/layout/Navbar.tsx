@@ -5,8 +5,6 @@ import { Home, Building2, Users, Phone, Menu, X, Lock } from 'lucide-react';
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
   const location = useLocation();
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -20,25 +18,10 @@ const Navbar: React.FC = () => {
         requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
           
-          // Cambiar estilo del navbar (transparente a blanco)
+          // Solo cambiar estilo del navbar (transparente a blanco)
+          // REMOVED: Lógica de ocultar/mostrar navbar
           setIsScrolled(currentScrollY > 10);
           
-          // Controlar visibilidad del navbar con lógica mejorada
-          if (currentScrollY <= 100) {
-            // En la parte superior, siempre visible
-            setIsVisible(true);
-          } else {
-            // Comparar con la posición anterior
-            if (currentScrollY > lastScrollY && currentScrollY > 200) {
-              // Scroll hacia abajo - ocultar (solo después de 200px)
-              setIsVisible(false);
-            } else if (currentScrollY < lastScrollY) {
-              // Scroll hacia arriba - mostrar inmediatamente
-              setIsVisible(true);
-            }
-          }
-          
-          setLastScrollY(currentScrollY);
           ticking = false;
         });
         ticking = true;
@@ -46,12 +29,11 @@ const Navbar: React.FC = () => {
     };
 
     // Inicializar valores
-    setLastScrollY(window.scrollY);
     setIsScrolled(window.scrollY > 10);
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, []);
 
   useEffect(() => {
     closeMenu();
@@ -59,10 +41,8 @@ const Navbar: React.FC = () => {
 
   const isHomePage = location.pathname === '/';
   
-  // Clases para el navbar con transiciones mejoradas
-  const navbarClasses = `fixed w-full z-50 transition-all duration-300 ease-in-out transform ${
-    isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
-  } ${
+  // FIXED: Navbar siempre visible - removida lógica de translate-y
+  const navbarClasses = `fixed w-full z-50 transition-all duration-300 ease-in-out ${
     isScrolled || !isHomePage
       ? 'bg-white/95 backdrop-blur-md shadow-lg py-3'
       : 'bg-transparent py-5'
@@ -169,10 +149,10 @@ const Navbar: React.FC = () => {
           )}
         </button>
 
-        {/* Mobile Menu - FIXED: Fondo sólido y visible */}
+        {/* Mobile Menu */}
         {isOpen && (
           <div className="fixed inset-0 flex z-50 lg:hidden">
-            {/* Menu Panel - FIXED: Fondo completamente opaco */}
+            {/* Menu Panel */}
             <div className="relative flex-1 bg-white shadow-2xl">
               <div className="absolute top-0 right-0 p-4">
                 <button 
@@ -238,7 +218,7 @@ const Navbar: React.FC = () => {
               </nav>
             </div>
             
-            {/* Overlay - FIXED: Fondo semi-transparente para cerrar */}
+            {/* Overlay */}
             <div onClick={closeMenu} className="flex-shrink-0 w-14 bg-black bg-opacity-50"></div>
           </div>
         )}
