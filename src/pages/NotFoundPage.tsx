@@ -4,7 +4,7 @@ import { Home, Search } from 'lucide-react';
 
 const NotFoundPage: React.FC = () => {
   return (
-    <div className="pt-20 min-h-screen bg-neutral-50 flex items-center">
+    <div className="min-h-screen bg-neutral-50 flex items-center">
       <div className="container-custom py-16 text-center">
         <h1 className="text-9xl font-bold text-primary-800 mb-4">404</h1>
         <h2 className="text-3xl font-semibold mb-4">Página no encontrada</h2>

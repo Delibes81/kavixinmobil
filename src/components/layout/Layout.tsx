@@ -13,12 +13,19 @@ const Layout: React.FC = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen relative">
+      {/* Navbar - Fixed positioning */}
       <Navbar />
+      
+      {/* Main content with proper top padding to account for fixed navbar */}
       <main className="flex-grow">
         <Outlet />
       </main>
+      
+      {/* Footer */}
       <Footer />
+      
+      {/* Scroll to top button */}
       <ScrollToTop />
     </div>
   );

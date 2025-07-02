@@ -14,6 +14,7 @@ const HomePage: React.FC = () => {
 
   return (
     <>
+      {/* HomePage no necesita pt-20 porque HeroSection maneja su propio spacing */}
       <HeroSection />
       <FeaturedProperties />
       <ServicesSection />

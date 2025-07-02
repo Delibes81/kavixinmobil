@@ -25,7 +25,7 @@ const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 
 // Loading fallback component
 const PageLoadingFallback = () => (
-  <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+  <div className="min-h-screen bg-neutral-50 flex items-center justify-center pt-20">
     <div className="text-center">
       <LoadingSpinner size="lg" className="mx-auto mb-4" />
       <p className="text-neutral-600">Cargando página...</p>
@@ -46,7 +46,7 @@ function App() {
         <PageTransition>
           <Suspense fallback={<PageLoadingFallback />}>
             <Routes>
-              {/* Public routes */}
+              {/* Public routes with Layout (includes Navbar) */}
               <Route path="/" element={<Layout />}>
                 <Route index element={<HomePage />} />
                 <Route path="propiedades" element={<PropertiesPage />} />
@@ -55,10 +55,10 @@ function App() {
                 <Route path="contacto" element={<ContactPage />} />
               </Route>
               
-              {/* Login route */}
+              {/* Login route - standalone without main navbar */}
               <Route path="/login" element={<LoginPage />} />
               
-              {/* Protected admin routes */}
+              {/* Protected admin routes with AdminLayout */}
               <Route path="/admin" element={
                 <ProtectedRoute>
                   <AdminLayout />
@@ -70,7 +70,7 @@ function App() {
                 <Route path="propiedades/nueva" element={<AdminPropertyCreate />} />
               </Route>
               
-              {/* 404 route */}
+              {/* 404 route - standalone */}
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>
