@@ -6,26 +6,26 @@ interface PageTransitionProps {
 }
 
 const PageTransition: React.FC<PageTransitionProps> = ({ children }) => {
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(true); // Cambiar a true por defecto
   const location = useLocation();
 
   useEffect(() => {
-    // Reset visibility
+    // Scroll to top on route change
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Transición muy sutil y rápida
     setIsVisible(false);
     
-    // Trigger fade in animation after a short delay
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, 50);
+    }, 50); // Muy rápido para evitar el efecto de salto
 
     return () => clearTimeout(timer);
   }, [location.pathname]);
 
   return (
-    <div className={`transition-all duration-300 ease-out ${
-      isVisible 
-        ? 'opacity-100 translate-y-0' 
-        : 'opacity-0 translate-y-2'
+    <div className={`transition-opacity duration-150 ease-out ${
+      isVisible ? 'opacity-100' : 'opacity-95'
     }`}>
       {children}
     </div>

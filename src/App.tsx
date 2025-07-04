@@ -7,7 +7,6 @@ import Layout from './components/layout/Layout';
 import AdminLayout from './components/layout/AdminLayout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import PageLoader from './components/ui/PageLoader';
-import LoadingSpinner from './components/ui/LoadingSpinner';
 
 // Lazy load components for better performance
 const HomePage = React.lazy(() => import('./pages/HomePage'));
@@ -22,19 +21,10 @@ const AdminPropertyEdit = React.lazy(() => import('./pages/admin/AdminPropertyEd
 const AdminPropertyCreate = React.lazy(() => import('./pages/admin/AdminPropertyCreate'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 
-// Loading fallback component
-const PageLoadingFallback = () => (
-  <div className="min-h-screen bg-neutral-50 flex items-center justify-center pt-20">
-    <div className="text-center">
-      <LoadingSpinner size="lg" className="mx-auto mb-4" />
-      <p className="text-neutral-600">Cargando página...</p>
-    </div>
-  </div>
-);
-
 function App() {
   const { showLoader, handleLoadingComplete } = usePageLoader();
 
+  // Solo mostrar el loader inicial de la aplicación
   if (showLoader) {
     return <PageLoader onLoadingComplete={handleLoadingComplete} />;
   }
@@ -42,7 +32,8 @@ function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <Suspense fallback={<PageLoadingFallback />}>
+        {/* Removido el Suspense fallback para evitar el efecto de "salto" */}
+        <Suspense fallback={null}>
           <Routes>
             {/* Public routes with Layout (includes Navbar) */}
             <Route path="/" element={<Layout />}>
