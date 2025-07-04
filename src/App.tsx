@@ -24,7 +24,7 @@ const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 function App() {
   const { showLoader, handleLoadingComplete } = usePageLoader();
 
-  // Solo mostrar el loader inicial de la aplicación
+  // Solo mostrar el loader en la primera carga de la aplicación
   if (showLoader) {
     return <PageLoader onLoadingComplete={handleLoadingComplete} />;
   }
@@ -32,7 +32,7 @@ function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        {/* Removido el Suspense fallback para evitar el efecto de "salto" */}
+        {/* Sin fallback para evitar cualquier loader entre páginas */}
         <Suspense fallback={null}>
           <Routes>
             {/* Public routes with Layout (includes Navbar) */}
