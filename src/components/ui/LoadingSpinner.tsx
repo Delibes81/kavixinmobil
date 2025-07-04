@@ -4,12 +4,16 @@ interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
   color?: 'primary' | 'secondary' | 'white';
   className?: string;
+  showText?: boolean;
+  text?: string;
 }
 
 const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
   size = 'md', 
   color = 'primary',
-  className = '' 
+  className = '',
+  showText = false,
+  text = 'Cargando...'
 }) => {
   const sizeClasses = {
     sm: 'h-4 w-4',
@@ -25,10 +29,15 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   };
 
   return (
-    <div className={`${sizeClasses[size]} ${className}`}>
-      <div className={`animate-spin rounded-full border-2 border-transparent ${colorClasses[color]} border-t-transparent h-full w-full`}>
-        <div className="sr-only">Cargando...</div>
+    <div className={`flex flex-col items-center ${className}`}>
+      <div className={`${sizeClasses[size]} relative`}>
+        <div className={`animate-spin rounded-full border-2 border-transparent ${colorClasses[color]} border-t-transparent h-full w-full`}>
+          <div className="sr-only">Cargando...</div>
+        </div>
       </div>
+      {showText && (
+        <p className="mt-3 text-sm text-neutral-600 animate-pulse">{text}</p>
+      )}
     </div>
   );
 };

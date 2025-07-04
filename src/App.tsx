@@ -1,7 +1,10 @@
 import React, { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
+import { useInitialLoading } from './hooks/useInitialLoading';
 import ErrorBoundary from './components/ui/ErrorBoundary';
+import InitialLoadingScreen from './components/ui/InitialLoadingScreen';
+import LoadingSpinner from './components/ui/LoadingSpinner';
 import Layout from './components/layout/Layout';
 import AdminLayout from './components/layout/AdminLayout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
@@ -20,11 +23,30 @@ const AdminPropertyCreate = React.lazy(() => import('./pages/admin/AdminProperty
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 
 function App() {
+  const { showInitialLoading, isInitialLoadComplete, completeInitialLoading } = useInitialLoading();
+
+  // Show initial loading screen on first visit
+  if (showInitialLoading) {
+    return <InitialLoadingScreen onComplete={completeInitialLoading} />;
+  }
+
+  // Don't render anything until initial loading is complete
+  if (!isInitialLoadComplete) {
+    return null;
+  }
+
   return (
     <ErrorBoundary>
       <AuthProvider>
-        {/* Sin fallback para evitar cualquier loader */}
-        <Suspense fallback={null}>
+        {/* Simple spinner for subsequent loads */}
+        <Suspense fallback={
+          <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+            <div className="text-center">
+              <LoadingSpinner size="lg" className="mx-auto mb-4" />
+              <p className="text-neutral-600">Cargando...</p>
+            </div>
+          </div>
+        }>
           <Routes>
             {/* Public routes with Layout (includes Navbar) */}
             <Route path="/" element={<Layout />}>
