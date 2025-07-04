@@ -66,18 +66,6 @@ const LoginForm: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
-      {/* Home Button - Top Right */}
-      <div className="absolute top-6 right-6 z-10">
-        <Link 
-          to="/" 
-          className="flex items-center px-4 py-2 bg-white/90 backdrop-blur-sm hover:bg-white text-primary-700 hover:text-primary-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 border border-primary-200"
-          title="Ir al sitio web"
-        >
-          <Home className="h-5 w-5 mr-2" />
-          <span className="font-medium">Sitio Web</span>
-        </Link>
-      </div>
-
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-primary-600">
