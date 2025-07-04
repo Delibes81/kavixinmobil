@@ -7,7 +7,6 @@ import Layout from './components/layout/Layout';
 import AdminLayout from './components/layout/AdminLayout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import PageLoader from './components/ui/PageLoader';
-import PageTransition from './components/ui/PageTransition';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
 // Lazy load components for better performance
@@ -43,38 +42,36 @@ function App() {
   return (
     <ErrorBoundary>
       <AuthProvider>
-        <PageTransition>
-          <Suspense fallback={<PageLoadingFallback />}>
-            <Routes>
-              {/* Public routes with Layout (includes Navbar) */}
-              <Route path="/" element={<Layout />}>
-                <Route index element={<HomePage />} />
-                <Route path="propiedades" element={<PropertiesPage />} />
-                <Route path="propiedades/:id" element={<PropertyDetailPage />} />
-                <Route path="nosotros" element={<AboutPage />} />
-                <Route path="contacto" element={<ContactPage />} />
-              </Route>
-              
-              {/* Login route - standalone without main navbar */}
-              <Route path="/login" element={<LoginPage />} />
-              
-              {/* Protected admin routes with AdminLayout */}
-              <Route path="/admin" element={
-                <ProtectedRoute>
-                  <AdminLayout />
-                </ProtectedRoute>
-              }>
-                <Route index element={<AdminDashboard />} />
-                <Route path="propiedades" element={<AdminProperties />} />
-                <Route path="propiedades/:id" element={<AdminPropertyEdit />} />
-                <Route path="propiedades/nueva" element={<AdminPropertyCreate />} />
-              </Route>
-              
-              {/* 404 route - standalone */}
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </Suspense>
-        </PageTransition>
+        <Suspense fallback={<PageLoadingFallback />}>
+          <Routes>
+            {/* Public routes with Layout (includes Navbar) */}
+            <Route path="/" element={<Layout />}>
+              <Route index element={<HomePage />} />
+              <Route path="propiedades" element={<PropertiesPage />} />
+              <Route path="propiedades/:id" element={<PropertyDetailPage />} />
+              <Route path="nosotros" element={<AboutPage />} />
+              <Route path="contacto" element={<ContactPage />} />
+            </Route>
+            
+            {/* Login route - standalone without main navbar */}
+            <Route path="/login" element={<LoginPage />} />
+            
+            {/* Protected admin routes with AdminLayout */}
+            <Route path="/admin" element={
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            }>
+              <Route index element={<AdminDashboard />} />
+              <Route path="propiedades" element={<AdminProperties />} />
+              <Route path="propiedades/:id" element={<AdminPropertyEdit />} />
+              <Route path="propiedades/nueva" element={<AdminPropertyCreate />} />
+            </Route>
+            
+            {/* 404 route - standalone */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
       </AuthProvider>
     </ErrorBoundary>
   );

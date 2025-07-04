@@ -50,7 +50,7 @@ const Navbar: React.FC = () => {
     <header className={navbarClasses}>
       <div className="container-custom flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center">
+        <Link to="/" className="flex items-center z-10">
           <Building2 className={`h-8 w-8 transition-colors duration-300 ${
             isScrolled || !isHomePage ? 'text-primary-600' : 'text-white'
           }`} />
@@ -120,7 +120,7 @@ const Navbar: React.FC = () => {
 
         {/* Mobile Menu Button */}
         <button
-          className="lg:hidden p-2 rounded-md focus:outline-none transition-colors duration-300"
+          className="lg:hidden p-2 rounded-md focus:outline-none transition-colors duration-300 z-10"
           onClick={toggleMenu}
           aria-label="Toggle menu"
         >
@@ -137,7 +137,7 @@ const Navbar: React.FC = () => {
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div className="fixed inset-0 flex z-50 lg:hidden">
+          <div className="fixed inset-0 flex z-40 lg:hidden">
             <div className="relative flex-1 bg-white">
               <div className="absolute top-0 right-0 p-4">
                 <button 

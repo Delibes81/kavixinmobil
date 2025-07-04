@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import ScrollToTop from '../ui/ScrollToTop';
+import PageTransition from '../ui/PageTransition';
 
 const Layout: React.FC = () => {
   const location = useLocation();
@@ -14,16 +15,18 @@ const Layout: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen relative">
-      {/* Navbar - Fixed positioning */}
+      {/* Navbar - Fixed positioning, outside of PageTransition */}
       <Navbar />
       
       {/* Main content with proper top padding to account for fixed navbar */}
-      <main className="flex-grow">
-        <Outlet />
-      </main>
-      
-      {/* Footer */}
-      <Footer />
+      <PageTransition>
+        <main className="flex-grow">
+          <Outlet />
+        </main>
+        
+        {/* Footer */}
+        <Footer />
+      </PageTransition>
       
       {/* Scroll to top button */}
       <ScrollToTop />
