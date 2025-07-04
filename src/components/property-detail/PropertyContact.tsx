@@ -1,5 +1,5 @@
 import React from 'react';
-import { Phone, Share2 } from 'lucide-react';
+import { MessageCircle, Share2 } from 'lucide-react';
 
 interface PropertyContactProps {
   propertyTitle: string;
@@ -34,7 +34,7 @@ const PropertyContact: React.FC<PropertyContactProps> = ({ propertyTitle, proper
           onClick={handleContactClick}
           className="btn btn-primary flex-1"
         >
-          <Phone className="h-5 w-5 mr-2" />
+          <MessageCircle className="h-5 w-5 mr-2" />
           Contactar por WhatsApp
         </button>
         
