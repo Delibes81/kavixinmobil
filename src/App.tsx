@@ -1,12 +1,10 @@
 import React, { Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import { usePageLoader } from './hooks/usePageLoader';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import Layout from './components/layout/Layout';
 import AdminLayout from './components/layout/AdminLayout';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-import PageLoader from './components/ui/PageLoader';
 
 // Lazy load components for better performance
 const HomePage = React.lazy(() => import('./pages/HomePage'));
@@ -22,17 +20,10 @@ const AdminPropertyCreate = React.lazy(() => import('./pages/admin/AdminProperty
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
 
 function App() {
-  const { showLoader, handleLoadingComplete } = usePageLoader();
-
-  // Solo mostrar el loader en la primera carga de la aplicación
-  if (showLoader) {
-    return <PageLoader onLoadingComplete={handleLoadingComplete} />;
-  }
-
   return (
     <ErrorBoundary>
       <AuthProvider>
-        {/* Sin fallback para evitar cualquier loader entre páginas */}
+        {/* Sin fallback para evitar cualquier loader */}
         <Suspense fallback={null}>
           <Routes>
             {/* Public routes with Layout (includes Navbar) */}
