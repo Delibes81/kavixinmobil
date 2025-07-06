@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Building2 } from 'lucide-react';
+import NovaHestiaLogo from './NovaHestiaLogo';
 
 interface InitialLoadingScreenProps {
   onComplete: () => void;
@@ -78,7 +78,7 @@ const InitialLoadingScreen: React.FC<InitialLoadingScreenProps> = ({ onComplete 
             
             {/* Logo */}
             <div className="relative w-32 h-32 mx-auto flex items-center justify-center bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-              <Building2 className="h-16 w-16 text-secondary-400 animate-pulse" />
+              <NovaHestiaLogo className="h-16 w-16 animate-pulse" color="#e6b325" />
             </div>
           </div>
         </div>

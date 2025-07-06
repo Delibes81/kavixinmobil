@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Lock, User, Eye, EyeOff, AlertCircle, Shield, Home } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { sanitizeInput } from '../../utils/security';
+import NovaHestiaLogo from '../ui/NovaHestiaLogo';
 
 const LoginForm: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -69,7 +70,7 @@ const LoginForm: React.FC = () => {
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-primary-600">
-            <Lock className="h-6 w-6 text-white" />
+            <NovaHestiaLogo className="h-6 w-6" color="#ffffff" />
           </div>
           <h1 className="mt-6 text-center text-3xl font-bold text-primary-800">
             Acceso Administrativo

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, Facebook, Instagram, Mail, MapPin, Phone, Twitter } from 'lucide-react';
+import { Facebook, Instagram, Mail, MapPin, Phone, Twitter } from 'lucide-react';
+import NovaHestiaLogo from '../ui/NovaHestiaLogo';
 
 const Footer: React.FC = () => {
   return (
@@ -10,7 +11,7 @@ const Footer: React.FC = () => {
           {/* Company Info */}
           <div>
             <div className="flex items-center mb-4">
-              <Building2 className="h-8 w-8 text-secondary-400" />
+              <NovaHestiaLogo className="h-8 w-8" color="#e6b325" />
               <span className="ml-2 text-xl font-heading font-bold">Nova Hestia</span>
             </div>
             <p className="text-neutral-300 mb-6">

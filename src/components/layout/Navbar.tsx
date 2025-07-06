@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Home, Building2, Users, Phone, Menu, X, Lock } from 'lucide-react';
+import NovaHestiaLogo from '../ui/NovaHestiaLogo';
 
 const Navbar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -51,9 +52,9 @@ const Navbar: React.FC = () => {
       <div className="container-custom flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center z-10">
-          <Building2 className={`h-8 w-8 transition-colors duration-300 ${
+          <NovaHestiaLogo className={`h-8 w-8 transition-colors duration-300 ${
             isScrolled || !isHomePage ? 'text-primary-600' : 'text-white'
-          }`} />
+          }`} color={isScrolled || !isHomePage ? '#0052a3' : '#ffffff'} />
           <span className={`ml-2 text-xl font-heading font-bold transition-colors duration-300 ${
             isScrolled || !isHomePage ? 'text-primary-800' : 'text-white'
           }`}>

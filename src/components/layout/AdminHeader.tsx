@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, LogOut, User, Shield } from 'lucide-react';
+import { LogOut, User, Shield } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import NovaHestiaLogo from '../ui/NovaHestiaLogo';
 
 const AdminHeader: React.FC = () => {
   const { user, logout } = useAuth();
@@ -31,7 +32,7 @@ const AdminHeader: React.FC = () => {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/admin" className="flex items-center">
-              <Building2 className="h-8 w-8 text-primary-600 mr-2" />
+              <NovaHestiaLogo className="h-8 w-8 mr-2" color="#0052a3" />
               <div>
                 <span className="text-xl font-heading font-bold text-primary-800">Nova Hestia</span>
                 <span className="block text-xs text-neutral-600">Panel de Administración</span>
