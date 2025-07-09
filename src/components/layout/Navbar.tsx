@@ -96,13 +96,7 @@ const Navbar: React.FC = () => {
             Contacto
           </NavLink>
           
-          <Link 
-            to="/login" 
-            className={`${linkBaseClasses} ${linkColorClasses} border border-current rounded-md ml-2`}
-          >
-            <Lock className="w-4 h-4 mr-1" />
-            Admin
-          </Link>
+
         </nav>
 
         {/* Contact Button */}
