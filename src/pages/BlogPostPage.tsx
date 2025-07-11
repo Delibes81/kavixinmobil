@@ -343,7 +343,7 @@ const BlogPostPage: React.FC = () => {
             {/* Contact CTA */}
             <FadeInSection delay={400}>
               <div className="bg-gradient-to-br from-primary-600 to-primary-700 rounded-lg p-6 text-white mb-8">
-                <h3 className="text-lg font-semibold mb-3">¿Necesitas asesoría inmobiliaria?</h3>
+                <h3 className="text-lg text-white/90 font-semibold mb-3">¿Necesitas asesoría inmobiliaria?</h3>
                 <p className="text-white/90 text-sm mb-4">
                   Nuestros expertos están listos para ayudarte a encontrar la propiedad perfecta.
                 </p>
