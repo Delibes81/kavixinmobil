@@ -113,30 +113,6 @@ const BlogPage: React.FC = () => {
             </FadeInSection>
           ))}
         </div>
-
-        {/* Newsletter Signup */}
-        <FadeInSection>
-          <div className="mt-16 bg-gradient-to-r from-primary-600 to-primary-700 rounded-lg p-8 text-center text-white">
-            <h3 className="text-2xl font-bold mb-4">¿Te gustó nuestro contenido?</h3>
-            <p className="text-white/90 mb-6 max-w-2xl mx-auto">
-              Suscríbete a nuestro newsletter y recibe los mejores artículos sobre el mercado inmobiliario 
-              mexicano directamente en tu correo electrónico.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Tu correo electrónico"
-                className="flex-1 px-4 py-3 rounded-md text-neutral-800 focus:outline-none focus:ring-2 focus:ring-secondary-400"
-              />
-              <button className="btn btn-secondary whitespace-nowrap">
-                Suscribirse
-              </button>
-            </div>
-            <p className="text-xs text-white/70 mt-3">
-              No spam. Puedes cancelar tu suscripción en cualquier momento.
-            </p>
-          </div>
-        </FadeInSection>
       </div>
     </div>
   );
