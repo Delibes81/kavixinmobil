@@ -57,3 +57,16 @@ export interface SearchFilters {
   metros_construccion_max: number | null;
   amueblado?: boolean | null;
 }
+
+export interface BlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  author: string;
+  publishDate: string;
+  imageUrl: string;
+  tags: string[];
+  readTime: number; // in minutes
+}

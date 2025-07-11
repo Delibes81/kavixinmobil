@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { Home, Building2, Users, Phone, Menu, X, Lock } from 'lucide-react';
+import { Home, Building2, BookOpen, Users, Phone, Menu, X, Lock } from 'lucide-react';
 import NovaHestiaLogo from '../ui/NovaHestiaLogo';
 
 const Navbar: React.FC = () => {
@@ -78,6 +78,14 @@ const Navbar: React.FC = () => {
           >
             <Building2 className="w-4 h-4 mr-1" />
             Propiedades
+          </NavLink>
+          
+          <NavLink 
+            to="/blog" 
+            className={({isActive}) => `${linkBaseClasses} ${linkColorClasses} ${isActive ? activeLinkClasses : ''}`}
+          >
+            <BookOpen className="w-4 h-4 mr-1" />
+            Blog
           </NavLink>
           
           <NavLink 
@@ -159,6 +167,14 @@ const Navbar: React.FC = () => {
                 >
                   <Building2 className="w-5 h-5 mr-2" />
                   Propiedades
+                </NavLink>
+                
+                <NavLink 
+                  to="/blog" 
+                  className="flex items-center py-2 text-lg font-medium text-primary-800 hover:text-primary-600 transition-colors duration-200"
+                >
+                  <BookOpen className="w-5 h-5 mr-2" />
+                  Blog
                 </NavLink>
                 
                 <NavLink 

@@ -13,6 +13,8 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 const HomePage = React.lazy(() => import('./pages/HomePage'));
 const PropertiesPage = React.lazy(() => import('./pages/PropertiesPage'));
 const PropertyDetailPage = React.lazy(() => import('./pages/PropertyDetailPage'));
+const BlogPage = React.lazy(() => import('./pages/BlogPage'));
+const BlogPostPage = React.lazy(() => import('./pages/BlogPostPage'));
 const AboutPage = React.lazy(() => import('./pages/AboutPage'));
 const ContactPage = React.lazy(() => import('./pages/ContactPage'));
 const LoginPage = React.lazy(() => import('./pages/LoginPage'));
@@ -53,6 +55,8 @@ function App() {
               <Route index element={<HomePage />} />
               <Route path="propiedades" element={<PropertiesPage />} />
               <Route path="propiedades/:id" element={<PropertyDetailPage />} />
+              <Route path="blog" element={<BlogPage />} />
+              <Route path="blog/:slug" element={<BlogPostPage />} />
               <Route path="nosotros" element={<AboutPage />} />
               <Route path="contacto" element={<ContactPage />} />
             </Route>
