@@ -283,14 +283,14 @@ La inversión inmobiliaria se ha consolidado como una de las opciones más atrac
 ### Análisis Financiero
 
 #### ROI (Retorno sobre Inversión)
-```
+\`\`\`
 ROI = (Ingresos Anuales - Gastos Anuales) / Inversión Inicial × 100
-```
+\`\`\`
 
 #### Cap Rate (Tasa de Capitalización)
-```
+\`\`\`
 Cap Rate = Ingreso Neto Operativo Anual / Valor de la Propiedad × 100
-```
+\`\`\`
 
 #### Flujo de Efectivo
 - **Ingresos**: Renta mensual × 12 meses
