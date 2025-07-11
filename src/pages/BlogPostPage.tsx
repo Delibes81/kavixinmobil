@@ -221,6 +221,7 @@ const BlogPostPage: React.FC = () => {
     // Flush any remaining list items
     flushList();
 
+    return content
       return result;
   };
 
@@ -229,6 +230,7 @@ const BlogPostPage: React.FC = () => {
       {/* Article Header */}
       <div className="bg-primary-800 text-white py-12">
         <div className="container-custom">
+          <FadeInSection>
             <div className="flex items-center mb-6">
               <Link to="/blog" className="flex items-center text-white hover:text-secondary-400 transition-colors mr-4">
                 <ArrowLeft className="h-5 w-5 mr-1" />
