@@ -221,7 +221,6 @@ const BlogPostPage: React.FC = () => {
     // Flush any remaining list items
     flushList();
 
-    return content
       return result;
   };
 
