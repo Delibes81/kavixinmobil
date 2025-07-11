@@ -293,100 +293,49 @@ const AboutPage: React.FC = () => {
             </div>
           
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <FadeInSection delay={100}>
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-14 h-14 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mb-4">
-                    <MapPin className="h-7 w-7" />
-                  </div>
-                  <h4 className="text-lg font-semibold mb-2">Dirección</h4>
-                  <p className="text-neutral-700">
-                    José Azueta 29<br />
-                    Colonia Avante<br />
-                    Alcaldía Coyoacán, 04460<br />
-                    Ciudad de México, CDMX
-                  </p>
+              <div className="flex flex-col items-center text-center">
+                <div className="w-14 h-14 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mb-4">
+                  <MapPin className="h-7 w-7" />
                 </div>
-              </FadeInSection>
+                <h4 className="text-lg font-semibold mb-2">Dirección</h4>
+                <p className="text-neutral-700">
+                  José Azueta 29<br />
+                  Colonia Avante<br />
+                  Alcaldía Coyoacán, 04460<br />
+                  Ciudad de México, CDMX
+                </p>
+              </div>
               
-              <FadeInSection delay={200}>
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-14 h-14 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mb-4">
-                    <Phone className="h-7 w-7" />
-                  </div>
-                  <h4 className="text-lg font-semibold mb-2">Teléfono</h4>
-                  <p className="text-neutral-700">
-                    <a href="tel:5544488414" className="hover:text-primary-600 transition-colors">
-                      55 4448 8414
-                    </a>
-                    <br />
-                    <a href="https://wa.me/525544488414" className="hover:text-primary-600 transition-colors">
-                      WhatsApp: 55 4448 8414
-                    </a>
-                  </p>
+              <div className="flex flex-col items-center text-center">
+                <div className="w-14 h-14 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mb-4">
+                  <Phone className="h-7 w-7" />
                 </div>
-              </FadeInSection>
+                <h4 className="text-lg font-semibold mb-2">Teléfono</h4>
+                <p className="text-neutral-700">
+                  <a href="tel:5544488414" className="hover:text-primary-600 transition-colors">
+                    55 4448 8414
+                  </a>
+                  <br />
+                  <a href="https://wa.me/525544488414" className="hover:text-primary-600 transition-colors">
+                    WhatsApp: 55 4448 8414
+                  </a>
+                </p>
+              </div>
               
-              <FadeInSection delay={300}>
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-14 h-14 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mb-4">
-                    <Mail className="h-7 w-7" />
-                  </div>
-                  <h4 className="text-lg font-semibold mb-2">Correo Electrónico</h4>
-                  <p className="text-neutral-700">
-                    <a href="mailto:contacto@novahestia.com" className="hover:text-primary-600 transition-colors">
-                      contacto@novahestia.com
-                    </a>
-                  </p>
+              <div className="flex flex-col items-center text-center">
+                <div className="w-14 h-14 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mb-4">
+                  <Mail className="h-7 w-7" />
                 </div>
-              </FadeInSection>
+                <h4 className="text-lg font-semibold mb-2">Correo Electrónico</h4>
+                <p className="text-neutral-700">
+                  <a href="mailto:contacto@novahestia.com" className="hover:text-primary-600 transition-colors">
+                    contacto@novahestia.com
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
         </FadeInSection>
-      </div>
-    </div>
-  );
-};
-
-export default AboutPage;
-              </div>
-              <h4 className="text-lg font-semibold mb-2">Dirección</h4>
-              <p className="text-neutral-700">
-                José Azueta 29<br />
-                Colonia Avante<br />
-                Alcaldía Coyoacán, 04460<br />
-                Ciudad de México, CDMX
-              </p>
-            </div>
-            
-            <div className="flex flex-col items-center text-center">
-              <div className="w-14 h-14 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mb-4">
-                <Phone className="h-7 w-7" />
-              </div>
-              <h4 className="text-lg font-semibold mb-2">Teléfono</h4>
-              <p className="text-neutral-700">
-                <a href="tel:5544488414" className="hover:text-primary-600 transition-colors">
-                  55 4448 8414
-                </a>
-                <br />
-                <a href="https://wa.me/525544488414" className="hover:text-primary-600 transition-colors">
-                  WhatsApp: 55 4448 8414
-                </a>
-              </p>
-            </div>
-            
-            <div className="flex flex-col items-center text-center">
-              <div className="w-14 h-14 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mb-4">
-                <Mail className="h-7 w-7" />
-              </div>
-              <h4 className="text-lg font-semibold mb-2">Correo Electrónico</h4>
-              <p className="text-neutral-700">
-                <a href="mailto:contacto@novahestia.com" className="hover:text-primary-600 transition-colors">
-                  contacto@novahestia.com
-                </a>
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
