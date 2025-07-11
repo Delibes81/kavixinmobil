@@ -241,25 +241,6 @@ const BlogPostPage: React.FC = () => {
               </div>
             </FadeInSection>
 
-            {/* Newsletter */}
-            <FadeInSection delay={500}>
-              <div className="bg-neutral-50 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-primary-800 mb-3">Newsletter</h3>
-                <p className="text-sm text-neutral-600 mb-4">
-                  Recibe los mejores artículos sobre bienes raíces en tu correo.
-                </p>
-                <div className="space-y-3">
-                  <input
-                    type="email"
-                    placeholder="Tu correo electrónico"
-                    className="input-field w-full text-sm"
-                  />
-                  <button className="btn btn-primary w-full text-sm">
-                    Suscribirse
-                  </button>
-                </div>
-              </div>
-            </FadeInSection>
           </div>
         </div>
 
