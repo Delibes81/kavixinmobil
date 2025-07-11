@@ -62,167 +62,55 @@ const BlogPostPage: React.FC = () => {
     .slice(0, 3);
 
   // Convert markdown-like content to HTML (basic implementation)
-  const formatInlineMarkdown = (text: string): string => {
-    return text
-      // Bold text (**text**)
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      // Italic text (*text*)
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      // Inline code (`code`)
-      .replace(/`([^`]+)`/g, '<code class="bg-neutral-100 text-neutral-800 px-1 py-0.5 rounded text-sm">$1</code>')
-      // Links [text](url)
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-primary-600 hover:text-primary-700 underline" target="_blank" rel="noopener noreferrer">$1</a>');
-  };
-
   const formatContent = (content: string) => {
-    const lines = content.split('\n');
-    const result: JSX.Element[] = [];
-    let inCodeBlock = false;
-    let codeBlockContent: string[] = [];
-    let listItems: JSX.Element[] = [];
-    let currentListType: 'ul' | 'ol' | null = null;
-
-    const flushList = () => {
-      if (listItems.length > 0) {
-        const ListComponent = currentListType === 'ol' ? 'ol' : 'ul';
-        result.push(
-          <ListComponent key={result.length} className={`mb-4 ${currentListType === 'ol' ? 'list-decimal' : 'list-disc'} list-inside space-y-1`}>
-            {listItems}
-          </ListComponent>
-        );
-        listItems = [];
-        currentListType = null;
-      }
-    };
-
-    lines.forEach((line, index) => {
-      // Handle code blocks
-      if (line.trim().startsWith('```')) {
-        if (inCodeBlock) {
-          // End code block
-          result.push(
-            <pre key={result.length} className="bg-neutral-900 text-neutral-100 p-4 rounded-lg overflow-x-auto mb-4">
-              <code>{codeBlockContent.join('\n')}</code>
-            </pre>
-          );
-          codeBlockContent = [];
-          inCodeBlock = false;
-        } else {
-          // Start code block
-          flushList();
-          inCodeBlock = true;
-        }
-        return;
-      }
-
-      if (inCodeBlock) {
-        codeBlockContent.push(line);
-        return;
-      }
-
-      // Headers
-      if (line.startsWith('# ')) {
-        flushList();
-        const text = line.substring(2);
-        result.push(
-          <h1 key={result.length} className="text-3xl font-bold text-primary-800 mb-6 mt-8">
-            {text}
-          </h1>
-        );
-        return;
-      }
-      if (line.startsWith('## ')) {
-        flushList();
-        const text = line.substring(3);
-        result.push(
-          <h2 key={result.length} className="text-2xl font-semibold text-primary-800 mb-4 mt-6">
-            {text}
-          </h2>
-        );
-        return;
-      }
-      if (line.startsWith('### ')) {
-        flushList();
-        const text = line.substring(4);
-        result.push(
-          <h3 key={result.length} className="text-xl font-semibold text-primary-800 mb-3 mt-5">
-            {text}
-          </h3>
-        );
-        return;
-      }
-      if (line.startsWith('#### ')) {
-        flushList();
-        const text = line.substring(5);
-        result.push(
-          <h4 key={result.length} className="text-lg font-semibold text-primary-800 mb-2 mt-4">
-            {text}
-          </h4>
-        );
-        return;
-      }
-      if (line.startsWith('##### ')) {
-        flushList();
-        const text = line.substring(6);
-        result.push(
-          <h5 key={result.length} className="text-base font-semibold text-primary-800 mb-2 mt-3">
-            {text}
-          </h5>
-        );
-        return;
-      }
-
-      // Lists
-      if (line.match(/^\d+\.\s/)) {
-        // Ordered list
-        if (currentListType !== 'ol') {
-          flushList();
-          currentListType = 'ol';
-        }
-        const text = line.replace(/^\d+\.\s/, '');
-        listItems.push(
-          <li key={listItems.length} className="text-neutral-700 mb-1" dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(text) }} />
-        );
-        return;
-      }
-      if (line.startsWith('- ')) {
-        // Unordered list
-        if (currentListType !== 'ul') {
-          flushList();
-          currentListType = 'ul';
-        }
-        const text = line.substring(2);
-        listItems.push(
-          <li key={listItems.length} className="text-neutral-700 mb-1" dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(text) }} />
-        );
-        return;
-      }
-
-      // If we were in a list but this line isn't a list item, flush the list
-      if (currentListType && !line.startsWith('- ') && !line.match(/^\d+\.\s/)) {
-        flushList();
-      }
-
-      // Empty lines
-      if (line.trim() === '') {
-        result.push(<div key={result.length} className="mb-2"></div>);
-        return;
-      }
-
-      // Regular paragraphs
-      if (line.trim() && !line.startsWith('#') && !line.startsWith('-') && !line.startsWith('*') && !line.match(/^\d+\.\s/)) {
-        result.push(
-          <p key={result.length} className="text-neutral-700 mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(line) }} />
-        );
-        return;
-      }
-    });
-
-    // Flush any remaining list items
-    flushList();
-
     return content
-      return result;
+      .split('\n')
+      .map((line, index) => {
+        // Headers
+        if (line.startsWith('# ')) {
+          return <h1 key={index} className="text-3xl font-bold text-primary-800 mb-6 mt-8">{line.substring(2)}</h1>;
+        }
+        if (line.startsWith('## ')) {
+          return <h2 key={index} className="text-2xl font-semibold text-primary-800 mb-4 mt-6">{line.substring(3)}</h2>;
+        }
+        if (line.startsWith('### ')) {
+          return <h3 key={index} className="text-xl font-semibold text-primary-800 mb-3 mt-5">{line.substring(4)}</h3>;
+        }
+        if (line.startsWith('#### ')) {
+          return <h4 key={index} className="text-lg font-semibold text-primary-800 mb-2 mt-4">{line.substring(5)}</h4>;
+        }
+        if (line.startsWith('##### ')) {
+          return <h5 key={index} className="text-base font-semibold text-primary-800 mb-2 mt-3">{line.substring(6)}</h5>;
+        }
+        
+        // Lists
+        if (line.startsWith('- ')) {
+          return <li key={index} className="text-neutral-700 mb-1">{line.substring(2)}</li>;
+        }
+        
+        // Bold text
+        if (line.startsWith('**') && line.endsWith('**')) {
+          return <p key={index} className="font-bold text-neutral-800 mb-3">{line.slice(2, -2)}</p>;
+        }
+        
+        // Code blocks
+        if (line.startsWith('```')) {
+          return null; // Skip code block markers for now
+        }
+        
+        // Empty lines
+        if (line.trim() === '') {
+          return <div key={index} className="mb-2"></div>;
+        }
+        
+        // Regular paragraphs
+        if (line.trim() && !line.startsWith('#') && !line.startsWith('-') && !line.startsWith('*')) {
+          return <p key={index} className="text-neutral-700 mb-4 leading-relaxed">{line}</p>;
+        }
+        
+        return null;
+      })
+      .filter(Boolean);
   };
 
   return (
@@ -343,7 +231,7 @@ const BlogPostPage: React.FC = () => {
             {/* Contact CTA */}
             <FadeInSection delay={400}>
               <div className="bg-gradient-to-br from-primary-600 to-primary-700 rounded-lg p-6 text-white mb-8">
-                <h3 className="text-lg text-white/90 font-semibold mb-3">¿Necesitas asesoría inmobiliaria?</h3>
+                <h3 className="text-lg font-semibold mb-3">¿Necesitas asesoría inmobiliaria?</h3>
                 <p className="text-white/90 text-sm mb-4">
                   Nuestros expertos están listos para ayudarte a encontrar la propiedad perfecta.
                 </p>
