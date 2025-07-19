@@ -58,6 +58,19 @@ const PropertyFeatures: React.FC<PropertyFeaturesProps> = ({ property }) => {
       {/* Additional features */}
       <div>
         <h4 className="text-lg font-medium mb-3">Amenidades</h4>
+        
+        {/* Property ID Section */}
+        {property.id_interno && (
+          <div className="mb-4 p-3 bg-neutral-50 rounded-md">
+            <div className="flex items-center">
+              <CheckCircle2 className="h-5 w-5 text-primary-600 mr-2 flex-shrink-0" />
+              <span className="text-sm font-medium text-neutral-700">
+                ID de la propiedad: <span className="font-mono text-primary-600">{property.id_interno}</span>
+              </span>
+            </div>
+          </div>
+        )}
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
           {property.amenidades && property.amenidades.length > 0 ? (
             property.amenidades.map((amenity, index) => (

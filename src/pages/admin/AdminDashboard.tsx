@@ -282,7 +282,10 @@ const AdminDashboard: React.FC = () => {
                           </div>
                           <div className="ml-4">
                             <div className="text-sm font-medium text-neutral-900 line-clamp-1">{property.titulo}</div>
-                            <div className="text-xs text-neutral-500">{property.ciudad}</div>
+                            <div className="text-xs text-neutral-500">
+                              {property.id_interno && <span className="mr-2">ID: {property.id_interno}</span>}
+                              {property.ciudad}
+                            </div>
                           </div>
                         </div>
                       </td>
