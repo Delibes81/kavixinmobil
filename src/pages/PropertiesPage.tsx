@@ -84,6 +84,7 @@ const PropertiesPage: React.FC = () => {
   const applyFilters = (filters: SearchFilters) => {
     console.log('Applying filters:', filters);
     console.log('Total properties to filter:', properties.length);
+    console.log('Properties before filtering:', properties.map(p => ({ id: p.id, titulo: p.titulo, tipo: p.tipo })));
     
     setActiveFilters(filters);
     
@@ -92,14 +93,18 @@ const PropertiesPage: React.FC = () => {
     // Apply filters
     if (filters.operacion) {
       console.log('Filtering by operacion:', filters.operacion);
+      console.log('Properties before operacion filter:', filtered.map(p => ({ id: p.id, operacion: p.operacion })));
       filtered = filtered.filter(property => property.operacion === filters.operacion);
       console.log('After operacion filter:', filtered.length);
+      console.log('Properties after operacion filter:', filtered.map(p => ({ id: p.id, titulo: p.titulo })));
     }
     
     if (filters.tipo) {
       console.log('Filtering by tipo:', filters.tipo);
+      console.log('Properties before tipo filter:', filtered.map(p => ({ id: p.id, tipo: p.tipo })));
       filtered = filtered.filter(property => property.tipo === filters.tipo);
       console.log('After tipo filter:', filtered.length);
+      console.log('Properties after tipo filter:', filtered.map(p => ({ id: p.id, titulo: p.titulo, tipo: p.tipo })));
     }
     
     if (filters.precio_min) {
@@ -163,6 +168,12 @@ const PropertiesPage: React.FC = () => {
     }
     
     console.log('Final filtered properties:', filtered.length);
+    console.log('Final filtered properties details:', filtered.map(p => ({ 
+      id: p.id, 
+      titulo: p.titulo, 
+      tipo: p.tipo, 
+      operacion: p.operacion 
+    })));
     setFilteredProperties(filtered);
   };
 

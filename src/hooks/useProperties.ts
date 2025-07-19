@@ -154,8 +154,8 @@ export const useProperties = () => {
         titulo: item.titulo,
         descripcion: item.descripcion || '',
         precio: item.precio,
-        operacion: item.operacion,
-        tipo: item.tipo,
+        operacion: item.operacion as 'venta' | 'renta',
+        tipo: item.tipo as 'casa' | 'departamento' | 'local' | 'terreno' | 'oficina',
         recamaras: item.recamaras || 0,
         banos: item.banos || 0,
         estacionamientos: item.estacionamientos || 0,
@@ -185,7 +185,16 @@ export const useProperties = () => {
       }));
 
       console.log('Properties loaded:', transformedProperties.length);
-      console.log('Sample property for debugging:', transformedProperties[0]);
+      console.log('Properties types distribution:', transformedProperties.reduce((acc, p) => {
+        acc[p.tipo] = (acc[p.tipo] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>));
+      console.log('Sample properties for debugging:', transformedProperties.slice(0, 3).map(p => ({
+        id: p.id,
+        titulo: p.titulo,
+        tipo: p.tipo,
+        operacion: p.operacion
+      })));
       setProperties(transformedProperties);
     } catch (err) {
       console.error('Error fetching properties:', err);

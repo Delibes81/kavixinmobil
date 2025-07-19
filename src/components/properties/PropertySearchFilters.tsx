@@ -48,6 +48,7 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
     const hasFilters = Object.values(filtersFromUrl).some(value => value !== '' && value !== null);
     console.log('Filters from URL:', filtersFromUrl);
     console.log('Has filters:', hasFilters);
+    console.log('Specific filter values - operacion:', filtersFromUrl.operacion, 'tipo:', filtersFromUrl.tipo);
     
     if (hasFilters) {
       setFilters(filtersFromUrl);
@@ -56,12 +57,14 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
         setIsAdvancedOpen(true);
       }
       // Apply filters immediately
+      console.log('Applying filters from URL immediately:', filtersFromUrl);
       onApplyFilters(filtersFromUrl);
     }
   }, [location.search]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    console.log('Filter input change:', { name, value });
     
     if (['precio_min', 'precio_max', 'recamaras', 'banos', 'estacionamientos', 'metros_construccion_min', 'metros_construccion_max'].includes(name)) {
       setFilters({
@@ -83,6 +86,7 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Form submitted with filters:', filters);
     onApplyFilters(filters);
   };
 
