@@ -211,7 +211,9 @@ const AdminProperties: React.FC = () => {
                         </div>
                         <div className="ml-4">
                           <div className="text-sm font-medium text-neutral-900 line-clamp-1">{property.titulo}</div>
-                          <div className="text-xs text-neutral-500">ID: {property.id}</div>
+                          <div className="text-xs text-neutral-500">
+                            {property.id_interno ? `ID: ${property.id_interno}` : `Sistema: ${property.id.slice(0, 8)}...`}
+                          </div>
                         </div>
                       </div>
                     </td>
