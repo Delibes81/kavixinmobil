@@ -36,6 +36,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
       imagenes: [],
       disponible: true,
       destacado: false,
+      id_interno: '',
     }
   );
   
@@ -70,6 +71,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
         imagenes: property.imagenes || [],
         disponible: property.disponible ?? true,
         destacado: property.destacado || false,
+        id_interno: property.id_interno || '',
       });
       
       // Set selected amenities
@@ -241,8 +243,30 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
         <h3 className="text-xl font-semibold mb-4">Información Básica</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Internal ID */}
+          <div>
+            <label htmlFor="id_interno" className="block text-sm font-medium text-neutral-700 mb-1">
+              ID Interno
+              <span className="text-neutral-500 text-xs ml-1">(Opcional - Para control interno)</span>
+            </label>
+            <input
+              type="text"
+              id="id_interno"
+              name="id_interno"
+              value={formData.id_interno || ''}
+              onChange={handleInputChange}
+              className="input-field"
+              placeholder="Ej. PROP-2025-001"
+              maxLength={50}
+              disabled={isSubmitting}
+            />
+            <p className="text-xs text-neutral-500 mt-1">
+              ID personalizable para identificación interna de la propiedad
+            </p>
+          </div>
+          
           {/* Title */}
-          <div className="col-span-2">
+          <div>
             <label htmlFor="titulo" className="block text-sm font-medium text-neutral-700 mb-1">
               Título <span className="text-red-500">*</span>
             </label>
@@ -258,6 +282,24 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               disabled={isSubmitting}
             />
             {errors.titulo && <p className="mt-1 text-sm text-red-500">{errors.titulo}</p>}
+          </div>
+          
+          {/* Description */}
+          <div className="col-span-2">
+            <label htmlFor="descripcion" className="block text-sm font-medium text-neutral-700 mb-1">
+              Descripción
+            </label>
+            <textarea
+              id="descripcion"
+              name="descripcion"
+              value={formData.descripcion || ''}
+              onChange={handleInputChange}
+              rows={4}
+              className="input-field"
+              placeholder="Descripción detallada de la propiedad..."
+              maxLength={2000}
+              disabled={isSubmitting}
+            ></textarea>
           </div>
           
           {/* Price & Operation */}
@@ -364,24 +406,6 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
                 Destacado
               </label>
             </div>
-          </div>
-          
-          {/* Description */}
-          <div className="col-span-2">
-            <label htmlFor="descripcion" className="block text-sm font-medium text-neutral-700 mb-1">
-              Descripción
-            </label>
-            <textarea
-              id="descripcion"
-              name="descripcion"
-              value={formData.descripcion || ''}
-              onChange={handleInputChange}
-              rows={5}
-              className="input-field"
-              placeholder="Descripción detallada de la propiedad..."
-              maxLength={2000}
-              disabled={isSubmitting}
-            ></textarea>
           </div>
         </div>
       </div>

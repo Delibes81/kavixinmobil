@@ -178,6 +178,9 @@ const AdminProperties: React.FC = () => {
                   Propiedad
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
+                  ID Interno
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
                   Ubicación
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-neutral-500 uppercase tracking-wider">
@@ -210,6 +213,13 @@ const AdminProperties: React.FC = () => {
                           <div className="text-sm font-medium text-neutral-900 line-clamp-1">{property.titulo}</div>
                           <div className="text-xs text-neutral-500">ID: {property.id}</div>
                         </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-neutral-900">
+                        {property.id_interno || (
+                          <span className="text-neutral-400 italic">Sin ID</span>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -287,7 +297,7 @@ const AdminProperties: React.FC = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={7} className="px-6 py-10 text-center">
+                  <td colSpan={8} className="px-6 py-10 text-center">
                     <Filter className="h-12 w-12 text-neutral-300 mx-auto mb-4" />
                     <p className="text-neutral-600 font-medium">No se encontraron propiedades</p>
                     <p className="text-neutral-500 text-sm mt-1">Intenta con otros filtros o añade una nueva propiedad</p>

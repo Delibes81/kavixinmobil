@@ -34,6 +34,7 @@ export interface Database {
           imagenes: string[] | null
           disponible: boolean | null
           destacado: boolean | null
+          id_interno: string | null
           fecha_creacion: string | null
           fecha_actualizacion: string | null
         }
@@ -61,6 +62,7 @@ export interface Database {
           imagenes?: string[] | null
           disponible?: boolean | null
           destacado?: boolean | null
+          id_interno?: string | null
           fecha_creacion?: string | null
           fecha_actualizacion?: string | null
         }
@@ -88,6 +90,7 @@ export interface Database {
           imagenes?: string[] | null
           disponible?: boolean | null
           destacado?: boolean | null
+          id_interno?: string | null
           fecha_creacion?: string | null
           fecha_actualizacion?: string | null
         }

@@ -22,6 +22,7 @@ export interface Property {
   imagenes: string[];
   disponible: boolean;
   destacado: boolean;
+  id_interno?: string;
   fecha_creacion: string;
   fecha_actualizacion: string;
   amenidades?: Amenity[];

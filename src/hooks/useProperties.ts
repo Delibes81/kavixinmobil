@@ -175,6 +175,7 @@ export const useProperties = () => {
         ),
         disponible: item.disponible ?? true,
         destacado: item.destacado || false,
+        id_interno: item.id_interno || undefined,
         fecha_creacion: item.fecha_creacion || new Date().toISOString(),
         fecha_actualizacion: item.fecha_actualizacion || new Date().toISOString(),
         amenidades: amenitiesData
