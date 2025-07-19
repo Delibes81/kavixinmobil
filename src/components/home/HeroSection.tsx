@@ -32,6 +32,8 @@ const HeroSection: React.FC = () => {
     // Create URL params from filters with proper encoding
     const params = new URLSearchParams();
     
+    console.log('Current search filters:', searchFilters);
+    
     // Add filters to URL params
     if (searchFilters.operacion) params.set('operacion', searchFilters.operacion);
     if (searchFilters.tipo) params.set('tipo', searchFilters.tipo);
@@ -41,6 +43,8 @@ const HeroSection: React.FC = () => {
     if (searchFilters.precio_min) params.set('precio_min', searchFilters.precio_min);
     if (searchFilters.precio_max) params.set('precio_max', searchFilters.precio_max);
 
+    console.log('URL params:', params.toString());
+    
     // Navigate to properties page with filters
     const queryString = params.toString();
     navigate(`/propiedades${queryString ? `?${queryString}` : ''}`);
@@ -77,7 +81,7 @@ const HeroSection: React.FC = () => {
 
           {/* Search Bar */}
           <FadeInSection delay={600}>
-            <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="bg-white p-4 md:p-6 rounded-lg shadow-lg mb-8 animate-slide-up">
+            <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg mb-8 animate-slide-up">
               {/* FIXED: Grid con padding extra para evitar recorte en hover */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-2">
                 {/* Operation Type */}
@@ -238,14 +242,15 @@ const HeroSection: React.FC = () => {
                   }`} />
                 </button>
                 <button 
-                  type="submit"
+                  type="button"
+                  onClick={handleSearch}
                   className="btn btn-primary w-full sm:w-auto transform transition-all duration-200 hover:scale-105"
                 >
                   <Search className="h-4 w-4 mr-2" />
                   Buscar propiedades
                 </button>
               </div>
-            </form>
+            </div>
           </FadeInSection>
 
           {/* Social Proof */}
