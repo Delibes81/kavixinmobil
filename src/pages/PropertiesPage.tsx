@@ -25,12 +25,16 @@ const PropertiesPage: React.FC = () => {
     metros_construccion_max: null,
     amueblado: null,
   });
+  const [urlFiltersApplied, setUrlFiltersApplied] = useState(false);
 
   useEffect(() => {
     document.title = 'Propiedades | Nova Hestia';
     // Scroll to top when component mounts
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    
+  }, []);
+
+  // Separate effect for reading URL parameters
+  useEffect(() => {
     // Read URL parameters and apply filters
     const urlParams = new URLSearchParams(location.search);
     const filtersFromUrl: SearchFilters = {
@@ -50,13 +54,20 @@ const PropertiesPage: React.FC = () => {
     // Apply filters if any URL parameters exist
     const hasFilters = Object.values(filtersFromUrl).some(value => value !== '' && value !== null);
     if (hasFilters) {
-      applyFilters(filtersFromUrl);
+      setActiveFilters(filtersFromUrl);
+      setUrlFiltersApplied(true);
     }
-  }, []);
+  }, [location.search]);
 
   useEffect(() => {
-    setFilteredProperties(properties);
-  }, [properties]);
+    // Apply URL filters when properties are loaded and URL filters haven't been applied yet
+    if (properties.length > 0 && urlFiltersApplied) {
+      applyFilters(activeFilters);
+      setUrlFiltersApplied(false); // Reset flag
+    } else if (properties.length > 0 && !urlFiltersApplied) {
+      setFilteredProperties(properties);
+    }
+  }, [properties, urlFiltersApplied, activeFilters]);
 
   const applyFilters = (filters: SearchFilters) => {
     setActiveFilters(filters);
@@ -115,6 +126,10 @@ const PropertiesPage: React.FC = () => {
     }
     
     setFilteredProperties(filtered);
+    
+    console.log('Filters applied:', filters);
+    console.log('Filtered properties count:', filtered.length);
+    console.log('Total properties:', properties.length);
   };
 
   if (loading) {

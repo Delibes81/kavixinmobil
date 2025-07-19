@@ -49,6 +49,7 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
       if (filtersFromUrl.recamaras || filtersFromUrl.banos || filtersFromUrl.ubicacion) {
         setIsAdvancedOpen(true);
       }
+      console.log('URL filters loaded:', filtersFromUrl);
     }
   }, [location.search]);
 
