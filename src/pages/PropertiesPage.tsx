@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Building2 } from 'lucide-react';
 import PropertySearchFilters from '../components/properties/PropertySearchFilters';
 import PropertyCard from '../components/properties/PropertyCard';
@@ -8,6 +9,7 @@ import { useProperties } from '../hooks/useProperties';
 import { Property, SearchFilters } from '../types';
 
 const PropertiesPage: React.FC = () => {
+  const location = useLocation();
   const { properties, loading, error } = useProperties();
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [activeFilters, setActiveFilters] = useState<SearchFilters>({
@@ -28,6 +30,28 @@ const PropertiesPage: React.FC = () => {
     document.title = 'Propiedades | Nova Hestia';
     // Scroll to top when component mounts
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    
+    // Read URL parameters and apply filters
+    const urlParams = new URLSearchParams(location.search);
+    const filtersFromUrl: SearchFilters = {
+      operacion: urlParams.get('operacion') || '',
+      tipo: urlParams.get('tipo') || '',
+      precio_min: urlParams.get('precio_min') ? Number(urlParams.get('precio_min')) : null,
+      precio_max: urlParams.get('precio_max') ? Number(urlParams.get('precio_max')) : null,
+      recamaras: urlParams.get('recamaras') ? Number(urlParams.get('recamaras')) : null,
+      banos: urlParams.get('banos') ? Number(urlParams.get('banos')) : null,
+      estacionamientos: null,
+      ubicacion: urlParams.get('ubicacion') || '',
+      metros_construccion_min: null,
+      metros_construccion_max: null,
+      amueblado: null,
+    };
+    
+    // Apply filters if any URL parameters exist
+    const hasFilters = Object.values(filtersFromUrl).some(value => value !== '' && value !== null);
+    if (hasFilters) {
+      applyFilters(filtersFromUrl);
+    }
   }, []);
 
   useEffect(() => {

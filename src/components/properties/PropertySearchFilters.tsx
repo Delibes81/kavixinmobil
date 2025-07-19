@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Search, X, Sliders, ChevronDown, ChevronUp, Filter, MapPin } from 'lucide-react';
 import { SearchFilters } from '../../types';
 
@@ -7,6 +8,7 @@ interface PropertySearchFiltersProps {
 }
 
 const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFilters }) => {
+  const location = useLocation();
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const [filters, setFilters] = useState<SearchFilters>({
     operacion: '',
@@ -21,6 +23,34 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
     metros_construccion_max: null,
     amueblado: null,
   });
+
+  // Initialize filters from URL parameters on component mount
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const filtersFromUrl: SearchFilters = {
+      operacion: urlParams.get('operacion') || '',
+      tipo: urlParams.get('tipo') || '',
+      precio_min: urlParams.get('precio_min') ? Number(urlParams.get('precio_min')) : null,
+      precio_max: urlParams.get('precio_max') ? Number(urlParams.get('precio_max')) : null,
+      recamaras: urlParams.get('recamaras') ? Number(urlParams.get('recamaras')) : null,
+      banos: urlParams.get('banos') ? Number(urlParams.get('banos')) : null,
+      estacionamientos: null,
+      ubicacion: urlParams.get('ubicacion') || '',
+      metros_construccion_min: null,
+      metros_construccion_max: null,
+      amueblado: null,
+    };
+    
+    // Update local state with URL filters
+    const hasFilters = Object.values(filtersFromUrl).some(value => value !== '' && value !== null);
+    if (hasFilters) {
+      setFilters(filtersFromUrl);
+      // Open advanced filters if advanced parameters are present
+      if (filtersFromUrl.recamaras || filtersFromUrl.banos || filtersFromUrl.ubicacion) {
+        setIsAdvancedOpen(true);
+      }
+    }
+  }, [location.search]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

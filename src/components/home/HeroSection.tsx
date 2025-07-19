@@ -29,14 +29,17 @@ const HeroSection: React.FC = () => {
   };
 
   const handleSearch = () => {
-    // Create URL params from filters
+    // Create URL params from filters with proper encoding
     const params = new URLSearchParams();
     
-    Object.entries(searchFilters).forEach(([key, value]) => {
-      if (value && value.trim() !== '') {
-        params.append(key, value);
-      }
-    });
+    // Add filters to URL params
+    if (searchFilters.operacion) params.set('operacion', searchFilters.operacion);
+    if (searchFilters.tipo) params.set('tipo', searchFilters.tipo);
+    if (searchFilters.ubicacion.trim()) params.set('ubicacion', searchFilters.ubicacion.trim());
+    if (searchFilters.recamaras) params.set('recamaras', searchFilters.recamaras);
+    if (searchFilters.banos) params.set('banos', searchFilters.banos);
+    if (searchFilters.precio_min) params.set('precio_min', searchFilters.precio_min);
+    if (searchFilters.precio_max) params.set('precio_max', searchFilters.precio_max);
 
     // Navigate to properties page with filters
     const queryString = params.toString();
