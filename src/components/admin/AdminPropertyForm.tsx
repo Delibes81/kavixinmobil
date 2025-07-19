@@ -679,7 +679,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
           images={formData.imagenes || []}
           onImagesChange={handleImagesChange}
           propertyId={property?.id}
-          maxImages={15}
+          maxImages={50}
         />
       </div>
     </form>
