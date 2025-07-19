@@ -91,6 +91,10 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
     // Sanitize text inputs
     if (type === 'text' || type === 'textarea') {
       processedValue = sanitizeInput(value);
+      // For id_interno, keep empty strings as empty strings (don't convert to null here)
+      if (name === 'id_interno') {
+        processedValue = value.trim();
+      }
     } else if (type === 'number') {
       processedValue = value === '' ? 0 : parseFloat(value);
       // Validate numeric ranges

@@ -175,7 +175,7 @@ export const useProperties = () => {
         ),
         disponible: item.disponible ?? true,
         destacado: item.destacado || false,
-        id_interno: item.id_interno || undefined,
+        id_interno: item.id_interno || null,
         fecha_creacion: item.fecha_creacion || new Date().toISOString(),
         fecha_actualizacion: item.fecha_actualizacion || new Date().toISOString(),
         amenidades: amenitiesData
@@ -330,6 +330,7 @@ export const useProperties = () => {
         imagenes: Array.isArray(propertyData.imagenes) ? propertyData.imagenes : [],
         disponible: propertyData.disponible ?? true,
         destacado: Boolean(propertyData.destacado),
+        id_interno: propertyData.id_interno?.trim() || null,
       };
 
       // Validate required fields
@@ -419,6 +420,7 @@ export const useProperties = () => {
         imagenes: Array.isArray(propertyData.imagenes) ? propertyData.imagenes : [],
         disponible: propertyData.disponible ?? true,
         destacado: Boolean(propertyData.destacado),
+        id_interno: propertyData.id_interno?.trim() || null,
       };
 
       console.log('Formatted update data:', updateData);
