@@ -74,7 +74,7 @@ const HeroSection: React.FC = () => {
 
           {/* Search Bar */}
           <FadeInSection delay={600}>
-            <div className="bg-white p-4 md:p-6 rounded-lg shadow-lg mb-8 animate-slide-up">
+            <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }} className="bg-white p-4 md:p-6 rounded-lg shadow-lg mb-8 animate-slide-up">
               {/* FIXED: Grid con padding extra para evitar recorte en hover */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-2">
                 {/* Operation Type */}
@@ -235,14 +235,14 @@ const HeroSection: React.FC = () => {
                   }`} />
                 </button>
                 <button 
-                  onClick={handleSearch}
+                  type="submit"
                   className="btn btn-primary w-full sm:w-auto transform transition-all duration-200 hover:scale-105"
                 >
                   <Search className="h-4 w-4 mr-2" />
                   Buscar propiedades
                 </button>
               </div>
-            </div>
+            </form>
           </FadeInSection>
 
           {/* Social Proof */}
