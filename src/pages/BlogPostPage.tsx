@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, Clock, Share2, Tag } from 'lucide-react';
 import FadeInSection from '../components/ui/FadeInSection';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
 import BlogPostCard from '../components/blog/BlogPostCard';
 import { blogPosts } from '../data/blogPosts';
 import { BlogPost } from '../types';
@@ -10,8 +11,10 @@ import NotFoundPage from './NotFoundPage';
 const BlogPostPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const [post, setPost] = useState<BlogPost | undefined>();
+  const [loadingPost, setLoadingPost] = useState(true);
   
   useEffect(() => {
+    setLoadingPost(true);
     if (slug) {
       const foundPost = blogPosts.find(p => p.slug === slug);
       setPost(foundPost);
@@ -22,10 +25,22 @@ const BlogPostPage: React.FC = () => {
         document.title = 'Artículo no encontrado | Blog Nova Hestia';
       }
     }
+    setLoadingPost(false);
     
     // Scroll to top when component mounts
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [slug]);
+
+  if (loadingPost) {
+    return (
+      <div className="pt-20 min-h-screen bg-neutral-50 flex items-center">
+        <div className="container-custom py-16 text-center">
+          <LoadingSpinner size="lg" className="mx-auto mb-4" />
+          <p className="text-neutral-600">Cargando artículo...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!post) {
     return <NotFoundPage />;
@@ -61,56 +76,48 @@ const BlogPostPage: React.FC = () => {
     .filter(p => p.id !== post.id)
     .slice(0, 3);
 
-  // Convert markdown-like content to HTML (basic implementation)
+  // Convert markdown-like content to HTML with proper bold text support
   const formatContent = (content: string) => {
-    return content
-      .split('\n')
-      .map((line, index) => {
-        // Headers
-        if (line.startsWith('# ')) {
-          return <h1 key={index} className="text-3xl font-bold text-primary-800 mb-6 mt-8">{line.substring(2)}</h1>;
-        }
-        if (line.startsWith('## ')) {
-          return <h2 key={index} className="text-2xl font-semibold text-primary-800 mb-4 mt-6">{line.substring(3)}</h2>;
-        }
-        if (line.startsWith('### ')) {
-          return <h3 key={index} className="text-xl font-semibold text-primary-800 mb-3 mt-5">{line.substring(4)}</h3>;
-        }
-        if (line.startsWith('#### ')) {
-          return <h4 key={index} className="text-lg font-semibold text-primary-800 mb-2 mt-4">{line.substring(5)}</h4>;
-        }
-        if (line.startsWith('##### ')) {
-          return <h5 key={index} className="text-base font-semibold text-primary-800 mb-2 mt-3">{line.substring(6)}</h5>;
-        }
-        
-        // Lists
-        if (line.startsWith('- ')) {
-          return <li key={index} className="text-neutral-700 mb-1">{line.substring(2)}</li>;
-        }
-        
-        // Bold text
-        if (line.startsWith('**') && line.endsWith('**')) {
-          return <p key={index} className="font-bold text-neutral-800 mb-3">{line.slice(2, -2)}</p>;
-        }
-        
-        // Code blocks
-        if (line.startsWith('```')) {
-          return null; // Skip code block markers for now
-        }
-        
-        // Empty lines
-        if (line.trim() === '') {
-          return <div key={index} className="mb-2"></div>;
-        }
-        
-        // Regular paragraphs
-        if (line.trim() && !line.startsWith('#') && !line.startsWith('-') && !line.startsWith('*')) {
-          return <p key={index} className="text-neutral-700 mb-4 leading-relaxed">{line}</p>;
-        }
-        
-        return null;
-      })
-      .filter(Boolean);
+    // Process the content to convert markdown to HTML
+    let htmlContent = content;
+    
+    // Convert bold text **text** to <strong>text</strong>
+    htmlContent = htmlContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Convert headers
+    htmlContent = htmlContent.replace(/^##### (.*$)/gm, '<h5 class="text-base font-semibold text-primary-800 mb-2 mt-3">$1</h5>');
+    htmlContent = htmlContent.replace(/^#### (.*$)/gm, '<h4 class="text-lg font-semibold text-primary-800 mb-2 mt-4">$1</h4>');
+    htmlContent = htmlContent.replace(/^### (.*$)/gm, '<h3 class="text-xl font-semibold text-primary-800 mb-3 mt-5">$1</h3>');
+    htmlContent = htmlContent.replace(/^## (.*$)/gm, '<h2 class="text-2xl font-semibold text-primary-800 mb-4 mt-6">$1</h2>');
+    htmlContent = htmlContent.replace(/^# (.*$)/gm, '<h1 class="text-3xl font-bold text-primary-800 mb-6 mt-8">$1</h1>');
+    
+    // Convert lists
+    htmlContent = htmlContent.replace(/^- (.*$)/gm, '<li class="text-neutral-700 mb-1">$1</li>');
+    
+    // Convert paragraphs (lines that don't start with special characters)
+    const lines = htmlContent.split('\n');
+    const processedLines = lines.map(line => {
+      const trimmedLine = line.trim();
+      
+      // Skip empty lines, headers, lists, and HTML tags
+      if (!trimmedLine || 
+          trimmedLine.startsWith('<') || 
+          trimmedLine.startsWith('#') || 
+          trimmedLine.startsWith('-') ||
+          trimmedLine.startsWith('```')) {
+        return line;
+      }
+      
+      // Wrap regular text in paragraph tags
+      return `<p class="text-neutral-700 mb-4 leading-relaxed">${line}</p>`;
+    });
+    
+    htmlContent = processedLines.join('\n');
+    
+    // Clean up multiple consecutive line breaks
+    htmlContent = htmlContent.replace(/\n\s*\n/g, '\n');
+    
+    return htmlContent;
   };
 
   return (
@@ -171,7 +178,10 @@ const BlogPostPage: React.FC = () => {
             <FadeInSection delay={200}>
               <article className="prose prose-lg max-w-none">
                 <div className="bg-white rounded-lg shadow-sm p-8">
-                  {formatContent(post.content)}
+                  <div 
+                    className="blog-content"
+                    dangerouslySetInnerHTML={{ __html: formatContent(post.content) }}
+                  />
                 </div>
               </article>
             </FadeInSection>
