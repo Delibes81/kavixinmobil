@@ -89,6 +89,12 @@ const PropertyDetailPage: React.FC = () => {
           <div className="flex flex-col md:flex-row justify-between">
             <div>
               <h1 className="text-white mb-2">{property.titulo}</h1>
+              {property.id_interno && (
+                <p className="text-white/70 text-sm mb-2 flex items-center">
+                  <Tag className="h-4 w-4 text-secondary-400 mr-1" />
+                  ID: {property.id_interno}
+                </p>
+              )}
               <p className="text-white/80 flex items-center mb-2">
                 <Tag className="h-5 w-5 text-secondary-400 mr-2" />
                 {formatPrice(property.precio)}
