@@ -37,6 +37,8 @@ const PropertiesPage: React.FC = () => {
   useEffect(() => {
     // Read URL parameters and apply filters
     const urlParams = new URLSearchParams(location.search);
+    console.log('PropertiesPage - URL search params:', location.search);
+    
     const filtersFromUrl: SearchFilters = {
       operacion: urlParams.get('operacion') || '',
       tipo: urlParams.get('tipo') || '',
@@ -53,83 +55,115 @@ const PropertiesPage: React.FC = () => {
     
     // Apply filters if any URL parameters exist
     const hasFilters = Object.values(filtersFromUrl).some(value => value !== '' && value !== null);
+    console.log('PropertiesPage - Filters from URL:', filtersFromUrl);
+    console.log('PropertiesPage - Has filters:', hasFilters);
+    
     if (hasFilters) {
       setActiveFilters(filtersFromUrl);
-      setUrlFiltersApplied(true);
+      // Apply filters immediately when properties are available
+      if (properties.length > 0) {
+        applyFilters(filtersFromUrl);
+      } else {
+        setUrlFiltersApplied(true);
+      }
     }
   }, [location.search]);
 
   useEffect(() => {
     // Apply URL filters when properties are loaded and URL filters haven't been applied yet
     if (properties.length > 0 && urlFiltersApplied) {
+      console.log('Applying URL filters to properties:', activeFilters);
       applyFilters(activeFilters);
       setUrlFiltersApplied(false); // Reset flag
     } else if (properties.length > 0 && !urlFiltersApplied) {
+      console.log('Setting all properties as filtered (no URL filters)');
       setFilteredProperties(properties);
     }
   }, [properties, urlFiltersApplied, activeFilters]);
 
   const applyFilters = (filters: SearchFilters) => {
+    console.log('Applying filters:', filters);
+    console.log('Total properties to filter:', properties.length);
+    
     setActiveFilters(filters);
     
     let filtered = [...properties];
     
     // Apply filters
     if (filters.operacion) {
+      console.log('Filtering by operacion:', filters.operacion);
       filtered = filtered.filter(property => property.operacion === filters.operacion);
+      console.log('After operacion filter:', filtered.length);
     }
     
     if (filters.tipo) {
+      console.log('Filtering by tipo:', filters.tipo);
       filtered = filtered.filter(property => property.tipo === filters.tipo);
+      console.log('After tipo filter:', filtered.length);
     }
     
     if (filters.precio_min) {
+      console.log('Filtering by precio_min:', filters.precio_min);
       filtered = filtered.filter(property => property.precio >= filters.precio_min!);
+      console.log('After precio_min filter:', filtered.length);
     }
     
     if (filters.precio_max) {
+      console.log('Filtering by precio_max:', filters.precio_max);
       filtered = filtered.filter(property => property.precio <= filters.precio_max!);
+      console.log('After precio_max filter:', filtered.length);
     }
     
     if (filters.recamaras) {
+      console.log('Filtering by recamaras:', filters.recamaras);
       filtered = filtered.filter(property => property.recamaras >= filters.recamaras!);
+      console.log('After recamaras filter:', filtered.length);
     }
     
     if (filters.banos) {
+      console.log('Filtering by banos:', filters.banos);
       filtered = filtered.filter(property => property.banos >= filters.banos!);
+      console.log('After banos filter:', filtered.length);
     }
     
     if (filters.estacionamientos) {
+      console.log('Filtering by estacionamientos:', filters.estacionamientos);
       filtered = filtered.filter(property => property.estacionamientos >= filters.estacionamientos!);
+      console.log('After estacionamientos filter:', filtered.length);
     }
 
     if (filters.metros_construccion_min) {
+      console.log('Filtering by metros_construccion_min:', filters.metros_construccion_min);
       filtered = filtered.filter(property => property.metros_construccion >= filters.metros_construccion_min!);
+      console.log('After metros_construccion_min filter:', filtered.length);
     }
 
     if (filters.metros_construccion_max) {
+      console.log('Filtering by metros_construccion_max:', filters.metros_construccion_max);
       filtered = filtered.filter(property => property.metros_construccion <= filters.metros_construccion_max!);
+      console.log('After metros_construccion_max filter:', filtered.length);
     }
 
     if (filters.amueblado !== null) {
+      console.log('Filtering by amueblado:', filters.amueblado);
       filtered = filtered.filter(property => property.amueblado === filters.amueblado);
+      console.log('After amueblado filter:', filtered.length);
     }
     
     if (filters.ubicacion) {
       const searchTerm = filters.ubicacion.toLowerCase();
+      console.log('Filtering by ubicacion:', searchTerm);
       filtered = filtered.filter(property => 
         property.direccion.toLowerCase().includes(searchTerm) ||
         property.colonia.toLowerCase().includes(searchTerm) ||
         property.ciudad.toLowerCase().includes(searchTerm) ||
         property.estado.toLowerCase().includes(searchTerm)
       );
+      console.log('After ubicacion filter:', filtered.length);
     }
     
+    console.log('Final filtered properties:', filtered.length);
     setFilteredProperties(filtered);
-    
-    console.log('Filters applied:', filters);
-    console.log('Filtered properties count:', filtered.length);
-    console.log('Total properties:', properties.length);
   };
 
   if (loading) {

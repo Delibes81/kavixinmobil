@@ -184,6 +184,8 @@ export const useProperties = () => {
           .filter(Boolean) || [],
       }));
 
+      console.log('Properties loaded:', transformedProperties.length);
+      console.log('Sample property for debugging:', transformedProperties[0]);
       setProperties(transformedProperties);
     } catch (err) {
       console.error('Error fetching properties:', err);

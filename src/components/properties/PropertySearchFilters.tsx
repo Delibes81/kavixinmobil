@@ -27,6 +27,9 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
   // Initialize filters from URL parameters on component mount
   React.useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
+    console.log('URL search params:', location.search);
+    console.log('Parsed URL params:', Object.fromEntries(urlParams.entries()));
+    
     const filtersFromUrl: SearchFilters = {
       operacion: urlParams.get('operacion') || '',
       tipo: urlParams.get('tipo') || '',
@@ -43,13 +46,17 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
     
     // Update local state with URL filters
     const hasFilters = Object.values(filtersFromUrl).some(value => value !== '' && value !== null);
+    console.log('Filters from URL:', filtersFromUrl);
+    console.log('Has filters:', hasFilters);
+    
     if (hasFilters) {
       setFilters(filtersFromUrl);
       // Open advanced filters if advanced parameters are present
       if (filtersFromUrl.recamaras || filtersFromUrl.banos || filtersFromUrl.ubicacion) {
         setIsAdvancedOpen(true);
       }
-      console.log('URL filters loaded:', filtersFromUrl);
+      // Apply filters immediately
+      onApplyFilters(filtersFromUrl);
     }
   }, [location.search]);
 

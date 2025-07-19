@@ -47,7 +47,9 @@ const HeroSection: React.FC = () => {
     
     // Navigate to properties page with filters
     const queryString = params.toString();
-    navigate(`/propiedades${queryString ? `?${queryString}` : ''}`);
+    const targetUrl = `/propiedades${queryString ? `?${queryString}` : ''}`;
+    console.log('Navigating to:', targetUrl);
+    navigate(targetUrl);
   };
 
   return (
