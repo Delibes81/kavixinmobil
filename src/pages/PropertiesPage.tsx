@@ -376,12 +376,12 @@ const PropertiesPage: React.FC = () => {
             </FadeInSection>
           )}
           
-          {/* Pagination (mockup) */}
-          {filteredProperties.length > 0 && (
+          {/* Pagination - Only show if there are more than 12 properties */}
+          {filteredProperties.length > 12 && (
             <FadeInSection>
               <div className="flex justify-center mt-12">
                 <nav className="flex space-x-1">
-                  <button className="px-3 py-2 rounded-md text-neutral-600 hover:bg-neutral-100 transition-colors duration-200">
+                  <button className="px-3 py-2 rounded-md text-neutral-600 hover:bg-neutral-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                     Anterior
                   </button>
                   <button className="px-3 py-2 rounded-md bg-primary-600 text-white">
