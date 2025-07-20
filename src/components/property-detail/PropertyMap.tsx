@@ -1,6 +1,7 @@
-import React from 'react';
-import { useGoogleMaps } from '../../hooks/useGoogleMaps';
-import { Loader } from 'lucide-react';
+import React, { useState } from 'react';
+import Map, { Marker, NavigationControl, FullscreenControl } from 'react-map-gl';
+import { MapPin, Loader } from 'lucide-react';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface PropertyMapProps {
   position: [number, number];
@@ -8,67 +9,32 @@ interface PropertyMapProps {
 }
 
 const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
-  const { isLoaded, error } = useGoogleMaps();
-  const mapRef = React.useRef<HTMLDivElement>(null);
-  const mapInstanceRef = React.useRef<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  const accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
-  React.useEffect(() => {
-    if (!isLoaded || !mapRef.current || !window.google) return;
-
-    // Initialize map
-    const map = new window.google.maps.Map(mapRef.current, {
-      center: { lat: position[0], lng: position[1] },
-      zoom: 15,
-      mapTypeControl: false,
-      streetViewControl: true,
-      fullscreenControl: true,
-      zoomControl: true,
-      styles: [
-        {
-          featureType: "poi",
-          elementType: "labels",
-          stylers: [{ visibility: "off" }]
-        }
-      ]
-    });
-
-    // Add marker
-    const marker = new window.google.maps.Marker({
-      position: { lat: position[0], lng: position[1] },
-      map: map,
-      title: address,
-      animation: window.google.maps.Animation.DROP
-    });
-
-    // Add info window
-    const infoWindow = new window.google.maps.InfoWindow({
-      content: `<div style="padding: 8px; max-width: 200px;"><strong>${address}</strong></div>`
-    });
-
-    marker.addListener('click', () => {
-      infoWindow.open(map, marker);
-    });
-
-    mapInstanceRef.current = map;
-
-    return () => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current = null;
-      }
-    };
-  }, [isLoaded, position, address]);
-
-  if (error) {
+  if (!accessToken) {
     return (
       <div className="h-[400px] rounded-lg bg-neutral-100 flex items-center justify-center">
-        <p className="text-neutral-600">Error al cargar el mapa</p>
+        <p className="text-neutral-600">Token de Mapbox no configurado</p>
       </div>
     );
   }
 
+  const handleMapLoad = () => {
+    setIsLoading(false);
+  };
+
+  const handleMapError = (evt: any) => {
+    console.error('Map error:', evt);
+    setError('Error al cargar el mapa');
+    setIsLoading(false);
+  };
+
   return (
     <div className="h-[400px] rounded-lg overflow-hidden shadow-md relative">
-      {!isLoaded && (
+      {isLoading && (
         <div className="absolute inset-0 bg-neutral-100 flex items-center justify-center z-10">
           <div className="text-center">
             <Loader className="h-8 w-8 text-primary-600 animate-spin mx-auto mb-2" />
@@ -76,7 +42,47 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
           </div>
         </div>
       )}
-      <div ref={mapRef} className="w-full h-full" />
+      
+      {error && (
+        <div className="absolute inset-0 bg-neutral-100 flex items-center justify-center z-10">
+          <p className="text-neutral-600">{error}</p>
+        </div>
+      )}
+
+      <Map
+        mapboxAccessToken={accessToken}
+        initialViewState={{
+          longitude: position[1],
+          latitude: position[0],
+          zoom: 15
+        }}
+        style={{ width: '100%', height: '100%' }}
+        mapStyle="mapbox://styles/mapbox/streets-v12"
+        onLoad={handleMapLoad}
+        onError={handleMapError}
+        attributionControl={false}
+      >
+        <Marker
+          longitude={position[1]}
+          latitude={position[0]}
+          anchor="bottom"
+        >
+          <div className="bg-primary-600 text-white p-2 rounded-full shadow-lg">
+            <MapPin className="h-6 w-6" />
+          </div>
+        </Marker>
+
+        {/* Navigation Controls */}
+        <NavigationControl position="top-right" />
+        <FullscreenControl position="top-left" />
+      </Map>
+      
+      {/* Address Info */}
+      <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-md max-w-xs">
+        <p className="text-sm font-medium text-neutral-800 line-clamp-2">
+          {address}
+        </p>
+      </div>
     </div>
   );
 };

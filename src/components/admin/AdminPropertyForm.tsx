@@ -4,7 +4,6 @@ import { Plus, X, AlertCircle } from 'lucide-react';
 import { useAmenities } from '../../hooks/useProperties';
 import ImageUploadComponent from './ImageUploadComponent';
 import AddressAutocomplete from './AddressAutocomplete';
-import { sanitizeInput, validatePropertyData } from '../../utils/security';
 
 interface AdminPropertyFormProps {
   property?: Property;

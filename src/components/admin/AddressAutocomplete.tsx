@@ -1,6 +1,6 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { MapPin, Loader } from 'lucide-react';
-import { useGoogleMaps } from '../../hooks/useGoogleMaps';
+import React, { useState, useEffect, useRef } from 'react';
+import { MapPin, Loader, X } from 'lucide-react';
+import { useMapbox } from '../../hooks/useMapbox';
 
 interface AddressAutocompleteProps {
   value: string;
@@ -31,75 +31,118 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   className = "",
   disabled = false
 }) => {
+  const { isLoaded, error, searchPlaces } = useMapbox();
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
-  const autocompleteRef = useRef<any>(null);
-  const { isLoaded, error } = useGoogleMaps();
-  const [isLoadingGeocode, setIsLoadingGeocode] = useState(false);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<NodeJS.Timeout>();
 
+  // Debounced search function
   useEffect(() => {
-    if (!isLoaded || !inputRef.current || !window.google) return;
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
 
-    // Initialize autocomplete
-    autocompleteRef.current = new window.google.maps.places.Autocomplete(
-      inputRef.current,
-      {
-        types: ['address'],
-        componentRestrictions: { country: 'mx' },
-        fields: ['formatted_address', 'geometry', 'address_components']
-      }
-    );
-
-    // Add place changed listener
-    const listener = autocompleteRef.current.addListener('place_changed', () => {
-      const place = autocompleteRef.current.getPlace();
-      
-      if (place.geometry && place.geometry.location) {
-        setIsLoadingGeocode(true);
-        
-        // Parse address components
-        const components: any = {};
-        if (place.address_components) {
-          place.address_components.forEach((component: any) => {
-            const types = component.types;
-            if (types.includes('street_number')) {
-              components.street_number = component.long_name;
-            } else if (types.includes('route')) {
-              components.route = component.long_name;
-            } else if (types.includes('neighborhood') || types.includes('sublocality')) {
-              components.neighborhood = component.long_name;
-            } else if (types.includes('locality')) {
-              components.locality = component.long_name;
-            } else if (types.includes('administrative_area_level_1')) {
-              components.administrative_area_level_1 = component.long_name;
-            } else if (types.includes('postal_code')) {
-              components.postal_code = component.long_name;
-            }
-          });
+    if (value.length >= 3) {
+      debounceRef.current = setTimeout(async () => {
+        setIsSearching(true);
+        try {
+          const results = await searchPlaces(value);
+          setSuggestions(results);
+          setShowSuggestions(true);
+        } catch (err) {
+          console.error('Search error:', err);
+          setSuggestions([]);
+        } finally {
+          setIsSearching(false);
         }
-
-        const addressData = {
-          formatted_address: place.formatted_address || value,
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng(),
-          components
-        };
-
-        onChange(place.formatted_address || value);
-        onAddressSelect?.(addressData);
-        setIsLoadingGeocode(false);
-      }
-    });
+      }, 300);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
 
     return () => {
-      if (listener) {
-        window.google.maps.event.removeListener(listener);
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
       }
     };
-  }, [isLoaded, onChange, onAddressSelect, value]);
+  }, [value, searchPlaces]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
+    setSelectedIndex(-1);
   };
+
+  const handleSuggestionClick = (suggestion: any) => {
+    const [lng, lat] = suggestion.center;
+    
+    const addressData = {
+      formatted_address: suggestion.place_name,
+      lat,
+      lng,
+      components: suggestion.components
+    };
+
+    onChange(suggestion.place_name);
+    onAddressSelect?.(addressData);
+    setShowSuggestions(false);
+    setSuggestions([]);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!showSuggestions || suggestions.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex(prev => 
+          prev < suggestions.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex(prev => prev > 0 ? prev - 1 : -1);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (selectedIndex >= 0 && selectedIndex < suggestions.length) {
+          handleSuggestionClick(suggestions[selectedIndex]);
+        }
+        break;
+      case 'Escape':
+        setShowSuggestions(false);
+        setSelectedIndex(-1);
+        break;
+    }
+  };
+
+  const handleClear = () => {
+    onChange('');
+    setSuggestions([]);
+    setShowSuggestions(false);
+    inputRef.current?.focus();
+  };
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(event.target as Node) &&
+        !inputRef.current?.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+        setSelectedIndex(-1);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   if (error) {
     return (
@@ -110,12 +153,12 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
           value={value}
           onChange={handleInputChange}
           placeholder={placeholder}
-          className={`input-field pl-10 ${className}`}
+          className={`input-field pl-10 pr-10 ${className}`}
           disabled={disabled}
         />
         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-500" />
         <div className="absolute right-3 top-1/2 -translate-y-1/2">
-          <span className="text-xs text-red-500" title="Google Maps no disponible">
+          <span className="text-xs text-red-500" title="Mapbox no disponible">
             ⚠️
           </span>
         </div>
@@ -130,23 +173,62 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
         type="text"
         value={value}
         onChange={handleInputChange}
+        onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className={`input-field pl-10 pr-10 ${className}`}
         disabled={disabled || !isLoaded}
+        autoComplete="off"
       />
+      
       <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-500" />
       
-      <div className="absolute right-3 top-1/2 -translate-y-1/2">
-        {!isLoaded ? (
-          <Loader className="h-4 w-4 text-neutral-400 animate-spin" />
-        ) : isLoadingGeocode ? (
+      <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center space-x-1">
+        {isSearching && (
           <Loader className="h-4 w-4 text-primary-600 animate-spin" />
-        ) : null}
+        )}
+        {value && (
+          <button
+            type="button"
+            onClick={handleClear}
+            className="text-neutral-400 hover:text-neutral-600 transition-colors"
+            tabIndex={-1}
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
       </div>
-      
+
+      {/* Suggestions Dropdown */}
+      {showSuggestions && suggestions.length > 0 && (
+        <div
+          ref={suggestionsRef}
+          className="absolute top-full left-0 right-0 mt-1 bg-white border border-neutral-200 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto"
+        >
+          {suggestions.map((suggestion, index) => (
+            <button
+              key={suggestion.id}
+              type="button"
+              onClick={() => handleSuggestionClick(suggestion)}
+              className={`w-full text-left px-4 py-3 hover:bg-neutral-50 transition-colors border-b border-neutral-100 last:border-b-0 ${
+                index === selectedIndex ? 'bg-primary-50 text-primary-700' : 'text-neutral-700'
+              }`}
+            >
+              <div className="flex items-start">
+                <MapPin className="h-4 w-4 text-neutral-400 mr-2 mt-0.5 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">
+                    {suggestion.place_name}
+                  </p>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+
       {!isLoaded && (
         <div className="absolute top-full left-0 right-0 mt-1 text-xs text-neutral-500 bg-neutral-50 p-2 rounded border">
-          Cargando Google Maps...
+          Cargando Mapbox...
         </div>
       )}
     </div>
