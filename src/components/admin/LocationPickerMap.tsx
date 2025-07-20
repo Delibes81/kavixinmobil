@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MapPin, Loader, AlertTriangle, Target, RotateCcw, Circle } from 'lucide-react';
+import { MapPin, Loader, AlertTriangle, Target, RotateCcw, Circle, Search, Navigation, Crosshair } from 'lucide-react';
 
 interface LocationPickerMapProps {
   latitude: number;
@@ -25,6 +25,11 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const [showCircle, setShowCircle] = useState(showAreaCircle);
   const [radius, setRadius] = useState(circleRadius);
+  const [mapMode, setMapMode] = useState<'pin' | 'area'>('pin');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<any>(null);
   const marker = useRef<any>(null);
@@ -90,7 +95,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
             marker.current.on('dragend', () => {
               const lngLat = marker.current.getLngLat();
               onLocationChange(lngLat.lat, lngLat.lng);
-              if (showCircle) {
+              if (showCircle && mapMode === 'area') {
                 updateAreaCircle(lngLat.lng, lngLat.lat);
               }
               setIsDragging(false);
@@ -101,7 +106,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
               const { lng, lat } = e.lngLat;
               marker.current.setLngLat([lng, lat]);
               onLocationChange(lat, lng);
-              if (showCircle) {
+              if (showCircle && mapMode === 'area') {
                 updateAreaCircle(lng, lat);
               }
             });
@@ -246,18 +251,29 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
 
   // Function to toggle circle visibility
   const toggleCircle = () => {
-    if (!map.current) return;
-
-    const newShowCircle = !showCircle;
-    setShowCircle(newShowCircle);
-
-    if (newShowCircle) {
-      if (marker.current) {
-        const lngLat = marker.current.getLngLat();
-        addAreaCircle(lngLat.lng, lngLat.lat);
-      }
+    const newMode = mapMode === 'pin' ? 'area' : 'pin';
+    setMapMode(newMode);
+    
+    if (newMode === 'area') {
+      setShowCircle(true);
+      updateMapForAreaMode();
     } else {
-      // Remove circle layers
+      setShowCircle(false);
+      removeAreaCircle();
+    }
+  };
+
+  const updateMapForAreaMode = () => {
+    if (marker.current) {
+      const lngLat = marker.current.getLngLat();
+      addAreaCircle(lngLat.lng, lngLat.lat);
+    }
+  };
+
+  const removeAreaCircle = () => {
+    if (!map.current) return;
+    
+    try {
       if (map.current.getLayer('area-circle-fill')) {
         map.current.removeLayer('area-circle-fill');
       }
@@ -267,13 +283,15 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
       if (map.current.getSource('area-circle')) {
         map.current.removeSource('area-circle');
       }
+    } catch (err) {
+      console.warn('Error removing area circle:', err);
     }
   };
 
   // Function to update circle radius
   const updateRadius = (newRadius: number) => {
     setRadius(newRadius);
-    if (showCircle && marker.current) {
+    if (showCircle && mapMode === 'area' && marker.current) {
       const lngLat = marker.current.getLngLat();
       updateAreaCircle(lngLat.lng, lngLat.lat);
     }
@@ -287,11 +305,63 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         map.current.setCenter([longitude, latitude]);
         map.current.setZoom(15);
       }
-      if (showCircle) {
+      if (showCircle && mapMode === 'area') {
         updateAreaCircle(longitude, latitude);
       }
     }
   }, [latitude, longitude]);
+
+  // Search functionality
+  const handleSearch = async () => {
+    if (!searchQuery.trim() || !accessToken) return;
+
+    setIsSearching(true);
+    setShowSearchResults(false);
+
+    try {
+      const encodedQuery = encodeURIComponent(searchQuery);
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedQuery}.json?access_token=${accessToken}&country=mx&language=es&limit=5&types=address,poi,place`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Error en la búsqueda: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setSearchResults(data.features || []);
+      setShowSearchResults(true);
+    } catch (error) {
+      console.error('Search error:', error);
+      setError(error instanceof Error ? error.message : 'Error al buscar ubicación');
+      setTimeout(() => setError(null), 3000);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleSearchResultSelect = (result: any) => {
+    const [lng, lat] = result.center;
+    
+    // Update map and marker
+    if (map.current && marker.current) {
+      map.current.setCenter([lng, lat]);
+      map.current.setZoom(16);
+      marker.current.setLngLat([lng, lat]);
+      
+      // Update coordinates
+      onLocationChange(lat, lng);
+      
+      // Update circle if in area mode
+      if (mapMode === 'area') {
+        updateAreaCircle(lng, lat);
+      }
+    }
+    
+    // Clear search
+    setSearchQuery(result.place_name);
+    setShowSearchResults(false);
+  };
 
   const handleCenterOnAddress = async () => {
     if (!address.trim() || !map.current) return;
@@ -322,7 +392,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         onLocationChange(lat, lng);
         
         // Update circle if visible
-        if (showCircle) {
+        if (showCircle && mapMode === 'area') {
           updateAreaCircle(lng, lat);
         }
       } else {
@@ -344,7 +414,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
       map.current.setZoom(10);
       marker.current.setLngLat(defaultCenter);
       onLocationChange(19.4326, -99.1332);
-      if (showCircle) {
+      if (showCircle && mapMode === 'area') {
         updateAreaCircle(-99.1332, 19.4326);
       }
     }
@@ -379,12 +449,18 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         {/* Instructions Overlay */}
         <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-md max-w-xs">
           <div className="flex items-start">
-            <MapPin className="h-4 w-4 text-primary-600 mr-2 mt-0.5 flex-shrink-0" />
+            {mapMode === 'pin' ? (
+              <MapPin className="h-4 w-4 text-primary-600 mr-2 mt-0.5 flex-shrink-0" />
+            ) : (
+              <Circle className="h-4 w-4 text-primary-600 mr-2 mt-0.5 flex-shrink-0" />
+            )}
             <div className="text-xs text-neutral-800">
-              <p className="font-medium mb-1">Seleccionar ubicación:</p>
+              <p className="font-medium mb-1">
+                {mapMode === 'pin' ? 'Modo: Ubicación exacta' : 'Modo: Área de influencia'}
+              </p>
               <p>• Haz clic en el mapa para mover el pin</p>
               <p>• Arrastra el pin para ajustar la posición</p>
-              {showCircle && <p>• El círculo muestra el área aproximada</p>}
+              {mapMode === 'area' && <p>• El círculo muestra el área de influencia</p>}
             </div>
           </div>
         </div>
@@ -400,13 +476,68 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-md">
           <div className="text-xs text-neutral-700">
             <p className="font-medium">Coordenadas:</p>
-            <p>Lat: {latitude ? latitude.toFixed(6) : 'No establecida'}</p>
-            <p>Lng: {longitude ? longitude.toFixed(6) : 'No establecida'}</p>
-            {showCircle && <p>Radio: {radius}m</p>}
+            <p>Lat: {latitude ? latitude.toFixed(15) : 'No establecida'}</p>
+            <p>Lng: {longitude ? longitude.toFixed(15) : 'No establecida'}</p>
+            {mapMode === 'area' && <p>Radio: {radius}m</p>}
           </div>
         </div>
       </div>
 
+      {/* Search Bar */}
+      <div className="mt-4 relative">
+        <div className="flex gap-2">
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              placeholder="Buscar dirección, lugar o punto de interés..."
+              className="input-field pl-10 pr-4"
+              disabled={isSearching}
+            />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-400" />
+          </div>
+          <button
+            type="button"
+            onClick={handleSearch}
+            disabled={isSearching || !searchQuery.trim()}
+            className="btn btn-primary px-4"
+          >
+            {isSearching ? (
+              <Loader className="h-4 w-4 animate-spin" />
+            ) : (
+              <Search className="h-4 w-4" />
+            )}
+          </button>
+        </div>
+
+        {/* Search Results */}
+        {showSearchResults && searchResults.length > 0 && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-neutral-200 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto">
+            {searchResults.map((result, index) => (
+              <button
+                key={index}
+                type="button"
+                onClick={() => handleSearchResultSelect(result)}
+                className="w-full text-left px-4 py-3 hover:bg-neutral-50 transition-colors border-b border-neutral-100 last:border-b-0"
+              >
+                <div className="flex items-start">
+                  <Navigation className="h-4 w-4 text-neutral-400 mr-2 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate text-neutral-900">
+                      {result.text}
+                    </p>
+                    <p className="text-xs text-neutral-500 truncate">
+                      {result.place_name}
+                    </p>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
       {/* Map Controls */}
       <div className="mt-4 flex flex-wrap gap-3">
         {address && (
@@ -442,15 +573,24 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         <button
           type="button"
           onClick={toggleCircle}
-          className={`btn flex-1 sm:flex-none ${showCircle ? 'btn-primary' : 'btn-outline'}`}
+          className={`btn flex-1 sm:flex-none ${mapMode === 'area' ? 'btn-primary' : 'btn-outline'}`}
         >
-          <Circle className="h-4 w-4 mr-2" />
-          {showCircle ? 'Ocultar área' : 'Mostrar área'}
+          {mapMode === 'pin' ? (
+            <>
+              <Crosshair className="h-4 w-4 mr-2" />
+              Cambiar a área
+            </>
+          ) : (
+            <>
+              <MapPin className="h-4 w-4 mr-2" />
+              Cambiar a pin
+            </>
+          )}
         </button>
       </div>
 
       {/* Circle Controls */}
-      {showCircle && (
+      {mapMode === 'area' && (
         <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-center justify-between mb-3">
             <label className="text-sm font-medium text-blue-800">
@@ -492,11 +632,12 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
           <div className="text-sm text-blue-800">
             <p className="font-medium mb-1">Cómo usar el mapa:</p>
             <ul className="list-disc list-inside space-y-1 text-xs">
+              <li>Usa el buscador para encontrar ubicaciones específicas</li>
               <li>Haz clic en cualquier punto del mapa para colocar el pin</li>
               <li>Arrastra el pin azul para ajustar la ubicación exacta</li>
+              <li>Cambia entre modo "Pin" (ubicación exacta) y "Área" (zona de influencia)</li>
               <li>Usa "Centrar en dirección" para buscar automáticamente</li>
               <li>Las coordenadas se actualizan automáticamente</li>
-              <li>Activa "Mostrar área" para visualizar la zona de influencia</li>
             </ul>
           </div>
         </div>
