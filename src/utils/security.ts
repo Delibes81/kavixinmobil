@@ -192,11 +192,6 @@ export const validatePropertyData = (data: any): { isValid: boolean; errors: str
 
   // Validate coordinates if provided
   // Allow any coordinate values - validation removed to allow manual input
-
-  // Warn if coordinates are not set (but don't make it an error)
-  if ((!data.latitud || data.latitud === 0) && (!data.longitud || data.longitud === 0)) {
-    console.warn('Property coordinates not set - map will not be available');
-  }
   return {
     isValid: errors.length === 0,
     errors
