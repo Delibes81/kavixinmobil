@@ -22,7 +22,7 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
     }
 
     if (!position || position[0] === 0 || position[1] === 0) {
-      setError('Coordenadas no disponibles');
+      setError('Coordenadas no disponibles para esta propiedad');
       setIsLoading(false);
       return;
     }
