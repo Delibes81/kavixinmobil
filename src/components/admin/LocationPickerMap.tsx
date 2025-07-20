@@ -65,9 +65,9 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         map.current.on('load', () => {
           // Create draggable marker
           marker.current = new mapboxgl.default.Marker({
-            color: '#0052a3',
+            color: '#1e40af',
             draggable: true,
-            scale: 1.2
+            scale: 1.5
           })
             .setLngLat([defaultLng, defaultLat])
             .addTo(map.current);
@@ -157,8 +157,8 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         type: 'fill',
         source: 'area-circle',
         paint: {
-          'fill-color': '#0052a3',
-          'fill-opacity': 0.2
+          'fill-color': '#1e40af',
+          'fill-opacity': 0.3
         }
       });
     }
@@ -169,9 +169,9 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         type: 'line',
         source: 'area-circle',
         paint: {
-          'line-color': '#0052a3',
-          'line-width': 2,
-          'line-opacity': 0.8
+          'line-color': '#1e40af',
+          'line-width': 3,
+          'line-opacity': 1
         }
       });
     }

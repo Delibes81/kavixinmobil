@@ -109,11 +109,9 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
       if (name === 'metros_construccion' && processedValue < 0) processedValue = 0;
       if (name === 'metros_terreno' && processedValue < 0) processedValue = 0;
       if (name === 'antiguedad' && processedValue < 0) processedValue = 0;
-      if (name === 'latitud' && (processedValue < -90 || processedValue > 90)) {
-        processedValue = Math.max(-90, Math.min(90, processedValue));
-      }
-      if (name === 'longitud' && (processedValue < -180 || processedValue > 180)) {
-        processedValue = Math.max(-180, Math.min(180, processedValue));
+      // Allow any coordinate values for manual input
+      if (name === 'latitud' || name === 'longitud') {
+        processedValue = value === '' ? 0 : parseFloat(value);
       }
     }
     
