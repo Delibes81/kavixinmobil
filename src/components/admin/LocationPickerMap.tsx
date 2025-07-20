@@ -157,8 +157,8 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         type: 'fill',
         source: 'area-circle',
         paint: {
-          'fill-color': '#1e40af',
-          'fill-opacity': 0.3
+          'fill-color': '#0052a3',
+          'fill-opacity': 0.4
         }
       });
     }
@@ -169,8 +169,8 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         type: 'line',
         source: 'area-circle',
         paint: {
-          'line-color': '#1e40af',
-          'line-width': 3,
+          'line-color': '#0052a3',
+          'line-width': 4,
           'line-opacity': 1
         }
       });
