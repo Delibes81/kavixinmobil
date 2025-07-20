@@ -24,6 +24,50 @@ interface AddressComponents {
   postal_code?: string;
 }
 
+// Singleton pattern for Google Maps script loading
+let _googleMapsScriptLoadingPromise: Promise<void> | null = null;
+
+const loadGoogleMapsScript = (apiKey: string): Promise<void> => {
+  // If already loading or loaded, return the existing promise
+  if (_googleMapsScriptLoadingPromise) {
+    return _googleMapsScriptLoadingPromise;
+  }
+
+  // Check if Google Maps is already loaded
+  if (window.google && window.google.maps) {
+    _googleMapsScriptLoadingPromise = Promise.resolve();
+    return _googleMapsScriptLoadingPromise;
+  }
+
+  // Create the loading promise
+  _googleMapsScriptLoadingPromise = new Promise((resolve, reject) => {
+    // Double-check if script was loaded while we were creating the promise
+    if (window.google && window.google.maps) {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=es&region=MX`;
+    script.async = true;
+    script.defer = true;
+    
+    script.onload = () => {
+      resolve();
+    };
+    
+    script.onerror = () => {
+      // Reset the promise so it can be retried
+      _googleMapsScriptLoadingPromise = null;
+      reject(new Error('Failed to load Google Maps'));
+    };
+
+    document.head.appendChild(script);
+  });
+
+  return _googleMapsScriptLoadingPromise;
+};
+
 export const useGoogleMaps = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,34 +80,14 @@ export const useGoogleMaps = () => {
       return;
     }
 
-    // Check if Google Maps is already loaded
-    if (window.google && window.google.maps) {
-      setIsLoaded(true);
-      return;
-    }
-
-    // Load Google Maps script
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&language=es&region=MX`;
-    script.async = true;
-    script.defer = true;
-    
-    script.onload = () => {
-      setIsLoaded(true);
-    };
-    
-    script.onerror = () => {
-      setError('Failed to load Google Maps');
-    };
-
-    document.head.appendChild(script);
-
-    return () => {
-      // Cleanup script if component unmounts
-      if (script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-    };
+    // Use the singleton loading function
+    loadGoogleMapsScript(apiKey)
+      .then(() => {
+        setIsLoaded(true);
+      })
+      .catch((err) => {
+        setError(err.message);
+      });
   }, []);
 
   const geocodeAddress = useCallback(async (address: string): Promise<{
@@ -152,8 +176,6 @@ export const useGoogleMaps = () => {
                 components.route = component.long_name;
               } else if (types.includes('neighborhood') || types.includes('sublocality')) {
                 components.neighborhood = component.long_name;
-              } else if (types.includes('locality')) {
-                components.locality = component.long_name;
               } else if (types.includes('administrative_area_level_1')) {
                 components.administrative_area_level_1 = component.long_name;
               } else if (types.includes('postal_code')) {
