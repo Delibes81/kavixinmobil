@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Property, Amenity } from '../../types';
-import { Plus, X, AlertCircle } from 'lucide-react';
+import { Plus, X, AlertCircle, MapPin } from 'lucide-react';
 import { useAmenities } from '../../hooks/useProperties';
 import ImageUploadComponent from './ImageUploadComponent';
 import AddressAutocomplete from './AddressAutocomplete';
@@ -43,6 +43,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGeocodingAddress, setIsGeocodingAddress] = useState(false);
 
   // Initialize form data when property changes
   useEffect(() => {
@@ -186,6 +187,70 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
     }));
   };
 
+  const handleGeocodeCurrentAddress = async () => {
+    if (!formData.direccion?.trim()) {
+      setErrors(prev => ({ ...prev, geocode: 'Ingresa una dirección para obtener coordenadas' }));
+      return;
+    }
+
+    setIsGeocodingAddress(true);
+    setErrors(prev => {
+      const newErrors = { ...prev };
+      delete newErrors.geocode;
+      return newErrors;
+    });
+
+    try {
+      // Build full address for geocoding
+      const addressParts = [];
+      if (formData.direccion) addressParts.push(formData.direccion);
+      if (formData.colonia) addressParts.push(formData.colonia);
+      if (formData.ciudad) addressParts.push(formData.ciudad);
+      if (formData.estado) addressParts.push(formData.estado);
+      
+      const fullAddress = addressParts.join(', ');
+      
+      // Use Mapbox Geocoding API
+      const accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
+      if (!accessToken) {
+        throw new Error('Token de Mapbox no configurado');
+      }
+
+      const encodedAddress = encodeURIComponent(fullAddress);
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${accessToken}&country=mx&language=es&limit=1`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Error en la geocodificación: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.features && data.features.length > 0) {
+        const feature = data.features[0];
+        const [lng, lat] = feature.center;
+        
+        setFormData(prev => ({
+          ...prev,
+          latitud: lat,
+          longitud: lng,
+        }));
+        
+        alert(`Coordenadas actualizadas: ${lat.toFixed(6)}, ${lng.toFixed(6)}`);
+      } else {
+        throw new Error('No se encontraron coordenadas para esta dirección');
+      }
+    } catch (error) {
+      console.error('Geocoding error:', error);
+      setErrors(prev => ({ 
+        ...prev, 
+        geocode: error instanceof Error ? error.message : 'Error al obtener coordenadas' 
+      }));
+    } finally {
+      setIsGeocodingAddress(false);
+    }
+  };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -692,6 +757,41 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               placeholder="Ej. -99.1332"
               disabled={isSubmitting}
             />
+          </div>
+          
+          {/* Geocode Button */}
+          <div className="col-span-2">
+            <div className="flex items-end space-x-4">
+              <div className="flex-1">
+                <button
+                  type="button"
+                  onClick={handleGeocodeCurrentAddress}
+                  disabled={isGeocodingAddress || isSubmitting || !formData.direccion?.trim()}
+                  className="btn btn-outline w-full"
+                >
+                  {isGeocodingAddress ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600 mr-2"></div>
+                      Obteniendo coordenadas...
+                    </>
+                  ) : (
+                    <>
+                      <MapPin className="h-4 w-4 mr-2" />
+                      Obtener coordenadas de la dirección
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+            {errors.geocode && <p className="mt-1 text-sm text-red-500">{errors.geocode}</p>}
+            <p className="mt-1 text-xs text-neutral-500">
+              Haz clic para obtener automáticamente las coordenadas basadas en la dirección ingresada
+            </p>
+            {formData.latitud !== 0 && formData.longitud !== 0 && (
+              <p className="mt-1 text-xs text-green-600">
+                ✓ Coordenadas configuradas: {formData.latitud?.toFixed(6)}, {formData.longitud?.toFixed(6)}
+              </p>
+            )}
           </div>
         </div>
       </div>

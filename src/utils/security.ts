@@ -191,13 +191,17 @@ export const validatePropertyData = (data: any): { isValid: boolean; errors: str
   if (data.estacionamientos < 0) errors.push('El número de estacionamientos no puede ser negativo');
 
   // Validate coordinates if provided
-  if (data.latitud && (data.latitud < -90 || data.latitud > 90)) {
+  if (data.latitud !== null && data.latitud !== undefined && (data.latitud < -90 || data.latitud > 90)) {
     errors.push('La latitud debe estar entre -90 y 90');
   }
-  if (data.longitud && (data.longitud < -180 || data.longitud > 180)) {
+  if (data.longitud !== null && data.longitud !== undefined && (data.longitud < -180 || data.longitud > 180)) {
     errors.push('La longitud debe estar entre -180 y 180');
   }
 
+  // Warn if coordinates are not set (but don't make it an error)
+  if ((!data.latitud || data.latitud === 0) && (!data.longitud || data.longitud === 0)) {
+    console.warn('Property coordinates not set - map will not be available');
+  }
   return {
     isValid: errors.length === 0,
     errors
