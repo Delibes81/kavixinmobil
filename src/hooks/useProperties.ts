@@ -176,6 +176,8 @@ export const useProperties = () => {
         disponible: item.disponible ?? true,
         destacado: item.destacado || false,
         id_interno: item.id_interno || null,
+        map_mode: (item.map_mode as 'pin' | 'area') || 'pin',
+        area_radius: item.area_radius || 500,
         fecha_creacion: item.fecha_creacion || new Date().toISOString(),
         fecha_actualizacion: item.fecha_actualizacion || new Date().toISOString(),
         amenidades: amenitiesData
@@ -232,6 +234,8 @@ export const useProperties = () => {
           ],
           disponible: true,
           destacado: true,
+          map_mode: 'pin' as const,
+          area_radius: 500,
           fecha_creacion: '2025-01-15T00:00:00Z',
           fecha_actualizacion: '2025-01-15T00:00:00Z',
           amenidades: []
@@ -264,6 +268,8 @@ export const useProperties = () => {
           ],
           disponible: true,
           destacado: true,
+          map_mode: 'pin' as const,
+          area_radius: 500,
           fecha_creacion: '2025-01-10T00:00:00Z',
           fecha_actualizacion: '2025-01-10T00:00:00Z',
           amenidades: []
@@ -296,6 +302,8 @@ export const useProperties = () => {
           ],
           disponible: true,
           destacado: false,
+          map_mode: 'pin' as const,
+          area_radius: 500,
           fecha_creacion: '2025-02-25T00:00:00Z',
           fecha_actualizacion: '2025-02-25T00:00:00Z',
           amenidades: []
@@ -342,6 +350,8 @@ export const useProperties = () => {
         disponible: propertyData.disponible ?? true,
         destacado: Boolean(propertyData.destacado),
         id_interno: propertyData.id_interno?.trim() || null,
+        map_mode: propertyData.map_mode || 'pin',
+        area_radius: Number(propertyData.area_radius) || 500,
       };
 
       // Validate required fields
@@ -432,6 +442,8 @@ export const useProperties = () => {
         disponible: propertyData.disponible ?? true,
         destacado: Boolean(propertyData.destacado),
         id_interno: propertyData.id_interno?.trim() || null,
+        map_mode: propertyData.map_mode || 'pin',
+        area_radius: Number(propertyData.area_radius) || 500,
       };
 
       console.log('Formatted update data:', updateData);

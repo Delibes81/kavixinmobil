@@ -143,6 +143,8 @@ const PropertyDetailPage: React.FC = () => {
               <h3 className="text-xl font-semibold mb-4">Ubicación</h3>
               <div className="mb-4">
                 <p className="text-neutral-800 font-medium mb-2">Dirección completa:</p>
+                  mapMode={property.map_mode || 'pin'}
+                  areaRadius={property.area_radius || 500}
                 <p className="text-neutral-600">{formatFullAddress()}</p>
               </div>
               <PropertyMap 

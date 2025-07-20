@@ -39,6 +39,8 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
       disponible: true,
       destacado: false,
       id_interno: '',
+      map_mode: 'pin',
+      area_radius: 500,
     }
   );
   
@@ -47,6 +49,8 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGeocodingAddress, setIsGeocodingAddress] = useState(false);
   const [showLocationPicker, setShowLocationPicker] = useState(false);
+  const [mapMode, setMapMode] = useState<'pin' | 'area'>('pin');
+  const [areaRadius, setAreaRadius] = useState(500);
 
   // Initialize form data when property changes
   useEffect(() => {
@@ -76,7 +80,13 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
         disponible: property.disponible ?? true,
         destacado: property.destacado || false,
         id_interno: property.id_interno || '',
+        map_mode: property.map_mode || 'pin',
+        area_radius: property.area_radius || 500,
       });
+      
+      // Set map mode and radius from property
+      setMapMode(property.map_mode || 'pin');
+      setAreaRadius(property.area_radius || 500);
       
       // Set selected amenities
       if (property.amenidades) {
@@ -178,6 +188,8 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
       ...prev,
       latitud: lat,
       longitud: lng,
+      map_mode: mapMode,
+      area_radius: areaRadius,
     }));
   };
 
@@ -261,6 +273,23 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
       setIsGeocodingAddress(false);
     }
   };
+
+  const handleMapModeChange = (newMode: 'pin' | 'area') => {
+    setMapMode(newMode);
+    setFormData(prev => ({
+      ...prev,
+      map_mode: newMode,
+    }));
+  };
+
+  const handleAreaRadiusChange = (newRadius: number) => {
+    setAreaRadius(newRadius);
+    setFormData(prev => ({
+      ...prev,
+      area_radius: newRadius,
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -828,8 +857,11 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
                   longitude={formData.longitud || 0}
                   onLocationChange={handleLocationChange}
                   address={`${formData.direccion || ''} ${formData.colonia || ''} ${formData.ciudad || ''}`.trim()}
-                  showAreaCircle={true}
-                  circleRadius={300}
+                  showAreaCircle={mapMode === 'area'}
+                  circleRadius={areaRadius}
+                  onMapModeChange={handleMapModeChange}
+                  onAreaRadiusChange={handleAreaRadiusChange}
+                  initialMode={mapMode}
                 />
               </div>
             </div>

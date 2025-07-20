@@ -9,6 +9,9 @@ interface LocationPickerMapProps {
   className?: string;
   showAreaCircle?: boolean;
   circleRadius?: number;
+  onMapModeChange?: (mode: 'pin' | 'area') => void;
+  onAreaRadiusChange?: (radius: number) => void;
+  initialMode?: 'pin' | 'area';
 }
 
 const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
@@ -19,13 +22,16 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   className = '',
   showAreaCircle = false,
   circleRadius = 500
+  onMapModeChange,
+  onAreaRadiusChange,
+  initialMode = 'pin'
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [showCircle, setShowCircle] = useState(showAreaCircle);
   const [radius, setRadius] = useState(circleRadius);
-  const [mapMode, setMapMode] = useState<'pin' | 'area'>('pin');
+  const [mapMode, setMapMode] = useState<'pin' | 'area'>(initialMode);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
@@ -40,6 +46,13 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   // Default to Mexico City center if no coordinates provided
   const defaultLat = latitude || 19.4326;
   const defaultLng = longitude || -99.1332;
+
+  // Initialize map mode and radius from props
+  useEffect(() => {
+    setMapMode(initialMode);
+    setShowCircle(initialMode === 'area');
+    setRadius(circleRadius);
+  }, [initialMode, circleRadius]);
 
   useEffect(() => {
     if (!accessToken) {
@@ -253,6 +266,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   const toggleCircle = () => {
     const newMode = mapMode === 'pin' ? 'area' : 'pin';
     setMapMode(newMode);
+    onMapModeChange?.(newMode);
     
     if (newMode === 'area') {
       setShowCircle(true);
@@ -291,6 +305,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   // Function to update circle radius
   const updateRadius = (newRadius: number) => {
     setRadius(newRadius);
+    onAreaRadiusChange?.(newRadius);
     if (showCircle && mapMode === 'area' && marker.current) {
       const lngLat = marker.current.getLngLat();
       updateAreaCircle(lngLat.lng, lngLat.lat);

@@ -4,14 +4,22 @@ import { MapPin, Loader, AlertTriangle, ExternalLink } from 'lucide-react';
 interface PropertyMapProps {
   position: [number, number];
   address: string;
+  mapMode?: 'pin' | 'area';
+  areaRadius?: number;
 }
 
-const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
+const PropertyMap: React.FC<PropertyMapProps> = ({ 
+  position, 
+  address, 
+  mapMode = 'pin', 
+  areaRadius = 500 
+}) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [useStaticMap, setUseStaticMap] = useState(false);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<any>(null);
+  const marker = useRef<any>(null);
   
   const accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
@@ -26,6 +34,7 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
     const width = 800;
     const height = 400;
     
+    // For area mode, we'll still show a pin in static map (circles not supported in static API)
     return `https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-l+0052a3(${lng},${lat})/${lng},${lat},${zoom}/${width}x${height}@2x?access_token=${accessToken}`;
   };
 
@@ -102,13 +111,18 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
         // Handle map load event
         map.current.on('load', () => {
           try {
-            // Add marker after map loads
-            new mapboxgl.default.Marker({
+            // Add marker after map loads with Nova Hestia blue
+            marker.current = new mapboxgl.default.Marker({
               color: '#0052a3', // Nova Hestia blue
               scale: 1.8
             })
               .setLngLat([lng, lat])
               .addTo(map.current);
+
+            // Add area circle if map mode is 'area'
+            if (mapMode === 'area') {
+              addAreaCircle(lng, lat, areaRadius);
+            }
 
             // Add navigation controls
             map.current.addControl(new mapboxgl.default.NavigationControl(), 'top-right');
@@ -162,6 +176,67 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
     };
   }, [accessToken, position]);
 
+  // Function to add area circle
+  const addAreaCircle = (lng: number, lat: number, radiusInMeters: number) => {
+    if (!map.current) return;
+
+    // Create circle data
+    const circleData = createCircleGeoJSON(lng, lat, radiusInMeters);
+
+    // Add circle source and layer
+    map.current.addSource('property-area-circle', {
+      type: 'geojson',
+      data: circleData
+    });
+
+    // Add fill layer with Nova Hestia blue
+    map.current.addLayer({
+      id: 'property-area-circle-fill',
+      type: 'fill',
+      source: 'property-area-circle',
+      paint: {
+        'fill-color': '#0052a3', // Nova Hestia blue
+        'fill-opacity': 0.3
+      }
+    });
+
+    // Add stroke layer
+    map.current.addLayer({
+      id: 'property-area-circle-stroke',
+      type: 'line',
+      source: 'property-area-circle',
+      paint: {
+        'line-color': '#0052a3', // Nova Hestia blue
+        'line-width': 3,
+        'line-opacity': 1
+      }
+    });
+  };
+
+  // Function to create circle GeoJSON
+  const createCircleGeoJSON = (lng: number, lat: number, radiusInMeters: number) => {
+    const points = 64;
+    const coords = [];
+    const distanceX = radiusInMeters / (111320 * Math.cos(lat * Math.PI / 180));
+    const distanceY = radiusInMeters / 110540;
+
+    for (let i = 0; i < points; i++) {
+      const theta = (i / points) * (2 * Math.PI);
+      const x = distanceX * Math.cos(theta);
+      const y = distanceY * Math.sin(theta);
+      coords.push([lng + x, lat + y]);
+    }
+    coords.push(coords[0]); // Close the polygon
+
+    return {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [coords]
+      }
+    };
+  };
+
   // If using static map or interactive map failed
   if (useStaticMap) {
     const staticMapUrl = getStaticMapUrl();
@@ -192,6 +267,11 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
                   <p className="text-xs text-neutral-600">
                     Lat: {position[0]?.toFixed(6)}, Lng: {position[1]?.toFixed(6)}
                   </p>
+                  {mapMode === 'area' && (
+                    <p className="text-xs text-blue-600 mt-1">
+                      Área de influencia: {areaRadius}m
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -286,6 +366,11 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
               <p className="text-xs text-neutral-600">
                 Lat: {position[0]?.toFixed(6)}, Lng: {position[1]?.toFixed(6)}
               </p>
+              {mapMode === 'area' && (
+                <p className="text-xs text-blue-600 mt-1">
+                  Área de influencia: {areaRadius}m
+                </p>
+              )}
             </div>
           </div>
         </div>
