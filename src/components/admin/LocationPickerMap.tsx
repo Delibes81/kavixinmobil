@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MapPin, Loader, AlertTriangle, Target, RotateCcw } from 'lucide-react';
+import { MapPin, Loader, AlertTriangle, Target, RotateCcw, Circle } from 'lucide-react';
 
 interface LocationPickerMapProps {
   latitude: number;
@@ -7,6 +7,8 @@ interface LocationPickerMapProps {
   onLocationChange: (lat: number, lng: number) => void;
   address?: string;
   className?: string;
+  showAreaCircle?: boolean;
+  circleRadius?: number;
 }
 
 const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
@@ -14,14 +16,19 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   longitude,
   onLocationChange,
   address = '',
-  className = ''
+  className = '',
+  showAreaCircle = false,
+  circleRadius = 500
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [showCircle, setShowCircle] = useState(showAreaCircle);
+  const [radius, setRadius] = useState(circleRadius);
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<any>(null);
   const marker = useRef<any>(null);
+  const circle = useRef<any>(null);
   
   const accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
@@ -57,10 +64,16 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         // Create draggable marker
         marker.current = new mapboxgl.default.Marker({
           color: '#0052a3',
-          draggable: true
+          draggable: true,
+          scale: 1.2
         })
           .setLngLat([defaultLng, defaultLat])
           .addTo(map.current);
+
+        // Add area circle if enabled
+        if (showCircle) {
+          addAreaCircle(defaultLng, defaultLat);
+        }
 
         // Handle marker drag
         marker.current.on('dragstart', () => {
@@ -70,6 +83,9 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         marker.current.on('dragend', () => {
           const lngLat = marker.current.getLngLat();
           onLocationChange(lngLat.lat, lngLat.lng);
+          if (showCircle) {
+            updateAreaCircle(lngLat.lng, lngLat.lat);
+          }
           setIsDragging(false);
         });
 
@@ -78,6 +94,9 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
           const { lng, lat } = e.lngLat;
           marker.current.setLngLat([lng, lat]);
           onLocationChange(lat, lng);
+          if (showCircle) {
+            updateAreaCircle(lng, lat);
+          }
         });
 
         // Add navigation controls
@@ -112,6 +131,111 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
     };
   }, [accessToken]);
 
+  // Function to add area circle
+  const addAreaCircle = (lng: number, lat: number) => {
+    if (!map.current) return;
+
+    // Create circle data
+    const circleData = createCircleGeoJSON(lng, lat, radius);
+
+    // Add circle source and layer
+    map.current.addSource('area-circle', {
+      type: 'geojson',
+      data: circleData
+    });
+
+    map.current.addLayer({
+      id: 'area-circle-fill',
+      type: 'fill',
+      source: 'area-circle',
+      paint: {
+        'fill-color': '#0052a3',
+        'fill-opacity': 0.2
+      }
+    });
+
+    map.current.addLayer({
+      id: 'area-circle-stroke',
+      type: 'line',
+      source: 'area-circle',
+      paint: {
+        'line-color': '#0052a3',
+        'line-width': 2,
+        'line-opacity': 0.8
+      }
+    });
+  };
+
+  // Function to update area circle
+  const updateAreaCircle = (lng: number, lat: number) => {
+    if (!map.current || !showCircle) return;
+
+    const circleData = createCircleGeoJSON(lng, lat, radius);
+    
+    if (map.current.getSource('area-circle')) {
+      map.current.getSource('area-circle').setData(circleData);
+    }
+  };
+
+  // Function to create circle GeoJSON
+  const createCircleGeoJSON = (lng: number, lat: number, radiusInMeters: number) => {
+    const points = 64;
+    const coords = [];
+    const distanceX = radiusInMeters / (111320 * Math.cos(lat * Math.PI / 180));
+    const distanceY = radiusInMeters / 110540;
+
+    for (let i = 0; i < points; i++) {
+      const theta = (i / points) * (2 * Math.PI);
+      const x = distanceX * Math.cos(theta);
+      const y = distanceY * Math.sin(theta);
+      coords.push([lng + x, lat + y]);
+    }
+    coords.push(coords[0]); // Close the polygon
+
+    return {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [coords]
+      }
+    };
+  };
+
+  // Function to toggle circle visibility
+  const toggleCircle = () => {
+    if (!map.current) return;
+
+    const newShowCircle = !showCircle;
+    setShowCircle(newShowCircle);
+
+    if (newShowCircle) {
+      if (marker.current) {
+        const lngLat = marker.current.getLngLat();
+        addAreaCircle(lngLat.lng, lngLat.lat);
+      }
+    } else {
+      // Remove circle layers
+      if (map.current.getLayer('area-circle-fill')) {
+        map.current.removeLayer('area-circle-fill');
+      }
+      if (map.current.getLayer('area-circle-stroke')) {
+        map.current.removeLayer('area-circle-stroke');
+      }
+      if (map.current.getSource('area-circle')) {
+        map.current.removeSource('area-circle');
+      }
+    }
+  };
+
+  // Function to update circle radius
+  const updateRadius = (newRadius: number) => {
+    setRadius(newRadius);
+    if (showCircle && marker.current) {
+      const lngLat = marker.current.getLngLat();
+      updateAreaCircle(lngLat.lng, lngLat.lat);
+    }
+  };
+
   // Update marker position when coordinates change externally
   useEffect(() => {
     if (marker.current && latitude && longitude) {
@@ -119,6 +243,9 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
       if (map.current) {
         map.current.setCenter([longitude, latitude]);
         map.current.setZoom(15);
+      }
+      if (showCircle) {
+        updateAreaCircle(longitude, latitude);
       }
     }
   }, [latitude, longitude]);
@@ -150,6 +277,11 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         
         // Update coordinates
         onLocationChange(lat, lng);
+        
+        // Update circle if visible
+        if (showCircle) {
+          updateAreaCircle(lng, lat);
+        }
       } else {
         throw new Error('No se encontraron coordenadas para esta dirección');
       }
@@ -169,6 +301,9 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
       map.current.setZoom(10);
       marker.current.setLngLat(defaultCenter);
       onLocationChange(19.4326, -99.1332);
+      if (showCircle) {
+        updateAreaCircle(-99.1332, 19.4326);
+      }
     }
   };
 
@@ -206,6 +341,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
               <p className="font-medium mb-1">Seleccionar ubicación:</p>
               <p>• Haz clic en el mapa para mover el pin</p>
               <p>• Arrastra el pin para ajustar la posición</p>
+              {showCircle && <p>• El círculo muestra el área aproximada</p>}
             </div>
           </div>
         </div>
@@ -223,6 +359,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
             <p className="font-medium">Coordenadas:</p>
             <p>Lat: {latitude ? latitude.toFixed(6) : 'No establecida'}</p>
             <p>Lng: {longitude ? longitude.toFixed(6) : 'No establecida'}</p>
+            {showCircle && <p>Radio: {radius}m</p>}
           </div>
         </div>
       </div>
@@ -258,6 +395,43 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
           <RotateCcw className="h-4 w-4 mr-2" />
           Centrar en CDMX
         </button>
+        
+        <button
+          type="button"
+          onClick={toggleCircle}
+          className={`btn flex-1 sm:flex-none ${showCircle ? 'btn-primary' : 'btn-outline'}`}
+        >
+          <Circle className="h-4 w-4 mr-2" />
+          {showCircle ? 'Ocultar área' : 'Mostrar área'}
+        </button>
+      </div>
+
+      {/* Circle Controls */}
+      {showCircle && (
+        <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-3">
+            <label className="text-sm font-medium text-blue-800">
+              Radio del área (metros):
+            </label>
+            <span className="text-sm text-blue-600 font-medium">{radius}m</span>
+          </div>
+          <input
+            type="range"
+            min="100"
+            max="2000"
+            step="50"
+            value={radius}
+            onChange={(e) => updateRadius(Number(e.target.value))}
+            className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer slider"
+          />
+          <div className="flex justify-between text-xs text-blue-600 mt-1">
+            <span>100m</span>
+            <span>2km</span>
+          </div>
+          <p className="text-xs text-blue-700 mt-2">
+            El círculo azul muestra el área aproximada de influencia de la propiedad
+          </p>
+        </div>
       </div>
 
       {/* Error Message */}
@@ -279,6 +453,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
               <li>Arrastra el pin azul para ajustar la ubicación exacta</li>
               <li>Usa "Centrar en dirección" para buscar automáticamente</li>
               <li>Las coordenadas se actualizan automáticamente</li>
+              <li>Activa "Mostrar área" para visualizar la zona de influencia</li>
             </ul>
           </div>
         </div>

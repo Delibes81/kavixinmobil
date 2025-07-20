@@ -830,6 +830,8 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
                   longitude={formData.longitud || 0}
                   onLocationChange={handleLocationChange}
                   address={`${formData.direccion || ''} ${formData.colonia || ''} ${formData.ciudad || ''}`.trim()}
+                  showAreaCircle={true}
+                  circleRadius={300}
                 />
               </div>
             </div>
