@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MapPin, Loader, AlertTriangle, ExternalLink } from 'lucide-react';
+import { MapPin, Loader, AlertTriangle, ExternalLink, Plus, Minus, Maximize2 } from 'lucide-react';
 
 interface PropertyMapProps {
   position: [number, number];
@@ -124,8 +124,12 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
               addAreaCircle(lng, lat, areaRadius);
             }
 
-            // Add navigation controls
-            map.current.addControl(new mapboxgl.default.NavigationControl(), 'top-right');
+            // Add navigation controls (includes zoom)
+            map.current.addControl(new mapboxgl.default.NavigationControl({
+              showCompass: true,
+              showZoom: true,
+              visualizePitch: true
+            }), 'top-right');
             
             setIsLoading(false);
           } catch (err) {
@@ -235,6 +239,45 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
         coordinates: [coords]
       }
     };
+  };
+
+  // Zoom functions
+  const handleZoomIn = () => {
+    if (map.current) {
+      map.current.zoomIn({ duration: 300 });
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (map.current) {
+      map.current.zoomOut({ duration: 300 });
+    }
+  };
+
+  const handleFitBounds = () => {
+    if (map.current && position[0] && position[1]) {
+      const [lat, lng] = position;
+      
+      if (mapMode === 'area' && areaRadius) {
+        // Calculate bounds for the area circle
+        const radiusInDegrees = areaRadius / 111320; // Approximate conversion
+        const bounds = [
+          [lng - radiusInDegrees, lat - radiusInDegrees], // Southwest
+          [lng + radiusInDegrees, lat + radiusInDegrees]  // Northeast
+        ];
+        map.current.fitBounds(bounds, { 
+          padding: 50,
+          duration: 1000 
+        });
+      } else {
+        // Center on pin with appropriate zoom
+        map.current.flyTo({
+          center: [lng, lat],
+          zoom: 16,
+          duration: 1000
+        });
+      }
+    }
   };
 
   // If using static map or interactive map failed
@@ -371,8 +414,40 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
                   Área de influencia: {areaRadius}m
                 </p>
               )}
+              {mapMode === 'area' && (
+                <p className="text-xs text-blue-600 mt-1">
+                  Área de influencia: {areaRadius}m
+                </p>
+              )}
             </div>
           </div>
+        </div>
+      )}
+      
+      {/* Custom Zoom Controls - Left side */}
+      {!isLoading && (
+        <div className="absolute top-4 left-4 flex flex-col space-y-2">
+          <button
+            onClick={handleZoomIn}
+            className="bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-md hover:bg-white transition-colors flex items-center justify-center"
+            title="Acercar"
+          >
+            <Plus className="h-5 w-5 text-primary-600" />
+          </button>
+          <button
+            onClick={handleZoomOut}
+            className="bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-md hover:bg-white transition-colors flex items-center justify-center"
+            title="Alejar"
+          >
+            <Minus className="h-5 w-5 text-primary-600" />
+          </button>
+          <button
+            onClick={handleFitBounds}
+            className="bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-md hover:bg-white transition-colors flex items-center justify-center"
+            title="Ajustar vista"
+          >
+            <Maximize2 className="h-4 w-4 text-primary-600" />
+          </button>
         </div>
       )}
       
