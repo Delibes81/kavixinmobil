@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
-    exclude: ['lucide-react'],
+    exclude: ['lucide-react', 'mapbox-gl'],
     include: ['react', 'react-dom', 'react-router-dom', 'react-map-gl']
   },
   build: {
