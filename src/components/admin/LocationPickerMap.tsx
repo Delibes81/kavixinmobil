@@ -52,59 +52,69 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         // Set access token
         mapboxgl.default.accessToken = accessToken;
 
-        // Initialize map
+        // Initialize map with error handling options
         map.current = new mapboxgl.default.Map({
           container: mapContainer.current,
-          style: 'mapbox://styles/mapbox/streets-v12',
-          center: [defaultLng, defaultLat],
+          style: 'mapbox://styles/mapbox/streets-v11',
+          center: [defaultLng, defaultLat], // [lng, lat]
           zoom: latitude && longitude ? 15 : 10,
-          attributionControl: false
+          attributionControl: false,
+          failIfMajorPerformanceCaveat: false,
+          preserveDrawingBuffer: true,
+          antialias: false,
+          interactive: true
         });
 
-        // Handle map load
+        // Handle map load event
         map.current.on('load', () => {
-          // Create draggable marker
-          marker.current = new mapboxgl.default.Marker({
-            color: '#1e40af',
-            draggable: true,
-            scale: 1.5
-          })
-            .setLngLat([defaultLng, defaultLat])
-            .addTo(map.current);
+          try {
+            // Create draggable marker
+            marker.current = new mapboxgl.default.Marker({
+              color: '#0052a3',
+              draggable: true, 
+              scale: 2.0
+            })
+              .setLngLat([defaultLng, defaultLat])
+              .addTo(map.current);
 
-          // Add area circle if enabled
-          if (showCircle) {
-            addAreaCircle(defaultLng, defaultLat);
+            // Add area circle if enabled
+            if (showCircle) {
+              addAreaCircle(defaultLng, defaultLat);
+            }
+
+            // Handle marker drag
+            marker.current.on('dragstart', () => {
+              setIsDragging(true);
+            });
+
+            marker.current.on('dragend', () => {
+              const lngLat = marker.current.getLngLat();
+              onLocationChange(lngLat.lat, lngLat.lng);
+              if (showCircle) {
+                updateAreaCircle(lngLat.lng, lngLat.lat);
+              }
+              setIsDragging(false);
+            });
+
+            // Handle map click to move marker
+            map.current.on('click', (e: any) => {
+              const { lng, lat } = e.lngLat;
+              marker.current.setLngLat([lng, lat]);
+              onLocationChange(lat, lng);
+              if (showCircle) {
+                updateAreaCircle(lng, lat);
+              }
+            });
+
+            // Add navigation controls
+            map.current.addControl(new mapboxgl.default.NavigationControl(), 'top-right');
+
+            setIsLoading(false);
+          } catch (err) {
+            console.error('Error adding map controls:', err);
+            setError('Error al configurar el mapa');
+            setIsLoading(false);
           }
-
-          // Handle marker drag
-          marker.current.on('dragstart', () => {
-            setIsDragging(true);
-          });
-
-          marker.current.on('dragend', () => {
-            const lngLat = marker.current.getLngLat();
-            onLocationChange(lngLat.lat, lngLat.lng);
-            if (showCircle) {
-              updateAreaCircle(lngLat.lng, lngLat.lat);
-            }
-            setIsDragging(false);
-          });
-
-          // Handle map click to move marker
-          map.current.on('click', (e: any) => {
-            const { lng, lat } = e.lngLat;
-            marker.current.setLngLat([lng, lat]);
-            onLocationChange(lat, lng);
-            if (showCircle) {
-              updateAreaCircle(lng, lat);
-            }
-          });
-
-          // Add navigation controls
-          map.current.addControl(new mapboxgl.default.NavigationControl(), 'top-right');
-
-          setIsLoading(false);
         });
 
         // Handle map errors
@@ -114,19 +124,39 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
           setIsLoading(false);
         });
 
+        // Handle style errors
+        map.current.on('styleimagemissing', (e: any) => {
+          console.warn('Style image missing:', e);
+        });
+
+        // Timeout fallback
+        setTimeout(() => {
+          if (isLoading) {
+            setError('Tiempo de espera agotado al cargar el mapa');
+            setIsLoading(false);
+          }
+        }, 12000);
+
       } catch (err) {
         console.error('Error initializing map:', err);
-        setError('Error al inicializar el mapa');
+        const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+        setError(`Error al inicializar el mapa: ${errorMessage}`);
         setIsLoading(false);
       }
     };
 
-    initializeMap();
+    // Add delay before initializing to ensure DOM is ready
+    const timer = setTimeout(initializeMap, 300);
 
     // Cleanup
     return () => {
+      clearTimeout(timer);
       if (map.current) {
-        map.current.remove();
+        try {
+          map.current.remove();
+        } catch (err) {
+          console.warn('Error removing map:', err);
+        }
       }
     };
   }, [accessToken]);
@@ -135,10 +165,15 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   const addAreaCircle = (lng: number, lat: number) => {
     if (!map.current) return;
 
-    // Check if source already exists
+    // Remove existing circle if it exists
     if (map.current.getSource('area-circle')) {
-      updateAreaCircle(lng, lat);
-      return;
+      if (map.current.getLayer('area-circle-fill')) {
+        map.current.removeLayer('area-circle-fill');
+      }
+      if (map.current.getLayer('area-circle-stroke')) {
+        map.current.removeLayer('area-circle-stroke');
+      }
+      map.current.removeSource('area-circle');
     }
 
     // Create circle data
@@ -150,31 +185,28 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
       data: circleData
     });
 
-    // Add layers only if they don't exist
-    if (!map.current.getLayer('area-circle-fill')) {
-      map.current.addLayer({
-        id: 'area-circle-fill',
-        type: 'fill',
-        source: 'area-circle',
-        paint: {
-          'fill-color': '#0052a3',
-          'fill-opacity': 0.4
-        }
-      });
-    }
+    // Add fill layer
+    map.current.addLayer({
+      id: 'area-circle-fill',
+      type: 'fill',
+      source: 'area-circle',
+      paint: {
+        'fill-color': '#0052a3',
+        'fill-opacity': 0.3
+      }
+    });
 
-    if (!map.current.getLayer('area-circle-stroke')) {
-      map.current.addLayer({
-        id: 'area-circle-stroke',
-        type: 'line',
-        source: 'area-circle',
-        paint: {
-          'line-color': '#0052a3',
-          'line-width': 4,
-          'line-opacity': 1
-        }
-      });
-    }
+    // Add stroke layer
+    map.current.addLayer({
+      id: 'area-circle-stroke',
+      type: 'line',
+      source: 'area-circle',
+      paint: {
+        'line-color': '#0052a3',
+        'line-width': 3,
+        'line-opacity': 1
+      }
+    });
   };
 
   // Function to update area circle
