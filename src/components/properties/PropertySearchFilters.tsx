@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Search, X, Sliders, ChevronDown, ChevronUp, Filter, MapPin } from 'lucide-react';
+import AddressAutocomplete from '../admin/AddressAutocomplete';
 import { SearchFilters } from '../../types';
 
 interface PropertySearchFiltersProps {
