@@ -61,49 +61,49 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
           attributionControl: false
         });
 
-        // Create draggable marker
-        marker.current = new mapboxgl.default.Marker({
-          color: '#0052a3',
-          draggable: true,
-          scale: 1.2
-        })
-          .setLngLat([defaultLng, defaultLat])
-          .addTo(map.current);
-
-        // Add area circle if enabled
-        if (showCircle) {
-          addAreaCircle(defaultLng, defaultLat);
-        }
-
-        // Handle marker drag
-        marker.current.on('dragstart', () => {
-          setIsDragging(true);
-        });
-
-        marker.current.on('dragend', () => {
-          const lngLat = marker.current.getLngLat();
-          onLocationChange(lngLat.lat, lngLat.lng);
-          if (showCircle) {
-            updateAreaCircle(lngLat.lng, lngLat.lat);
-          }
-          setIsDragging(false);
-        });
-
-        // Handle map click to move marker
-        map.current.on('click', (e: any) => {
-          const { lng, lat } = e.lngLat;
-          marker.current.setLngLat([lng, lat]);
-          onLocationChange(lat, lng);
-          if (showCircle) {
-            updateAreaCircle(lng, lat);
-          }
-        });
-
-        // Add navigation controls
-        map.current.addControl(new mapboxgl.default.NavigationControl(), 'top-right');
-
         // Handle map load
         map.current.on('load', () => {
+          // Create draggable marker
+          marker.current = new mapboxgl.default.Marker({
+            color: '#0052a3',
+            draggable: true,
+            scale: 1.2
+          })
+            .setLngLat([defaultLng, defaultLat])
+            .addTo(map.current);
+
+          // Add area circle if enabled
+          if (showCircle) {
+            addAreaCircle(defaultLng, defaultLat);
+          }
+
+          // Handle marker drag
+          marker.current.on('dragstart', () => {
+            setIsDragging(true);
+          });
+
+          marker.current.on('dragend', () => {
+            const lngLat = marker.current.getLngLat();
+            onLocationChange(lngLat.lat, lngLat.lng);
+            if (showCircle) {
+              updateAreaCircle(lngLat.lng, lngLat.lat);
+            }
+            setIsDragging(false);
+          });
+
+          // Handle map click to move marker
+          map.current.on('click', (e: any) => {
+            const { lng, lat } = e.lngLat;
+            marker.current.setLngLat([lng, lat]);
+            onLocationChange(lat, lng);
+            if (showCircle) {
+              updateAreaCircle(lng, lat);
+            }
+          });
+
+          // Add navigation controls
+          map.current.addControl(new mapboxgl.default.NavigationControl(), 'top-right');
+
           setIsLoading(false);
         });
 
