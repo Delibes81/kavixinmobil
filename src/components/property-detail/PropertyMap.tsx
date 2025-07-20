@@ -17,26 +17,29 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
 
   // Generate static map URL as fallback
   const getStaticMapUrl = () => {
-    if (!accessToken || !position || position[0] === 0 || position[1] === 0) {
+    const [lat, lng] = position;
+    if (!accessToken || !lat || !lng || (lat === 0 && lng === 0)) {
       return null;
     }
     
-    const [lat, lng] = position;
     const zoom = 15;
     const width = 800;
     const height = 400;
     
-    return `https://api.mapbox.com/styles/v1/mapbox/streets-v12/static/pin-s+0052a3(${lng},${lat})/${lng},${lat},${zoom}/${width}x${height}@2x?access_token=${accessToken}`;
+    return `https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/pin-l+0052a3(${lng},${lat})/${lng},${lat},${zoom}/${width}x${height}@2x?access_token=${accessToken}`;
   };
 
   // Generate Google Maps URL as ultimate fallback
   const getGoogleMapsUrl = () => {
-    if (!position || position[0] === 0 || position[1] === 0) {
-      return `https://www.google.com/maps/search/${encodeURIComponent(address)}`;
+    const [lat, lng] = position;
+    
+    // If we have valid coordinates, use them with the address for better accuracy
+    if (lat && lng && lat !== 0 && lng !== 0) {
+      return `https://www.google.com/maps/search/${encodeURIComponent(address)}/@${lat},${lng},17z`;
     }
     
-    const [lat, lng] = position;
-    return `https://www.google.com/maps/@${lat},${lng},15z`;
+    // Fallback to address search only
+    return `https://www.google.com/maps/search/${encodeURIComponent(address)}`;
   };
 
   useEffect(() => {
@@ -47,7 +50,9 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
       return;
     }
 
-    if (!position || position[0] === 0 || position[1] === 0) {
+    // Check if we have valid coordinates
+    const [lat, lng] = position;
+    if (!lat || !lng || (lat === 0 && lng === 0)) {
       setError('Coordenadas no disponibles para esta propiedad');
       setIsLoading(false);
       setUseStaticMap(true);
@@ -84,8 +89,8 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
         // Initialize map with minimal options for better compatibility
         map.current = new mapboxgl.default.Map({
           container: mapContainer.current,
-          style: 'mapbox://styles/mapbox/streets-v12',
-          center: [position[1], position[0]], // [lng, lat]
+          style: 'mapbox://styles/mapbox/streets-v11',
+          center: [lng, lat], // [lng, lat]
           zoom: 15,
           attributionControl: false,
           failIfMajorPerformanceCaveat: false,
@@ -99,10 +104,10 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
           try {
             // Add marker after map loads
             new mapboxgl.default.Marker({
-              color: '#0052a3',
-              scale: 1.5
+              color: '#0052a3', // Nova Hestia blue
+              scale: 1.8
             })
-              .setLngLat([position[1], position[0]])
+              .setLngLat([lng, lat])
               .addTo(map.current);
 
             // Add navigation controls
@@ -177,12 +182,17 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
             />
             
             {/* Address Info Overlay */}
-            <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-md max-w-xs">
+            <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-md max-w-sm">
               <div className="flex items-start">
                 <MapPin className="h-4 w-4 text-primary-600 mr-2 mt-0.5 flex-shrink-0" />
-                <p className="text-sm font-medium text-neutral-800 line-clamp-2">
-                  {address}
-                </p>
+                <div>
+                  <p className="text-sm font-medium text-neutral-800 mb-1">
+                    {address}
+                  </p>
+                  <p className="text-xs text-neutral-600">
+                    Lat: {position[0]?.toFixed(6)}, Lng: {position[1]?.toFixed(6)}
+                  </p>
+                </div>
               </div>
             </div>
             
@@ -192,7 +202,7 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
                 href={googleMapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-white/90 backdrop-blur-sm rounded-lg p-2 shadow-md hover:bg-white transition-colors flex items-center text-sm font-medium text-primary-600"
+                className="bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-md hover:bg-white transition-colors flex items-center text-sm font-medium text-primary-600"
               >
                 <ExternalLink className="h-4 w-4 mr-1" />
                 Ver en Google Maps
@@ -266,15 +276,33 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
       
       {/* Address Info - only show when map is loaded */}
       {!isLoading && (
-        <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-md max-w-xs">
+        <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-md max-w-sm">
           <div className="flex items-start">
             <MapPin className="h-4 w-4 text-primary-600 mr-2 mt-0.5 flex-shrink-0" />
-            <p className="text-sm font-medium text-neutral-800 line-clamp-2">
-              {address}
-            </p>
+            <div>
+              <p className="text-sm font-medium text-neutral-800 mb-1">
+                {address}
+              </p>
+              <p className="text-xs text-neutral-600">
+                Lat: {position[0]?.toFixed(6)}, Lng: {position[1]?.toFixed(6)}
+              </p>
+            </div>
           </div>
         </div>
       )}
+      
+      {/* Google Maps Link - Always visible */}
+      <div className="absolute top-4 right-4">
+        <a
+          href={getGoogleMapsUrl()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="bg-white/90 backdrop-blur-sm rounded-lg px-3 py-2 shadow-md hover:bg-white transition-colors flex items-center text-sm font-medium text-primary-600"
+        >
+          <ExternalLink className="h-4 w-4 mr-1" />
+          Ver en Google Maps
+        </a>
+      </div>
     </div>
   );
 };
