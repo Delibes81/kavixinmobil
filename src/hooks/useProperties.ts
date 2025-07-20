@@ -12,9 +12,12 @@ export const useProperties = () => {
       setLoading(true);
       setError(null);
 
-      // Check if Supabase is properly configured
-      if (!supabaseConfig.hasUrl || !supabaseConfig.hasKey) {
-        console.warn('Supabase not configured, using mock data');
+      // Check if Supabase is properly configured  
+      if (!supabaseConfig.isConfigured) {
+        console.warn('⚠️  Supabase not configured properly, using mock data');
+        console.warn('📋 To connect to your database:');
+        console.warn('1. Update VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in .env');
+        console.warn('2. Restart the development server');
         // Use mock data when Supabase is not configured
         const mockProperties: Property[] = [
           {
