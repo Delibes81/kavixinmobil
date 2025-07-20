@@ -128,18 +128,24 @@ const HeroSection: React.FC = () => {
                 
                 {/* Location */}
                 <div className="transform transition-all duration-300 hover:scale-[1.02] hover:z-10 relative">
-                  <label htmlFor="location" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
+                  <label htmlFor="ubicacion" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                     Ubicación
                   </label>
                   <AddressAutocomplete
                     value={searchFilters.ubicacion}
                     onChange={(value) => handleInputChange({ target: { name: 'ubicacion', value } } as any)}
-                    placeholder="Ciudad o zona"
+                    placeholder="Ciudad, colonia o zona"
+                    className={`transition-all duration-200 ${
+                      searchFilters.ubicacion ? 'border-primary-500 bg-primary-50' : ''
+                    }`}
                     onAddressSelect={(addressData) => {
-                      // Just use the location for search, don't auto-fill other fields in hero
+                      // Use the most relevant location component for search
+                      const locationValue = addressData.components.locality || 
+                                          addressData.components.neighborhood || 
+                                          addressData.formatted_address;
                       setSearchFilters(prev => ({
                         ...prev,
-                        ubicacion: addressData.components.locality || addressData.components.neighborhood || addressData.formatted_address
+                        ubicacion: locationValue
                       }));
                     }}
                   />

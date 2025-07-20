@@ -343,20 +343,24 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
                 <label htmlFor="ubicacion" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                   Ubicación
                 </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    id="ubicacion"
-                    name="ubicacion"
-                    placeholder="Ciudad, colonia o zona"
-                    value={filters.ubicacion}
-                    onChange={handleInputChange}
-                    className={`input-field pl-10 transition-all duration-200 ${
-                      filters.ubicacion ? 'border-primary-500 bg-primary-50' : ''
-                    }`}
-                  />
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-500" />
-                </div>
+                <AddressAutocomplete
+                  value={filters.ubicacion}
+                  onChange={(value) => handleInputChange({ target: { name: 'ubicacion', value } } as any)}
+                  placeholder="Ciudad, colonia o zona"
+                  className={`transition-all duration-200 ${
+                    filters.ubicacion ? 'border-primary-500 bg-primary-50' : ''
+                  }`}
+                  onAddressSelect={(addressData) => {
+                    // Use the most relevant location component for search
+                    const locationValue = addressData.components.locality || 
+                                        addressData.components.neighborhood || 
+                                        addressData.formatted_address;
+                    setFilters(prev => ({
+                      ...prev,
+                      ubicacion: locationValue
+                    }));
+                  }}
+                />
               </div>
               
               {/* Construction Area Range */}
