@@ -5,6 +5,7 @@ import { useAmenities } from '../../hooks/useProperties';
 import ImageUploadComponent from './ImageUploadComponent';
 import AddressAutocomplete from './AddressAutocomplete';
 import LocationPickerMap from './LocationPickerMap';
+import { validatePropertyData, sanitizeInput } from '../../utils/security';
 
 interface AdminPropertyFormProps {
   property?: Property;
