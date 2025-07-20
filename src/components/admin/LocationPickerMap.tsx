@@ -249,7 +249,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
 
   // Update marker position when coordinates change externally
   useEffect(() => {
-    if (marker.current && latitude && longitude) {
+    if (marker.current && latitude !== 0 && longitude !== 0) {
       marker.current.setLngLat([longitude, latitude]);
       if (map.current) {
         map.current.setCenter([longitude, latitude]);
