@@ -10,6 +10,7 @@
 # Environment variables for build (REMOVE SENSITIVE DATA)
 [build.environment]
   NODE_VERSION = "18"
+  VITE_MAPBOX_ACCESS_TOKEN = "pk.eyJ1Ijoibm92YWhlc3RpYSIsImEiOiJjbWRiZm9yYXgwdnBvMmlwejZjbHRhZnBiIn0.3ZhErTc-krHYGhBB0HUp1Q"
   # IMPORTANT: Remove sensitive environment variables from here
   # Set them in Netlify dashboard instead
 
