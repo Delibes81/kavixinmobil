@@ -11,26 +11,49 @@ interface PropertySearchFiltersProps {
 const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFilters }) => {
   const location = useLocation();
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
-  const [filters, setFilters] = useState<SearchFilters>({
-    operacion: '',
-    tipo: '',
-    precio_min: null,
-    precio_max: null,
-    recamaras: null,
-    banos: null,
-    estacionamientos: null,
-    ubicacion: '',
-    metros_construccion_min: null,
-    metros_construccion_max: null,
-    amueblado: null,
+  const [filters, setFilters] = useState<SearchFilters>(() => {
+    // Initialize filters from URL parameters immediately
+    const urlParams = new URLSearchParams(location.search);
+    return {
+      operacion: urlParams.get('operacion') || '',
+      tipo: urlParams.get('tipo') || '',
+      precio_min: urlParams.get('precio_min') ? Number(urlParams.get('precio_min')) : null,
+      precio_max: urlParams.get('precio_max') ? Number(urlParams.get('precio_max')) : null,
+      recamaras: urlParams.get('recamaras') ? Number(urlParams.get('recamaras')) : null,
+      banos: urlParams.get('banos') ? Number(urlParams.get('banos')) : null,
+      estacionamientos: null,
+      ubicacion: urlParams.get('ubicacion') || '',
+      metros_construccion_min: null,
+      metros_construccion_max: null,
+      amueblado: null,
+    };
   });
 
-  // Initialize filters from URL parameters on component mount
+  const [initialFiltersApplied, setInitialFiltersApplied] = useState(false);
+
+  // Apply initial filters from URL immediately when component mounts
+  React.useEffect(() => {
+    if (!initialFiltersApplied) {
+      const urlParams = new URLSearchParams(location.search);
+      const hasFilters = Array.from(urlParams.entries()).length > 0;
+      
+      if (hasFilters) {
+        console.log('Applying initial filters from URL:', filters);
+        onApplyFilters(filters);
+        
+        // Open advanced filters if advanced parameters are present
+        if (filters.recamaras || filters.banos || filters.ubicacion) {
+          setIsAdvancedOpen(true);
+        }
+      }
+      
+      setInitialFiltersApplied(true);
+    }
+  }, [filters, onApplyFilters, initialFiltersApplied, location.search]);
+
+  // Update filters when URL changes (for navigation between pages)
   React.useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
-    console.log('URL search params:', location.search);
-    console.log('Parsed URL params:', Object.fromEntries(urlParams.entries()));
-    
     const filtersFromUrl: SearchFilters = {
       operacion: urlParams.get('operacion') || '',
       tipo: urlParams.get('tipo') || '',
@@ -44,24 +67,31 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
       metros_construccion_max: null,
       amueblado: null,
     };
-    
-    // Update local state with URL filters
-    const hasFilters = Object.values(filtersFromUrl).some(value => value !== '' && value !== null);
-    console.log('Filters from URL:', filtersFromUrl);
-    console.log('Has filters:', hasFilters);
-    console.log('Specific filter values - operacion:', filtersFromUrl.operacion, 'tipo:', filtersFromUrl.tipo);
-    
-    if (hasFilters) {
+
+    // Only update if filters actually changed
+    const filtersChanged = JSON.stringify(filters) !== JSON.stringify(filtersFromUrl);
+    if (filtersChanged && initialFiltersApplied) {
+      console.log('URL changed, updating filters:', filtersFromUrl);
       setFilters(filtersFromUrl);
-      // Open advanced filters if advanced parameters are present
-      if (filtersFromUrl.recamaras || filtersFromUrl.banos || filtersFromUrl.ubicacion) {
-        setIsAdvancedOpen(true);
-      }
-      // Apply filters immediately
-      console.log('Applying filters from URL immediately:', filtersFromUrl);
       onApplyFilters(filtersFromUrl);
     }
-  }, [location.search]);
+  }, [location.search, initialFiltersApplied]);
+
+  // Remove the old useEffect that was causing conflicts
+  /*
+  React.useEffect(() => {
+    operacion: '',
+    tipo: '',
+    precio_min: null,
+    precio_max: null,
+    recamaras: null,
+    banos: null,
+    estacionamientos: null,
+    ubicacion: '',
+    metros_construccion_min: null,
+    metros_construccion_max: null,
+    amueblado: null,
+  */
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
