@@ -135,6 +135,12 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   const addAreaCircle = (lng: number, lat: number) => {
     if (!map.current) return;
 
+    // Check if source already exists
+    if (map.current.getSource('area-circle')) {
+      updateAreaCircle(lng, lat);
+      return;
+    }
+
     // Create circle data
     const circleData = createCircleGeoJSON(lng, lat, radius);
 
@@ -144,26 +150,31 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
       data: circleData
     });
 
-    map.current.addLayer({
-      id: 'area-circle-fill',
-      type: 'fill',
-      source: 'area-circle',
-      paint: {
-        'fill-color': '#0052a3',
-        'fill-opacity': 0.2
-      }
-    });
+    // Add layers only if they don't exist
+    if (!map.current.getLayer('area-circle-fill')) {
+      map.current.addLayer({
+        id: 'area-circle-fill',
+        type: 'fill',
+        source: 'area-circle',
+        paint: {
+          'fill-color': '#0052a3',
+          'fill-opacity': 0.2
+        }
+      });
+    }
 
-    map.current.addLayer({
-      id: 'area-circle-stroke',
-      type: 'line',
-      source: 'area-circle',
-      paint: {
-        'line-color': '#0052a3',
-        'line-width': 2,
-        'line-opacity': 0.8
-      }
-    });
+    if (!map.current.getLayer('area-circle-stroke')) {
+      map.current.addLayer({
+        id: 'area-circle-stroke',
+        type: 'line',
+        source: 'area-circle',
+        paint: {
+          'line-color': '#0052a3',
+          'line-width': 2,
+          'line-opacity': 0.8
+        }
+      });
+    }
   };
 
   // Function to update area circle
