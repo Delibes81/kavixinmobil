@@ -3,6 +3,7 @@ import { Property, Amenity } from '../../types';
 import { Plus, X, AlertCircle } from 'lucide-react';
 import { useAmenities } from '../../hooks/useProperties';
 import ImageUploadComponent from './ImageUploadComponent';
+import AddressAutocomplete from './AddressAutocomplete';
 import { sanitizeInput, validatePropertyData } from '../../utils/security';
 
 interface AdminPropertyFormProps {
@@ -168,6 +169,22 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
       console.log('Updated form data with images:', newData);
       return newData;
     });
+  };
+
+  const handleAddressSelect = (addressData: any) => {
+    console.log('Address selected:', addressData);
+    
+    setFormData(prev => ({
+      ...prev,
+      direccion: addressData.formatted_address,
+      latitud: addressData.lat,
+      longitud: addressData.lng,
+      // Auto-fill other fields if available
+      colonia: addressData.components.neighborhood || prev.colonia,
+      ciudad: addressData.components.locality || prev.ciudad,
+      estado: addressData.components.administrative_area_level_1 || prev.estado,
+      codigo_postal: addressData.components.postal_code || prev.codigo_postal,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -545,8 +562,15 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
             <label htmlFor="direccion" className="block text-sm font-medium text-neutral-700 mb-1">
               Dirección <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
+            <AddressAutocomplete
+              value={formData.direccion || ''}
+              onChange={(value) => handleInputChange({ target: { name: 'direccion', value, type: 'text' } } as any)}
+              onAddressSelect={handleAddressSelect}
+              placeholder="Ej. Paseo de la Reforma 222, Depto 301"
+              className={errors.direccion ? 'border-red-500' : ''}
+              disabled={isSubmitting}
+            />
+            {/* <input
               id="direccion"
               name="direccion"
               value={formData.direccion || ''}
@@ -555,7 +579,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               placeholder="Ej. Paseo de la Reforma 222, Depto 301"
               maxLength={200}
               disabled={isSubmitting}
-            />
+            /> */}
             {errors.direccion && <p className="mt-1 text-sm text-red-500">{errors.direccion}</p>}
           </div>
           

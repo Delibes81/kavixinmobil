@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Search, MapPin, Home, ChevronDown } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import FadeInSection from '../ui/FadeInSection';
+import AddressAutocomplete from '../admin/AddressAutocomplete';
 
 const HeroSection: React.FC = () => {
   const navigate = useNavigate();
@@ -130,18 +131,18 @@ const HeroSection: React.FC = () => {
                   <label htmlFor="location" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                     Ubicación
                   </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      id="location"
-                      name="ubicacion"
-                      placeholder="Ciudad o zona"
-                      value={searchFilters.ubicacion}
-                      onChange={handleInputChange}
-                      className="input-field pl-10"
-                    />
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-neutral-500" />
-                  </div>
+                  <AddressAutocomplete
+                    value={searchFilters.ubicacion}
+                    onChange={(value) => handleInputChange({ target: { name: 'ubicacion', value } } as any)}
+                    placeholder="Ciudad o zona"
+                    onAddressSelect={(addressData) => {
+                      // Just use the location for search, don't auto-fill other fields in hero
+                      setSearchFilters(prev => ({
+                        ...prev,
+                        ubicacion: addressData.components.locality || addressData.components.neighborhood || addressData.formatted_address
+                      }));
+                    }}
+                  />
                 </div>
               </div>
 
