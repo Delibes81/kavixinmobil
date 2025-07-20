@@ -432,7 +432,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
             El círculo azul muestra el área aproximada de influencia de la propiedad
           </p>
         </div>
-      </div>
+      )}
 
       {/* Error Message */}
       {error && (
