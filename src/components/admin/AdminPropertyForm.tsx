@@ -4,6 +4,7 @@ import { Plus, X, AlertCircle, MapPin } from 'lucide-react';
 import { useAmenities } from '../../hooks/useProperties';
 import ImageUploadComponent from './ImageUploadComponent';
 import AddressAutocomplete from './AddressAutocomplete';
+import LocationPickerMap from './LocationPickerMap';
 
 interface AdminPropertyFormProps {
   property?: Property;
@@ -44,6 +45,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGeocodingAddress, setIsGeocodingAddress] = useState(false);
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
 
   // Initialize form data when property changes
   useEffect(() => {
@@ -169,6 +171,15 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
       console.log('Updated form data with images:', newData);
       return newData;
     });
+  };
+
+  const handleLocationChange = (lat: number, lng: number) => {
+    console.log('Location changed:', { lat, lng });
+    setFormData(prev => ({
+      ...prev,
+      latitud: lat,
+      longitud: lng,
+    }));
   };
 
   const handleAddressSelect = (addressData: any) => {
@@ -721,7 +732,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
           </div>
           
           {/* Coordinates */}
-          <div>
+          <div className="transform transition-all duration-300 hover:scale-[1.02] hover:z-10 relative">
             <label htmlFor="latitud" className="block text-sm font-medium text-neutral-700 mb-1">
               Latitud
             </label>
@@ -729,7 +740,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="number"
               id="latitud"
               name="latitud"
-              value={formData.latitud || ''}
+              value={formData.latitud || 0}
               onChange={handleInputChange}
               step="0.0001"
               min="-90"
@@ -740,7 +751,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
             />
           </div>
           
-          <div>
+          <div className="transform transition-all duration-300 hover:scale-[1.02] hover:z-10 relative">
             <label htmlFor="longitud" className="block text-sm font-medium text-neutral-700 mb-1">
               Longitud
             </label>
@@ -748,7 +759,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               type="number"
               id="longitud"
               name="longitud"
-              value={formData.longitud || ''}
+              value={formData.longitud || 0}
               onChange={handleInputChange}
               step="0.0001"
               min="-180"
@@ -759,15 +770,15 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
             />
           </div>
           
-          {/* Geocode Button */}
-          <div className="col-span-2">
+          {/* Location Controls */}
+          <div className="col-span-3">
             <div className="flex items-end space-x-4">
               <div className="flex-1">
                 <button
                   type="button"
                   onClick={handleGeocodeCurrentAddress}
                   disabled={isGeocodingAddress || isSubmitting || !formData.direccion?.trim()}
-                  className="btn btn-outline w-full"
+                  className="btn btn-outline w-full sm:w-auto"
                 >
                   {isGeocodingAddress ? (
                     <>
@@ -782,10 +793,21 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
                   )}
                 </button>
               </div>
+              
+              <div className="flex-1">
+                <button
+                  type="button"
+                  onClick={() => setShowLocationPicker(!showLocationPicker)}
+                  className="btn btn-primary w-full sm:w-auto"
+                >
+                  <MapPin className="h-4 w-4 mr-2" />
+                  {showLocationPicker ? 'Ocultar mapa' : 'Seleccionar en mapa'}
+                </button>
+              </div>
             </div>
             {errors.geocode && <p className="mt-1 text-sm text-red-500">{errors.geocode}</p>}
             <p className="mt-1 text-xs text-neutral-500">
-              Haz clic para obtener automáticamente las coordenadas basadas en la dirección ingresada
+              Obtén coordenadas automáticamente desde la dirección o selecciona la ubicación en el mapa interactivo
             </p>
             {formData.latitud !== 0 && formData.longitud !== 0 && (
               <p className="mt-1 text-xs text-green-600">
@@ -793,6 +815,24 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               </p>
             )}
           </div>
+          
+          {/* Interactive Location Picker */}
+          {showLocationPicker && (
+            <div className="col-span-3">
+              <div className="mt-4 p-4 border border-neutral-200 rounded-lg bg-neutral-50">
+                <h4 className="text-lg font-medium text-neutral-800 mb-3 flex items-center">
+                  <MapPin className="h-5 w-5 mr-2 text-primary-600" />
+                  Seleccionar Ubicación en el Mapa
+                </h4>
+                <LocationPickerMap
+                  latitude={formData.latitud || 0}
+                  longitude={formData.longitud || 0}
+                  onLocationChange={handleLocationChange}
+                  address={`${formData.direccion || ''} ${formData.colonia || ''} ${formData.ciudad || ''}`.trim()}
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
       
