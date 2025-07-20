@@ -12,6 +12,7 @@ const PropertiesPage: React.FC = () => {
   const location = useLocation();
   const { properties, loading, error } = useProperties();
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
+  const [isInitializing, setIsInitializing] = useState(true);
   const [activeFilters, setActiveFilters] = useState<SearchFilters>({
     operacion: '',
     tipo: '',
@@ -25,7 +26,6 @@ const PropertiesPage: React.FC = () => {
     metros_construccion_max: null,
     amueblado: null,
   });
-  const [urlFiltersApplied, setUrlFiltersApplied] = useState(false);
 
   useEffect(() => {
     document.title = 'Propiedades | Nova Hestia';
@@ -33,9 +33,8 @@ const PropertiesPage: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
-  // Separate effect for reading URL parameters
+  // Initialize filters from URL and apply them immediately
   useEffect(() => {
-    // Read URL parameters and apply filters
     const urlParams = new URLSearchParams(location.search);
     console.log('PropertiesPage - URL search params:', location.search);
     
@@ -53,33 +52,24 @@ const PropertiesPage: React.FC = () => {
       amueblado: null,
     };
     
-    // Apply filters if any URL parameters exist
     const hasFilters = Object.values(filtersFromUrl).some(value => value !== '' && value !== null);
     console.log('PropertiesPage - Filters from URL:', filtersFromUrl);
     console.log('PropertiesPage - Has filters:', hasFilters);
     
-    if (hasFilters) {
-      setActiveFilters(filtersFromUrl);
-      // Apply filters immediately when properties are available
-      if (properties.length > 0) {
+    setActiveFilters(filtersFromUrl);
+    
+    // Apply filters when properties are available
+    if (properties.length > 0) {
+      if (hasFilters) {
+        console.log('Applying URL filters to properties:', filtersFromUrl);
         applyFilters(filtersFromUrl);
       } else {
-        setUrlFiltersApplied(true);
+        console.log('No URL filters, showing all properties');
+        setFilteredProperties(properties);
       }
+      setIsInitializing(false);
     }
-  }, [location.search]);
-
-  useEffect(() => {
-    // Apply URL filters when properties are loaded and URL filters haven't been applied yet
-    if (properties.length > 0 && urlFiltersApplied) {
-      console.log('Applying URL filters to properties:', activeFilters);
-      applyFilters(activeFilters);
-      setUrlFiltersApplied(false); // Reset flag
-    } else if (properties.length > 0 && !urlFiltersApplied) {
-      console.log('Setting all properties as filtered (no URL filters)');
-      setFilteredProperties(properties);
-    }
-  }, [properties, urlFiltersApplied, activeFilters]);
+  }, [location.search, properties]);
 
   const applyFilters = (filters: SearchFilters) => {
     console.log('Applying filters:', filters);
@@ -175,9 +165,10 @@ const PropertiesPage: React.FC = () => {
       operacion: p.operacion 
     })));
     setFilteredProperties(filtered);
+    setIsInitializing(false);
   };
 
-  if (loading) {
+  if (loading || isInitializing) {
     return (
       <div className="pt-20">
         <div className="bg-primary-800 text-white py-12">
@@ -195,7 +186,9 @@ const PropertiesPage: React.FC = () => {
         </div>
         <div className="container-custom py-16 text-center">
           <LoadingSpinner size="lg" className="mx-auto mb-4" />
-          <p className="text-neutral-600">Cargando propiedades...</p>
+          <p className="text-neutral-600">
+            {loading ? 'Cargando propiedades...' : 'Aplicando filtros...'}
+          </p>
         </div>
       </div>
     );
