@@ -27,39 +27,66 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
       return;
     }
 
-    // Dynamically import mapbox-gl
+    // Dynamically import mapbox-gl with better error handling
     const initializeMap = async () => {
       try {
-        const mapboxgl = await import('mapbox-gl');
+        setIsLoading(true);
+        setError(null);
         
-        if (!mapContainer.current) return;
+        // Check if container exists
+        if (!mapContainer.current) {
+          throw new Error('Map container not found');
+        }
+
+        // Dynamic import with timeout
+        const mapboxgl = await Promise.race([
+          import('mapbox-gl'),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Map loading timeout')), 10000)
+          )
+        ]) as typeof import('mapbox-gl');
+        
+        // Validate mapbox-gl loaded correctly
+        if (!mapboxgl || !mapboxgl.default) {
+          throw new Error('Mapbox GL failed to load');
+        }
 
         // Set access token
         mapboxgl.default.accessToken = accessToken;
 
-        // Initialize map
+        // Initialize map with error handling options
         map.current = new mapboxgl.default.Map({
           container: mapContainer.current,
           style: 'mapbox://styles/mapbox/streets-v12',
           center: [position[1], position[0]], // [lng, lat]
           zoom: 15,
-          attributionControl: false
+          attributionControl: false,
+          failIfMajorPerformanceCaveat: false,
+          preserveDrawingBuffer: true,
+          antialias: false
         });
 
-        // Add marker
-        new mapboxgl.default.Marker({
-          color: '#0052a3'
-        })
-          .setLngLat([position[1], position[0]])
-          .addTo(map.current);
-
-        // Add navigation controls
-        map.current.addControl(new mapboxgl.default.NavigationControl(), 'top-right');
-        map.current.addControl(new mapboxgl.default.FullscreenControl(), 'top-left');
-
-        // Handle map load
+        // Handle map load event
         map.current.on('load', () => {
-          setIsLoading(false);
+          try {
+            // Add marker after map loads
+            new mapboxgl.default.Marker({
+              color: '#0052a3',
+              scale: 1.2
+            })
+              .setLngLat([position[1], position[0]])
+              .addTo(map.current);
+
+            // Add navigation controls
+            map.current.addControl(new mapboxgl.default.NavigationControl(), 'top-right');
+            map.current.addControl(new mapboxgl.default.FullscreenControl(), 'top-left');
+            
+            setIsLoading(false);
+          } catch (err) {
+            console.error('Error adding map controls:', err);
+            setError('Error al configurar el mapa');
+            setIsLoading(false);
+          }
         });
 
         // Handle map errors
@@ -69,19 +96,39 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
           setIsLoading(false);
         });
 
+        // Handle style errors
+        map.current.on('styleimagemissing', (e: any) => {
+          console.warn('Style image missing:', e);
+        });
+
+        // Timeout fallback
+        setTimeout(() => {
+          if (isLoading) {
+            setError('Tiempo de espera agotado al cargar el mapa');
+            setIsLoading(false);
+          }
+        }, 15000);
+
       } catch (err) {
         console.error('Error initializing map:', err);
-        setError('Error al inicializar el mapa');
+        const errorMessage = err instanceof Error ? err.message : 'Error desconocido';
+        setError(`Error al inicializar el mapa: ${errorMessage}`);
         setIsLoading(false);
       }
     };
 
-    initializeMap();
+    // Add delay before initializing to ensure DOM is ready
+    const timer = setTimeout(initializeMap, 100);
 
     // Cleanup
     return () => {
+      clearTimeout(timer);
       if (map.current) {
-        map.current.remove();
+        try {
+          map.current.remove();
+        } catch (err) {
+          console.warn('Error removing map:', err);
+        }
       }
     };
   }, [accessToken, position]);
@@ -106,6 +153,12 @@ const PropertyMap: React.FC<PropertyMapProps> = ({ position, address }) => {
           <p className="text-neutral-500 text-sm mt-1">
             Ubicación: {address}
           </p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-3 px-4 py-2 bg-primary-600 text-white rounded-md text-sm hover:bg-primary-700 transition-colors"
+          >
+            Reintentar
+          </button>
         </div>
       </div>
     );
