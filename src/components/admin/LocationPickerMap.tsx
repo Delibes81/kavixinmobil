@@ -6,7 +6,6 @@ interface LocationPickerMapProps {
   longitude: number;
   onLocationChange: (lat: number, lng: number) => void;
   address?: string;
-  className?: string;
   showAreaCircle?: boolean;
   onMapModeChange?: (mode: 'pin' | 'area') => void;
   onAreaRadiusChange?: (radius: number) => void;
@@ -19,7 +18,6 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   onLocationChange,
   address = '',
   className = '',
-  showAreaCircle = false,
   onMapModeChange,
   onAreaRadiusChange,
   initialMode = 'pin'
