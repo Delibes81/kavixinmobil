@@ -1,8 +1,12 @@
-# Netlify redirects file for React Router
-# This ensures that all routes are handled by the React app
+# Netlify redirects file for React Router SPA
+# This file ensures that all routes are handled by the React app
 
-# Redirect all requests to index.html for client-side routing
+# Handle all routes with React Router (SPA routing)
 /*    /index.html   200
 
-# Optional: Redirect admin routes specifically (if needed)
-/admin/*    /index.html   200
+# Specific redirects for admin routes
+/admin    /admin/    301!
+/login    /login/    301!
+
+# Handle API routes if needed in the future
+/api/*    /.netlify/functions/:splat   200

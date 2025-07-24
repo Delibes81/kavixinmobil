@@ -2,10 +2,19 @@
   publish = "dist"
   command = "npm run build"
 
+# SPA routing - This must be the first redirect rule
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  force = false
+
+# API routes (if needed in the future)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+  force = false
 
 # Environment variables for build (REMOVE SENSITIVE DATA)
 [build.environment]
