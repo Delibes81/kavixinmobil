@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import { MapPin, Crosshair, RotateCcw, Search } from 'lucide-react';
 import AddressAutocomplete from './AddressAutocomplete';
 
@@ -36,6 +37,8 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
   const [currentCoords, setCurrentCoords] = useState({ lat: latitude, lng: longitude });
   const [searchValue, setSearchValue] = useState('');
 
+  // Usamos refs para tener los valores más actuales dentro de los listeners del mapa,
+  // ya que estos se registran una sola vez
   // Mapbox access token
   const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
 
@@ -130,34 +133,33 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
     }
     if (mode === 'pin') {
       console.log('Creating pin marker at:', lat, lng);
-      
+
       // Create marker element manually for better control
       const markerElement = document.createElement('div');
       markerElement.className = 'mapbox-marker-pin';
-     markerElement.style.position = 'relative';
       markerElement.style.width = '30px';
       markerElement.style.height = '30px';
       markerElement.style.borderRadius = '50% 50% 50% 0';
       markerElement.style.backgroundColor = '#0052a3';
-     markerElement.style.border = '4px solid #ffffff';
-     markerElement.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.5)';
+      markerElement.style.border = '3px solid #ffffff';
+      markerElement.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)';
       markerElement.style.transform = 'rotate(-45deg)';
       markerElement.style.cursor = 'pointer';
-     markerElement.style.zIndex = '1000';
-      
+      markerElement.style.position = 'relative'; // <-- Agrega esto
+
       // Add inner dot
       const innerDot = document.createElement('div');
-      innerDot.style.width = '8px';
-      innerDot.style.height = '8px';
+      innerDot.style.width = '10px'; // Más grande para mejor visibilidad
+      innerDot.style.height = '10px';
       innerDot.style.backgroundColor = '#ffffff';
       innerDot.style.borderRadius = '50%';
       innerDot.style.position = 'absolute';
       innerDot.style.top = '50%';
       innerDot.style.left = '50%';
-     innerDot.style.transform = 'translate(-50%, -50%)';
-     innerDot.style.zIndex = '1001';
+      innerDot.style.transform = 'translate(-50%, -50%) rotate(45deg)';
+      innerDot.style.boxShadow = '0 0 4px #0052a3'; // Sombra azul para resaltar
       markerElement.appendChild(innerDot);
-      
+
       marker.current = new mapboxgl.Marker({
         element: markerElement,
         draggable: true,
@@ -221,15 +223,13 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
 
       // Add center marker with custom element
       const centerElement = document.createElement('div');
-     centerElement.style.position = 'relative';
       centerElement.style.width = '20px';
       centerElement.style.height = '20px';
       centerElement.style.borderRadius = '50%';
       centerElement.style.backgroundColor = '#e6b325';
-     centerElement.style.border = '4px solid #ffffff';
-     centerElement.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.5)';
+      centerElement.style.border = '3px solid #ffffff';
+      centerElement.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)';
       centerElement.style.cursor = 'pointer';
-     centerElement.style.zIndex = '1000';
       
       marker.current = new mapboxgl.Marker({
         element: centerElement,
