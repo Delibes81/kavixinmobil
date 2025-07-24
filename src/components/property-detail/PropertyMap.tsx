@@ -150,16 +150,15 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
         // Timeout fallback
         setTimeout(() => {
           if (isLoading) {
-            console.warn('Map loading timeout, switching to static map');
-            setUseStaticMap(true);
+            console.warn('Map loading timeout, trying static map fallback');
+            setError('El mapa interactivo no está disponible');
             setIsLoading(false);
           }
-        }, 10000);
+        }, 6000);
 
       } catch (err) {
         console.error('Error initializing map:', err);
-        // Fallback to static map
-        setUseStaticMap(true);
+        setError('Error al cargar el mapa interactivo');
         setIsLoading(false);
       }
     };
