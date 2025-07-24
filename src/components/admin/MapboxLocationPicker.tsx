@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
-import { MapPin, Crosshair, RotateCcw } from 'lucide-react';
+import { MapPin, Crosshair, RotateCcw, Search } from 'lucide-react';
 import AddressAutocomplete from './AddressAutocomplete';
 
 interface MapboxLocationPickerProps {
@@ -68,6 +68,7 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
       setIsMapLoaded(true);
       // Initialize marker after map loads - sin delay para respuesta inmediata
       updateMapDisplay(initialLat, initialLng, mapMode, areaRadius);
+    });
     // Handle map clicks
     map.current.on('click', (e) => {
       const { lng, lat } = e.lngLat;
