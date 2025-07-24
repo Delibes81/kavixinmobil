@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import Slider from 'react-slick';
+import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick-theme.css";
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import LazyImage from '../ui/LazyImage';
 
@@ -13,44 +15,35 @@ interface TestimonialProps {
 
 const Testimonial: React.FC<TestimonialProps> = ({ quote, author, position, rating, image }) => {
   return (
-    <div className="px-4 py-8">
+    <div className="px-2 md:px-4 h-full">
       <div className="card p-8 h-full flex flex-col">
-        <div className="flex-1">
+        <div className="flex-1 mb-6">
           {/* Rating */}
           <div className="flex mb-4">
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
                 className={`h-5 w-5 ${
-                  i < rating ? 'text-secondary-500 fill-secondary-500' : 'text-neutral-300'
+                  i < rating ? 'text-secondary-500 fill-secondary-500' : 'text-neutral-300 fill-neutral-300'
                 }`}
               />
             ))}
           </div>
           
           {/* Quote */}
-          <blockquote className="text-lg text-neutral-700 italic mb-6">
+          <blockquote className="text-lg text-neutral-700 italic">
             "{quote}"
           </blockquote>
         </div>
-      </div>
-      
-      {/* Custom navigation buttons - moved outside relative container */}
-      <div className="flex justify-center mt-6 space-x-4 md:hidden">
-        <button
-          onClick={() => sliderRef?.slickPrev()}
-          className="bg-white rounded-full p-3 shadow-md hover:bg-neutral-100 focus:outline-none transition-colors duration-200"
-          aria-label="Previous testimonial"
-        >
-          <ChevronLeft className="h-5 w-5 text-primary-600" />
-        </button>
-        <button
-          onClick={() => sliderRef?.slickNext()}
-          className="bg-white rounded-full p-3 shadow-md hover:bg-neutral-100 focus:outline-none transition-colors duration-200"
-          aria-label="Next testimonial"
-        >
-          <ChevronRight className="h-5 w-5 text-primary-600" />
-        </button>
+        <div className="mt-auto">
+          <div className="flex items-center">
+            <LazyImage src={image} alt={author} className="h-12 w-12 rounded-full object-cover mr-4" />
+            <div>
+              <p className="font-bold text-neutral-800">{author}</p>
+              <p className="text-sm text-neutral-500">{position}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -148,6 +141,24 @@ const TestimonialsSection: React.FC = () => {
             aria-label="Next testimonial"
           >
             <ChevronRight className="h-6 w-6 text-primary-600" />
+          </button>
+        </div>
+
+        {/* Custom navigation buttons for mobile */}
+        <div className="flex justify-center mt-8 space-x-4 md:hidden">
+          <button
+            onClick={() => sliderRef?.slickPrev()}
+            className="bg-white rounded-full p-3 shadow-md hover:bg-neutral-100 focus:outline-none transition-colors duration-200"
+            aria-label="Anterior testimonio"
+          >
+            <ChevronLeft className="h-5 w-5 text-primary-600" />
+          </button>
+          <button
+            onClick={() => sliderRef?.slickNext()}
+            className="bg-white rounded-full p-3 shadow-md hover:bg-neutral-100 focus:outline-none transition-colors duration-200"
+            aria-label="Siguiente testimonio"
+          >
+            <ChevronRight className="h-5 w-5 text-primary-600" />
           </button>
         </div>
       </div>
