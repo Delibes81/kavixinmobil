@@ -21,7 +21,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   address = '',
   className = '',
   showAreaCircle = false,
-  circleRadius = 500
+  circleRadius = 500,
   onMapModeChange,
   onAreaRadiusChange,
   initialMode = 'pin'
