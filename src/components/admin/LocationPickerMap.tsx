@@ -44,6 +44,96 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   const defaultLat = latitude || 19.4326;
   const defaultLng = longitude || -99.1332;
 
+  // Function to toggle circle visibility
+  const toggleCircle = () => {
+    const newMode = mapMode === 'pin' ? 'area' : 'pin';
+    setMapMode(newMode);
+    onMapModeChange?.(newMode);
+    
+    if (newMode === 'area') {
+      setShowCircle(true);
+      updateMapForAreaMode();
+    } else {
+      setShowCircle(false);
+      removeAreaCircle();
+    }
+  };
+
+  // Function to update circle radius
+  const updateRadius = (newRadius: number) => {
+    setRadius(newRadius);
+    onAreaRadiusChange?.(newRadius);
+    if (mapMode === 'area' && marker.current) {
+      const lngLat = marker.current.getLngLat();
+      updateAreaCircle(lngLat.lng, lngLat.lat);
+    }
+  };
+
+  const handleResetToDefault = () => {
+    if (map.current && marker.current) {
+      const defaultCenter = [-99.1332, 19.4326]; // Mexico City
+      map.current.setCenter(defaultCenter);
+      map.current.setZoom(10);
+      marker.current.setLngLat(defaultCenter);
+      onLocationChange(19.4326, -99.1332);
+      if (mapMode === 'area') {
+        updateAreaCircle(-99.1332, 19.4326);
+      }
+    }
+  };
+
+  // Search functionality
+  const handleSearch = async () => {
+    if (!searchQuery.trim() || !accessToken) return;
+
+    setIsSearching(true);
+    setShowSearchResults(false);
+
+    try {
+      const encodedQuery = encodeURIComponent(searchQuery);
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedQuery}.json?access_token=${accessToken}&country=mx&language=es&limit=5&types=address,poi,place`
+      );
+
+      if (!response.ok) {
+        throw new Error(`Error en la búsqueda: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setSearchResults(data.features || []);
+      setShowSearchResults(true);
+    } catch (error) {
+      console.error('Search error:', error);
+      setError(error instanceof Error ? error.message : 'Error al buscar ubicación');
+      setTimeout(() => setError(null), 3000);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleSearchResultSelect = (result: any) => {
+    const [lng, lat] = result.center;
+    
+    // Update map and marker
+    if (map.current && marker.current) {
+      map.current.setCenter([lng, lat]);
+      map.current.setZoom(16);
+      marker.current.setLngLat([lng, lat]);
+      
+      // Update coordinates
+      onLocationChange(lat, lng);
+      
+      // Update circle if in area mode
+      if (mapMode === 'area') {
+        updateAreaCircle(lng, lat);
+      }
+    }
+    
+    // Clear search
+    setSearchQuery(result.place_name);
+    setShowSearchResults(false);
+  };
+
   // Handle centering on address
   const handleCenterOnAddress = useCallback(async () => {
     if (!address.trim() || !map.current) return;
@@ -444,16 +534,6 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
     }
   };
 
-  // Function to update circle radius
-  const updateRadius = (newRadius: number) => {
-    setRadius(newRadius);
-    onAreaRadiusChange?.(newRadius);
-    if (mapMode === 'area' && marker.current) {
-      const lngLat = marker.current.getLngLat();
-      updateAreaCircle(lngLat.lng, lngLat.lat);
-    }
-  };
-
   // Update marker position when coordinates change externally
   useEffect(() => {
     if (marker.current && latitude !== 0 && longitude !== 0) {
@@ -467,72 +547,6 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
       }
     }
   }, [latitude, longitude]);
-
-  // Search functionality
-  const handleSearch = async () => {
-    if (!searchQuery.trim() || !accessToken) return;
-
-    setIsSearching(true);
-    setShowSearchResults(false);
-
-    try {
-      const encodedQuery = encodeURIComponent(searchQuery);
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedQuery}.json?access_token=${accessToken}&country=mx&language=es&limit=5&types=address,poi,place`
-      );
-
-      if (!response.ok) {
-        throw new Error(`Error en la búsqueda: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setSearchResults(data.features || []);
-      setShowSearchResults(true);
-    } catch (error) {
-      console.error('Search error:', error);
-      setError(error instanceof Error ? error.message : 'Error al buscar ubicación');
-      setTimeout(() => setError(null), 3000);
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  const handleSearchResultSelect = (result: any) => {
-    const [lng, lat] = result.center;
-    
-    // Update map and marker
-    if (map.current && marker.current) {
-      map.current.setCenter([lng, lat]);
-      map.current.setZoom(16);
-      marker.current.setLngLat([lng, lat]);
-      
-      // Update coordinates
-      onLocationChange(lat, lng);
-      
-      // Update circle if in area mode
-      if (mapMode === 'area') {
-        updateAreaCircle(lng, lat);
-      }
-    }
-    
-    // Clear search
-    setSearchQuery(result.place_name);
-    setShowSearchResults(false);
-  };
-
-
-  const handleResetToDefault = () => {
-    if (map.current && marker.current) {
-      const defaultCenter = [-99.1332, 19.4326]; // Mexico City
-      map.current.setCenter(defaultCenter);
-      map.current.setZoom(10);
-      marker.current.setLngLat(defaultCenter);
-      onLocationChange(19.4326, -99.1332);
-      if (mapMode === 'area') {
-        updateAreaCircle(-99.1332, 19.4326);
-      }
-    }
-  };
 
   if (!accessToken) {
     return (
