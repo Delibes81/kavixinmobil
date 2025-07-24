@@ -39,12 +39,12 @@ const Navbar: React.FC = () => {
 
   // Link classes
   const linkBaseClasses = 'relative flex items-center px-4 py-2 text-base font-medium transition-colors duration-200';
-  const linkColorClasses = isScrolled || !isHomePage 
+  const linkColorClasses = isScrolled || !isHomePage || isOpen
     ? 'text-primary-800 hover:text-primary-600' 
-    : 'text-white hover:text-secondary-300';
+    : 'text-white/95 hover:text-secondary-300';
 
   const activeLinkClasses = `after:content-[''] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-secondary-500 ${
-    isScrolled || !isHomePage ? 'text-primary-600' : 'text-secondary-400'
+    isScrolled || !isHomePage || isOpen ? 'text-primary-600' : 'text-secondary-400'
   }`;
 
   return (
@@ -53,10 +53,10 @@ const Navbar: React.FC = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center z-10">
           <NovaHestiaLogo className={`h-8 w-8 transition-colors duration-300 ${
-            isScrolled || !isHomePage ? 'text-primary-600' : 'text-white'
-          }`} color={isScrolled || !isHomePage ? '#0052a3' : '#ffffff'} />
+            isScrolled || !isHomePage || isOpen ? 'text-primary-600' : 'text-white'
+          }`} color={isScrolled || !isHomePage || isOpen ? '#0052a3' : '#ffffff'} />
           <span className={`ml-2 text-xl font-heading font-bold transition-colors duration-300 ${
-            isScrolled || !isHomePage ? 'text-primary-800' : 'text-white'
+            isScrolled || !isHomePage || isOpen ? 'text-primary-800' : 'text-white'
           }`}>
             Nova Hestia
           </span>
@@ -114,7 +114,7 @@ const Navbar: React.FC = () => {
             target="_blank" 
             rel="noopener noreferrer"
             className={`btn transition-all duration-300 ${
-              isScrolled || !isHomePage || isOpen ? 'btn-primary' : 'btn-white'
+              isScrolled || !isHomePage ? 'btn-primary' : 'btn-white'
             }`}
           >
             Contáctanos
@@ -129,11 +129,11 @@ const Navbar: React.FC = () => {
         >
           {isOpen ? (
             <X className={`h-6 w-6 transition-colors duration-300 ${
-              isScrolled || !isHomePage ? 'text-primary-800' : 'text-white'
+              isScrolled || !isHomePage || isOpen ? 'text-primary-800' : 'text-white'
             }`} />
           ) : (
             <Menu className={`h-6 w-6 transition-colors duration-300 ${
-              isScrolled || !isHomePage ? 'text-primary-800' : 'text-white'
+              isScrolled || !isHomePage || isOpen ? 'text-primary-800' : 'text-white'
             }`} />
           )}
         </button>
