@@ -35,8 +35,8 @@ export interface Database {
           disponible: boolean | null
           destacado: boolean | null
           id_interno: string | null
-          map_mode: string | null
-          area_radius: number | null
+          map_mode: 'pin' | 'area'
+          area_radius: number
           fecha_creacion: string | null
           fecha_actualizacion: string | null
         }
@@ -65,8 +65,8 @@ export interface Database {
           disponible?: boolean | null
           destacado?: boolean | null
           id_interno?: string | null
-          map_mode?: string | null
-          area_radius?: number | null
+          map_mode?: 'pin' | 'area'
+          area_radius?: number
           fecha_creacion?: string | null
           fecha_actualizacion?: string | null
         }
@@ -95,8 +95,8 @@ export interface Database {
           disponible?: boolean | null
           destacado?: boolean | null
           id_interno?: string | null
-          map_mode?: string | null
-          area_radius?: number | null
+          map_mode?: 'pin' | 'area'
+          area_radius?: number
           fecha_creacion?: string | null
           fecha_actualizacion?: string | null
         }
