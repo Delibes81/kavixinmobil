@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapPin, AlertTriangle } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 
 interface LocationPickerMapProps {
   latitude: number;
@@ -17,53 +17,56 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   longitude,
   onLocationChange,
   address = '',
-  className = '',
   onMapModeChange,
   onAreaRadiusChange,
   initialMode = 'pin',
   initialRadius = 500
 }) => {
   return (
-    <div className={`relative ${className}`}>
-      <div className="h-[400px] rounded-lg bg-neutral-100 flex items-center justify-center border border-neutral-200">
-        <div className="text-center p-8">
-          <MapPin className="h-12 w-12 text-primary-600 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-neutral-800 mb-2">Selector de Ubicación</h3>
-          <p className="text-neutral-600 mb-4 text-sm">
-            Funcionalidad de mapas deshabilitada
-          </p>
-          <div className="bg-white rounded-lg p-4 border border-neutral-200 mb-4">
-            <p className="text-sm font-medium text-neutral-700 mb-2">Coordenadas actuales:</p>
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <label className="block text-neutral-600 mb-1">Latitud:</label>
-                <input
-                  type="number"
-                  value={latitude || 0}
-                  onChange={(e) => onLocationChange(Number(e.target.value), longitude)}
-                  step="0.000001"
-                  className="input-field text-sm"
-                  placeholder="19.4326"
-                />
-              </div>
-              <div>
-                <label className="block text-neutral-600 mb-1">Longitud:</label>
-                <input
-                  type="number"
-                  value={longitude || 0}
-                  onChange={(e) => onLocationChange(latitude, Number(e.target.value))}
-                  step="0.000001"
-                  className="input-field text-sm"
-                  placeholder="-99.1332"
-                />
-              </div>
-            </div>
+    <div className="space-y-4">
+      {/* Coordinates Input */}
+      <div className="bg-white rounded-lg p-6 border border-neutral-200">
+        <div className="flex items-center mb-4">
+          <MapPin className="h-6 w-6 text-primary-600 mr-2" />
+          <h3 className="text-lg font-semibold text-neutral-800">Coordenadas de la Propiedad</h3>
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-2">Latitud:</label>
+            <input
+              type="number"
+              value={latitude || 0}
+              onChange={(e) => onLocationChange(Number(e.target.value), longitude)}
+              step="0.000001"
+              className="input-field"
+              placeholder="19.4326"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-neutral-700 mb-2">Longitud:</label>
+            <input
+              type="number"
+              value={longitude || 0}
+              onChange={(e) => onLocationChange(latitude, Number(e.target.value))}
+              step="0.000001"
+              className="input-field"
+              placeholder="-99.1332"
+            />
           </div>
         </div>
+        
+        {address && (
+          <div className="mt-4 p-3 bg-neutral-50 rounded-md">
+            <p className="text-sm text-neutral-600">
+              <strong>Dirección:</strong> {address}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Map Mode Controls */}
-      <div className="mt-4 flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-3">
         <button
           type="button"
           onClick={() => onMapModeChange?.('pin')}
@@ -85,7 +88,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
 
       {/* Area Radius Controls */}
       {initialMode === 'area' && (
-        <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
           <div className="flex items-center justify-between mb-3">
             <label className="text-sm font-medium text-blue-800">
               Radio del área (metros):

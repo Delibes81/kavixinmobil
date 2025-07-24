@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { MapPin, X } from 'lucide-react';
 
 interface AddressAutocompleteProps {
@@ -63,6 +63,10 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
             <X className="h-4 w-4" />
           </button>
         )}
+      </div>
+      
+      <div className="mt-2 text-xs text-neutral-500">
+        Funcionalidad de autocompletado será implementada próximamente
       </div>
     </div>
   );
