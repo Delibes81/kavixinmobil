@@ -8,6 +8,7 @@ interface LocationPickerMapProps {
   address?: string;
   className?: string;
   showAreaCircle?: boolean;
+  circleRadius?: number;
   onMapModeChange?: (mode: 'pin' | 'area') => void;
   onAreaRadiusChange?: (radius: number) => void;
   initialMode?: 'pin' | 'area';
@@ -20,6 +21,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   address = '',
   className = '',
   showAreaCircle = false,
+  circleRadius = 500,
   onMapModeChange,
   onAreaRadiusChange,
   initialMode = 'pin'
@@ -28,7 +30,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [showCircle, setShowCircle] = useState(showAreaCircle);
-  const [radius, setRadius] = useState(circleRadius);
+  const [radius, setRadius] = useState(500);
   const [mapMode, setMapMode] = useState<'pin' | 'area'>(initialMode);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -49,8 +51,8 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   useEffect(() => {
     setMapMode(initialMode);
     setShowCircle(initialMode === 'area');
-    setRadius(circleRadius);
-  }, [initialMode, circleRadius]);
+    setRadius(500);
+  }, [initialMode]);
 
   useEffect(() => {
     if (!accessToken) {
