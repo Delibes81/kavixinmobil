@@ -32,9 +32,9 @@ const Navbar: React.FC = () => {
   
   // Navbar classes - always visible, no hiding
   const navbarClasses = `fixed w-full z-50 transition-all duration-300 ease-in-out ${
-    isScrolled || !isHomePage
-      ? 'bg-white/95 backdrop-blur-md shadow-lg py-3'
-      : 'bg-transparent py-5'
+    isScrolled || !isHomePage || isOpen
+      ? 'bg-white/98 backdrop-blur-md shadow-lg py-3'
+      : 'bg-white/10 backdrop-blur-sm py-5'
   }`;
 
   // Link classes
@@ -114,7 +114,7 @@ const Navbar: React.FC = () => {
             target="_blank" 
             rel="noopener noreferrer"
             className={`btn transition-all duration-300 ${
-              isScrolled || !isHomePage ? 'btn-primary' : 'btn-white'
+              isScrolled || !isHomePage || isOpen ? 'btn-primary' : 'btn-white'
             }`}
           >
             Contáctanos
