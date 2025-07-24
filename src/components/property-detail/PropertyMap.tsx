@@ -125,7 +125,10 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
 
             // Add area circle if map mode is 'area'
             if (mapMode === 'area') {
-              addAreaCircle(lng, lat, areaRadius);
+             // Wait a bit for the style to be fully loaded
+             setTimeout(() => {
+               addAreaCircle(lng, lat, areaRadius);
+             }, 500);
             }
 
             // Add navigation controls (includes zoom)
@@ -151,6 +154,14 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
           setIsLoading(false);
         });
 
+       // Handle style load event specifically for area circles
+       map.current.on('styledata', () => {
+         if (mapMode === 'area' && mapInitialized) {
+           setTimeout(() => {
+             addAreaCircle(lng, lat, areaRadius);
+           }, 100);
+         }
+       });
 
       } catch (err) {
         console.error('Error initializing map:', err);
@@ -174,11 +185,23 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
         }
       }
     };
-  }, [accessToken, position]);
+  }, [accessToken, position, mapMode, areaRadius]);
 
   // Function to add area circle
   const addAreaCircle = (lng: number, lat: number, radiusInMeters: number) => {
-    if (!map.current || !mapInitialized || !map.current.isStyleLoaded()) return;
+   if (!map.current || !mapInitialized) {
+     console.log('Map not ready for area circle');
+     return;
+   }
+   
+   // Check if style is loaded
+   if (!map.current.isStyleLoaded()) {
+     console.log('Map style not loaded, waiting...');
+     setTimeout(() => addAreaCircle(lng, lat, radiusInMeters), 200);
+     return;
+   }
+   
+   console.log('Adding area circle:', { lng, lat, radiusInMeters, mapMode });
 
     // Create circle data
     const circleData = createCircleGeoJSON(lng, lat, radiusInMeters);
@@ -186,6 +209,7 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
     // Remove existing circle if it exists
     try {
       if (map.current.getSource('property-area-circle')) {
+       console.log('Removing existing circle');
         if (map.current.getLayer('property-area-circle-fill')) {
           map.current.removeLayer('property-area-circle-fill');
         }
@@ -199,6 +223,7 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
     }
     // Add circle source and layer
     try {
+     console.log('Adding new circle source and layers');
       map.current.addSource('property-area-circle', {
         type: 'geojson',
         data: circleData
@@ -226,8 +251,10 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
           'line-opacity': 1
         }
       });
+     
+     console.log('Area circle added successfully');
     } catch (err) {
-      console.warn('Error adding area circle:', err);
+     console.error('Error adding area circle:', err);
     }
   };
 
