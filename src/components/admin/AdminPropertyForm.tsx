@@ -3,8 +3,6 @@ import { Property, Amenity } from '../../types';
 import { Plus, X, AlertCircle, MapPin } from 'lucide-react';
 import { useAmenities } from '../../hooks/useProperties';
 import ImageUploadComponent from './ImageUploadComponent';
-import AddressAutocomplete from './AddressAutocomplete';
-import LocationPickerMap from './LocationPickerMap';
 import { validatePropertyData, sanitizeInput } from '../../utils/security';
 
 interface AdminPropertyFormProps {
@@ -47,10 +45,6 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isGeocodingAddress, setIsGeocodingAddress] = useState(false);
-  const [showLocationPicker, setShowLocationPicker] = useState(false);
-  const [mapMode, setMapMode] = useState<'pin' | 'area'>('pin');
-  const [areaRadius, setAreaRadius] = useState(500);
 
   // Initialize form data when property changes
   useEffect(() => {
@@ -85,8 +79,6 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
       });
       
       // Set map mode and radius from property
-      setMapMode(property.map_mode || 'pin');
-      setAreaRadius(property.area_radius || 500);
       
       // Set selected amenities
       if (property.amenidades) {
@@ -180,114 +172,6 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
       console.log('Updated form data with images:', newData);
       return newData;
     });
-  };
-
-  const handleLocationChange = (lat: number, lng: number) => {
-    console.log('Location changed:', { lat, lng });
-    setFormData(prev => ({
-      ...prev,
-      latitud: lat,
-      longitud: lng,
-      map_mode: mapMode,
-      area_radius: areaRadius,
-    }));
-  };
-
-  const handleAddressSelect = (addressData: any) => {
-    console.log('Address selected:', addressData);
-    
-    setFormData(prev => ({
-      ...prev,
-      direccion: addressData.formatted_address,
-      latitud: addressData.lat,
-      longitud: addressData.lng,
-      // Auto-fill other fields if available
-      colonia: addressData.components.neighborhood || prev.colonia,
-      ciudad: addressData.components.locality || prev.ciudad,
-      estado: addressData.components.administrative_area_level_1 || prev.estado,
-      codigo_postal: addressData.components.postal_code || prev.codigo_postal,
-    }));
-  };
-
-  const handleGeocodeCurrentAddress = async () => {
-    if (!formData.direccion?.trim()) {
-      setErrors(prev => ({ ...prev, geocode: 'Ingresa una dirección para obtener coordenadas' }));
-      return;
-    }
-
-    setIsGeocodingAddress(true);
-    setErrors(prev => {
-      const newErrors = { ...prev };
-      delete newErrors.geocode;
-      return newErrors;
-    });
-
-    try {
-      // Build full address for geocoding
-      const addressParts = [];
-      if (formData.direccion) addressParts.push(formData.direccion);
-      if (formData.colonia) addressParts.push(formData.colonia);
-      if (formData.ciudad) addressParts.push(formData.ciudad);
-      if (formData.estado) addressParts.push(formData.estado);
-      
-      const fullAddress = addressParts.join(', ');
-      
-      // Use Mapbox Geocoding API
-      const accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
-      if (!accessToken) {
-        throw new Error('Token de Mapbox no configurado');
-      }
-
-      const encodedAddress = encodeURIComponent(fullAddress);
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${accessToken}&country=mx&language=es&limit=1`
-      );
-
-      if (!response.ok) {
-        throw new Error(`Error en la geocodificación: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      if (data.features && data.features.length > 0) {
-        const feature = data.features[0];
-        const [lng, lat] = feature.center;
-        
-        setFormData(prev => ({
-          ...prev,
-          latitud: lat,
-          longitud: lng,
-        }));
-        
-        alert(`Coordenadas actualizadas: ${lat.toFixed(6)}, ${lng.toFixed(6)}`);
-      } else {
-        throw new Error('No se encontraron coordenadas para esta dirección');
-      }
-    } catch (error) {
-      console.error('Geocoding error:', error);
-      setErrors(prev => ({ 
-        ...prev, 
-        geocode: error instanceof Error ? error.message : 'Error al obtener coordenadas' 
-      }));
-    } finally {
-      setIsGeocodingAddress(false);
-    }
-  };
-
-  const handleMapModeChange = (newMode: 'pin' | 'area') => {
-    setMapMode(newMode);
-    setFormData(prev => ({
-      ...prev,
-      map_mode: newMode,
-    }));
-  };
-
-  const handleAreaRadiusChange = (newRadius: number) => {
-    setAreaRadius(newRadius);
-    setFormData(prev => ({
-      ...prev,
-      area_radius: newRadius,
-    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -801,70 +685,16 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
           {/* Location Controls */}
           <div className="col-span-3">
             <div className="flex items-end space-x-4">
-              <div className="flex-1">
-                <button
-                  type="button"
-                  onClick={handleGeocodeCurrentAddress}
-                  disabled={isGeocodingAddress || isSubmitting || !formData.direccion?.trim()}
-                  className="btn btn-outline w-full sm:w-auto"
-                >
-                  {isGeocodingAddress ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600 mr-2"></div>
-                      Obteniendo coordenadas...
-                    </>
-                  ) : (
-                    <>
-                      <MapPin className="h-4 w-4 mr-2" />
-                      Obtener coordenadas de la dirección
-                    </>
-                  )}
-                </button>
-              </div>
-              
-              <div className="flex-1">
-                <button
-                  type="button"
-                  onClick={() => setShowLocationPicker(!showLocationPicker)}
-                  className="btn btn-primary w-full sm:w-auto"
-                >
-                  <MapPin className="h-4 w-4 mr-2" />
-                  {showLocationPicker ? 'Ocultar mapa' : 'Seleccionar en mapa'}
-                </button>
-              </div>
+              <p className="text-sm text-neutral-600">
+                Ingresa las coordenadas manualmente o utiliza un servicio externo de geocodificación.
+              </p>
             </div>
-            {errors.geocode && <p className="mt-1 text-sm text-red-500">{errors.geocode}</p>}
-            <p className="mt-1 text-xs text-neutral-500">
-              Obtén coordenadas automáticamente desde la dirección o selecciona la ubicación en el mapa interactivo
-            </p>
             {formData.latitud !== 0 && formData.longitud !== 0 && (
               <p className="mt-1 text-xs text-green-600">
                 ✓ Coordenadas configuradas: {formData.latitud?.toFixed(6)}, {formData.longitud?.toFixed(6)}
               </p>
             )}
           </div>
-          
-          {/* Interactive Location Picker */}
-          {showLocationPicker && (
-            <div className="col-span-3">
-              <div className="mt-4 p-4 border border-neutral-200 rounded-lg bg-neutral-50">
-                <h4 className="text-lg font-medium text-neutral-800 mb-3 flex items-center">
-                  <MapPin className="h-5 w-5 mr-2 text-primary-600" />
-                  Seleccionar Ubicación en el Mapa
-                </h4>
-                <LocationPickerMap
-                  latitude={formData.latitud || 0}
-                  longitude={formData.longitud || 0}
-                  onLocationChange={handleLocationChange}
-                  address={`${formData.direccion || ''} ${formData.colonia || ''} ${formData.ciudad || ''}`.trim()}
-                  onMapModeChange={handleMapModeChange}
-                  onAreaRadiusChange={handleAreaRadiusChange}
-                  initialMode={mapMode}
-                  initialRadius={areaRadius}
-                />
-              </div>
-            </div>
-          )}
         </div>
       </div>
       
