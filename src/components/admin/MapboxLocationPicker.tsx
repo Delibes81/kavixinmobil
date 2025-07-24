@@ -134,14 +134,16 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
       // Create marker element manually for better control
       const markerElement = document.createElement('div');
       markerElement.className = 'mapbox-marker-pin';
+     markerElement.style.position = 'relative';
       markerElement.style.width = '30px';
       markerElement.style.height = '30px';
       markerElement.style.borderRadius = '50% 50% 50% 0';
       markerElement.style.backgroundColor = '#0052a3';
-      markerElement.style.border = '3px solid #ffffff';
-      markerElement.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)';
+     markerElement.style.border = '4px solid #ffffff';
+     markerElement.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.5)';
       markerElement.style.transform = 'rotate(-45deg)';
       markerElement.style.cursor = 'pointer';
+     markerElement.style.zIndex = '1000';
       
       // Add inner dot
       const innerDot = document.createElement('div');
@@ -152,7 +154,8 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
       innerDot.style.position = 'absolute';
       innerDot.style.top = '50%';
       innerDot.style.left = '50%';
-      innerDot.style.transform = 'translate(-50%, -50%) rotate(45deg)';
+     innerDot.style.transform = 'translate(-50%, -50%)';
+     innerDot.style.zIndex = '1001';
       markerElement.appendChild(innerDot);
       
       marker.current = new mapboxgl.Marker({
@@ -218,13 +221,15 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
 
       // Add center marker with custom element
       const centerElement = document.createElement('div');
+     centerElement.style.position = 'relative';
       centerElement.style.width = '20px';
       centerElement.style.height = '20px';
       centerElement.style.borderRadius = '50%';
       centerElement.style.backgroundColor = '#e6b325';
-      centerElement.style.border = '3px solid #ffffff';
-      centerElement.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)';
+     centerElement.style.border = '4px solid #ffffff';
+     centerElement.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.5)';
       centerElement.style.cursor = 'pointer';
+     centerElement.style.zIndex = '1000';
       
       marker.current = new mapboxgl.Marker({
         element: centerElement,
