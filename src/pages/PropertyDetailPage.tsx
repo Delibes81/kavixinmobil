@@ -150,6 +150,8 @@ const PropertyDetailPage: React.FC = () => {
               <PropertyMap 
                 position={[property.latitud, property.longitud]} 
                 address={formatFullAddress()}
+                mapMode={property.map_mode || 'pin'}
+                areaRadius={property.area_radius || 500}
               />
             </div>
           </div>

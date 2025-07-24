@@ -857,11 +857,10 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
                   longitude={formData.longitud || 0}
                   onLocationChange={handleLocationChange}
                   address={`${formData.direccion || ''} ${formData.colonia || ''} ${formData.ciudad || ''}`.trim()}
-                  showAreaCircle={mapMode === 'area'}
-                  circleRadius={areaRadius}
                   onMapModeChange={handleMapModeChange}
                   onAreaRadiusChange={handleAreaRadiusChange}
                   initialMode={mapMode}
+                  initialRadius={areaRadius}
                 />
               </div>
             </div>
