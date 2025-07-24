@@ -104,6 +104,60 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
     }
   };
 
+  // Handle search
+  const handleSearch = async () => {
+    if (!searchQuery.trim() || !map.current) return;
+
+    try {
+      setIsSearching(true);
+      const encodedQuery = encodeURIComponent(searchQuery);
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedQuery}.json?access_token=${accessToken}&country=mx&language=es&limit=5`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`Error en la búsqueda: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      if (data.features && data.features.length > 0) {
+        setSearchResults(data.features);
+        setShowSearchResults(true);
+      } else {
+        setError('No se encontraron resultados para esta búsqueda');
+        setTimeout(() => setError(null), 3000);
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+      setError(error instanceof Error ? error.message : 'Error al buscar');
+      setTimeout(() => setError(null), 3000);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Handle search result selection
+  const handleSearchResultSelect = (result: any) => {
+    const [lng, lat] = result.center;
+    
+    // Update map and marker
+    map.current.setCenter([lng, lat]);
+    map.current.setZoom(16);
+    marker.current.setLngLat([lng, lat]);
+    
+    // Update coordinates
+    onLocationChange(lat, lng);
+    
+    // Update circle if in area mode
+    if (mapMode === 'area') {
+      updateAreaCircle(lng, lat);
+    }
+
+    // Clear search
+    setSearchQuery(result.place_name);
+    setShowSearchResults(false);
+  };
+
   // Remove the old toggleCircle function since we now have separate functions
   const toggleCircle = () => {
     const newMode = mapMode === 'pin' ? 'area' : 'pin';
@@ -306,106 +360,6 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
     };
   }, [accessToken, handleCenterOnAddress]);
 
-  // Fallback to static map or simple coordinate display if map fails
-  if (error) {
-    return (
-      <div className={`relative ${className}`}>
-        <div className="h-[400px] rounded-lg bg-neutral-100 flex items-center justify-center border border-neutral-200">
-          <div className="text-center p-8">
-            <MapPin className="h-12 w-12 text-primary-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-neutral-800 mb-2">Selector de Ubicación</h3>
-            <p className="text-neutral-600 mb-4 text-sm">
-              {error}
-            </p>
-            <div className="bg-white rounded-lg p-4 border border-neutral-200 mb-4">
-              <p className="text-sm font-medium text-neutral-700 mb-2">Coordenadas actuales:</p>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <label className="block text-neutral-600 mb-1">Latitud:</label>
-                  <input
-                    type="number"
-                    value={latitude || 0}
-                    onChange={(e) => onLocationChange(Number(e.target.value), longitude)}
-                    step="0.000001"
-                    className="input-field text-sm"
-                    placeholder="19.4326"
-                  />
-                </div>
-                <div>
-                  <label className="block text-neutral-600 mb-1">Longitud:</label>
-                  <input
-                    type="number"
-                    value={longitude || 0}
-                    onChange={(e) => onLocationChange(latitude, Number(e.target.value))}
-                    step="0.000001"
-                    className="input-field text-sm"
-                    placeholder="-99.1332"
-                  />
-                </div>
-              </div>
-            </div>
-            {address && (
-              <button
-                type="button"
-                onClick={handleCenterOnAddress}
-                className="btn btn-primary text-sm"
-              >
-                <Target className="h-4 w-4 mr-2" />
-                Obtener coordenadas de la dirección
-              </button>
-            )}
-          </div>
-        </div>
-        
-        {/* Map Mode Controls */}
-        <div className="mt-4 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={toggleCircle}
-            className={`btn flex-1 sm:flex-none ${mapMode === 'area' ? 'btn-primary' : 'btn-outline'}`}
-          >
-            {mapMode === 'pin' ? (
-              <>
-                <Circle className="h-4 w-4 mr-2" />
-                Cambiar a área
-              </>
-            ) : (
-              <>
-                <MapPin className="h-4 w-4 mr-2" />
-                Cambiar a pin
-              </>
-            )}
-          </button>
-        </div>
-
-        {/* Circle Controls */}
-        {mapMode === 'area' && (
-          <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-3">
-              <label className="text-sm font-medium text-blue-800">
-                Radio del área (metros):
-              </label>
-              <span className="text-sm text-blue-600 font-medium">{radius}m</span>
-            </div>
-            <input
-              type="range"
-              min="100"
-              max="2000"
-              step="50"
-              value={radius}
-              onChange={(e) => updateRadius(Number(e.target.value))}
-              className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
-            />
-            <div className="flex justify-between text-xs text-blue-600 mt-1">
-              <span>100m</span>
-              <span>2km</span>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
   // Function to add area circle
   const addAreaCircle = (lng: number, lat: number) => {
     if (!map.current) return;
@@ -527,6 +481,106 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
       }
     }
   }, [latitude, longitude]);
+
+  // Fallback to static map or simple coordinate display if map fails
+  if (error) {
+    return (
+      <div className={`relative ${className}`}>
+        <div className="h-[400px] rounded-lg bg-neutral-100 flex items-center justify-center border border-neutral-200">
+          <div className="text-center p-8">
+            <MapPin className="h-12 w-12 text-primary-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-neutral-800 mb-2">Selector de Ubicación</h3>
+            <p className="text-neutral-600 mb-4 text-sm">
+              {error}
+            </p>
+            <div className="bg-white rounded-lg p-4 border border-neutral-200 mb-4">
+              <p className="text-sm font-medium text-neutral-700 mb-2">Coordenadas actuales:</p>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <label className="block text-neutral-600 mb-1">Latitud:</label>
+                  <input
+                    type="number"
+                    value={latitude || 0}
+                    onChange={(e) => onLocationChange(Number(e.target.value), longitude)}
+                    step="0.000001"
+                    className="input-field text-sm"
+                    placeholder="19.4326"
+                  />
+                </div>
+                <div>
+                  <label className="block text-neutral-600 mb-1">Longitud:</label>
+                  <input
+                    type="number"
+                    value={longitude || 0}
+                    onChange={(e) => onLocationChange(latitude, Number(e.target.value))}
+                    step="0.000001"
+                    className="input-field text-sm"
+                    placeholder="-99.1332"
+                  />
+                </div>
+              </div>
+            </div>
+            {address && (
+              <button
+                type="button"
+                onClick={handleCenterOnAddress}
+                className="btn btn-primary text-sm"
+              >
+                <Target className="h-4 w-4 mr-2" />
+                Obtener coordenadas de la dirección
+              </button>
+            )}
+          </div>
+        </div>
+        
+        {/* Map Mode Controls */}
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button
+            type="button"
+            onClick={toggleCircle}
+            className={`btn flex-1 sm:flex-none ${mapMode === 'area' ? 'btn-primary' : 'btn-outline'}`}
+          >
+            {mapMode === 'pin' ? (
+              <>
+                <Circle className="h-4 w-4 mr-2" />
+                Cambiar a área
+              </>
+            ) : (
+              <>
+                <MapPin className="h-4 w-4 mr-2" />
+                Cambiar a pin
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Circle Controls */}
+        {mapMode === 'area' && (
+          <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <label className="text-sm font-medium text-blue-800">
+                Radio del área (metros):
+              </label>
+              <span className="text-sm text-blue-600 font-medium">{radius}m</span>
+            </div>
+            <input
+              type="range"
+              min="100"
+              max="2000"
+              step="50"
+              value={radius}
+              onChange={(e) => updateRadius(Number(e.target.value))}
+              className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
+            />
+            <div className="flex justify-between text-xs text-blue-600 mt-1">
+              <span>100m</span>
+              <span>2km</span>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   if (!accessToken) {
     return (
@@ -734,89 +788,6 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
           </div>
         </div>
       )}
-    </div>
-  );
-};
-
-export default LocationPickerMap;
-          className="btn btn-outline flex-1 sm:flex-none"
-        >
-          <RotateCcw className="h-4 w-4 mr-2" />
-          Centrar en CDMX
-        </button>
-        
-        <button
-          type="button"
-          onClick={toggleCircle}
-          className={`btn flex-1 sm:flex-none ${mapMode === 'area' ? 'btn-primary' : 'btn-outline'}`}
-        >
-          {mapMode === 'pin' ? (
-            <>
-              <Crosshair className="h-4 w-4 mr-2" />
-              Cambiar a área
-            </>
-          ) : (
-            <>
-              <MapPin className="h-4 w-4 mr-2" />
-              Cambiar a pin
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Circle Controls */}
-      {mapMode === 'area' && (
-        <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <div className="flex items-center justify-between mb-3">
-            <label className="text-sm font-medium text-blue-800">
-              Radio del área (metros):
-            </label>
-            <span className="text-sm text-blue-600 font-medium">{radius}m</span>
-          </div>
-          <input
-            type="range"
-            min="100"
-            max="2000"
-            step="50"
-            value={radius}
-            onChange={(e) => updateRadius(Number(e.target.value))}
-            className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer slider"
-          />
-          <div className="flex justify-between text-xs text-blue-600 mt-1">
-            <span>100m</span>
-            <span>2km</span>
-          </div>
-          <p className="text-xs text-blue-700 mt-2">
-            El círculo azul muestra el área aproximada de influencia de la propiedad
-          </p>
-        </div>
-      )}
-
-      {/* Error Message */}
-      {error && (
-        <div className="mt-3 bg-red-100 border border-red-400 text-red-700 px-3 py-2 rounded text-sm flex items-start">
-          <AlertTriangle className="h-4 w-4 mr-2 flex-shrink-0 mt-0.5" />
-          <p>{error}</p>
-        </div>
-      )}
-
-      {/* Instructions */}
-      <div className="mt-3 bg-blue-50 border border-blue-200 rounded-lg p-3">
-        <div className="flex items-start">
-          <MapPin className="h-4 w-4 text-blue-600 mr-2 flex-shrink-0 mt-0.5" />
-          <div className="text-sm text-blue-800">
-            <p className="font-medium mb-1">Cómo usar el mapa:</p>
-            <ul className="list-disc list-inside space-y-1 text-xs">
-              <li>Usa el buscador para encontrar ubicaciones específicas</li>
-              <li>Haz clic en cualquier punto del mapa para colocar el pin</li>
-              <li>Arrastra el pin azul para ajustar la ubicación exacta</li>
-              <li>Cambia entre modo "Pin" (ubicación exacta) y "Área" (zona de influencia)</li>
-              <li>Usa "Centrar en dirección" para buscar automáticamente</li>
-              <li>Las coordenadas se actualizan automáticamente</li>
-            </ul>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
