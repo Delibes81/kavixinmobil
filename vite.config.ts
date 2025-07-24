@@ -32,7 +32,6 @@ export default defineConfig({
           router: ['react-router-dom'],
           ui: ['lucide-react'],
           slider: ['react-slick', 'slick-carousel'],
-          maps: ['react-leaflet', 'leaflet'],
           supabase: ['@supabase/supabase-js']
         },
         chunkFileNames: 'assets/[name]-[hash].js',

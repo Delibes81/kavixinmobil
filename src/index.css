@@ -411,11 +411,6 @@
 }
 
 /* Custom Leaflet Map Styles */
-.leaflet-container {
-  @apply h-full rounded-lg overflow-hidden border border-neutral-200;
-}
-
-/* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
 }
