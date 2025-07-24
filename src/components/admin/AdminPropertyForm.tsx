@@ -3,6 +3,7 @@ import { Property, Amenity } from '../../types';
 import { Plus, X, AlertCircle, MapPin } from 'lucide-react';
 import { useAmenities } from '../../hooks/useProperties';
 import ImageUploadComponent from './ImageUploadComponent';
+import MapboxLocationPicker from './MapboxLocationPicker';
 import { validatePropertyData, sanitizeInput } from '../../utils/security';
 
 interface AdminPropertyFormProps {
@@ -635,59 +636,43 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               disabled={isSubmitting}
             />
           </div>
-          
-          {/* Coordinates */}
-          <div className="transform transition-all duration-300 hover:scale-[1.02] hover:z-10 relative">
-            <label htmlFor="latitud" className="block text-sm font-medium text-neutral-700 mb-1">
-              Latitud
-            </label>
-            <input
-              type="number"
-              id="latitud"
-              name="latitud"
-              value={formData.latitud || 0}
-              onChange={handleInputChange}
-              step="0.000000000000001"
-              min="-90"
-              max="90"
-              className="input-field"
-              placeholder="Ej. 19.4326"
-              disabled={isSubmitting}
-            />
-          </div>
-          
-          <div className="transform transition-all duration-300 hover:scale-[1.02] hover:z-10 relative">
-            <label htmlFor="longitud" className="block text-sm font-medium text-neutral-700 mb-1">
-              Longitud
-            </label>
-            <input
-              type="number"
-              id="longitud"
-              name="longitud"
-              value={formData.longitud || 0}
-              onChange={handleInputChange}
-              step="0.000000000000001"
-              min="-180"
-              max="180"
-              className="input-field"
-              placeholder="Ej. -99.1332"
-              disabled={isSubmitting}
-            />
-          </div>
-          
-          {/* Location Controls */}
-          <div className="col-span-3">
-            <div className="flex items-end space-x-4">
-              <p className="text-sm text-neutral-600">
-                Ingresa las coordenadas manualmente o utiliza un servicio externo de geocodificación.
-              </p>
-            </div>
-            {formData.latitud !== 0 && formData.longitud !== 0 && (
-              <p className="mt-1 text-xs text-green-600">
-                ✓ Coordenadas configuradas: {formData.latitud?.toFixed(6)}, {formData.longitud?.toFixed(6)}
-              </p>
-            )}
-          </div>
+        </div>
+        
+        {/* Interactive Map */}
+        <div className="mt-6">
+          <h4 className="text-lg font-medium text-neutral-800 mb-4 flex items-center">
+            <MapPin className="h-5 w-5 mr-2 text-primary-600" />
+            Seleccionar Ubicación en el Mapa
+          </h4>
+          <MapboxLocationPicker
+            latitude={formData.latitud || 0}
+            longitude={formData.longitud || 0}
+            onLocationChange={(lat, lng) => {
+              console.log('Location changed:', { lat, lng });
+              setFormData(prev => ({
+                ...prev,
+                latitud: lat,
+                longitud: lng,
+              }));
+            }}
+            address={`${formData.direccion || ''}, ${formData.colonia || ''}, ${formData.ciudad || ''}`}
+            onMapModeChange={(mode) => {
+              console.log('Map mode changed:', mode);
+              setFormData(prev => ({
+                ...prev,
+                map_mode: mode,
+              }));
+            }}
+            onAreaRadiusChange={(radius) => {
+              console.log('Area radius changed:', radius);
+              setFormData(prev => ({
+                ...prev,
+                area_radius: radius,
+              }));
+            }}
+            initialMode={formData.map_mode || 'pin'}
+            initialRadius={formData.area_radius || 500}
+          />
         </div>
       </div>
       
