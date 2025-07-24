@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import { MapPin, Crosshair, RotateCcw } from 'lucide-react';
+import AddressAutocomplete from './AddressAutocomplete';
 
 interface MapboxLocationPickerProps {
   latitude: number;
@@ -33,6 +34,7 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
   const [mapMode, setMapMode] = useState<'pin' | 'area'>(initialMode);
   const [areaRadius, setAreaRadius] = useState(initialRadius);
   const [currentCoords, setCurrentCoords] = useState({ lat: latitude, lng: longitude });
+  const [searchValue, setSearchValue] = useState('');
 
   // Mapbox access token
   const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
@@ -66,8 +68,6 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
       setIsMapLoaded(true);
       // Initialize marker after map loads - sin delay para respuesta inmediata
       updateMapDisplay(initialLat, initialLng, mapMode, areaRadius);
-    });
-
     // Handle map clicks
     map.current.on('click', (e) => {
       const { lng, lat } = e.lngLat;
@@ -84,7 +84,7 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
       }
     };
   }, []);
-
+      // Actualizar inmediatamente el display del mapa
   // Update map when coordinates change externally
   useEffect(() => {
     if (isMapLoaded && (latitude !== currentCoords.lat || longitude !== currentCoords.lng)) {
@@ -128,7 +128,7 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
       marker.current = new mapboxgl.Marker({
         color: '#0052a3',
         draggable: true,
-        scale: 1.5
+        scale: 1.8 // Pin azul más grande
       })
         .setLngLat([lng, lat])
         .addTo(map.current);
@@ -166,19 +166,20 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
         paint: {
           'circle-radius': {
             stops: [
-              [10, radius / 15],
-              [12, radius / 10],
-              [14, radius / 6],
-              [16, radius / 4],
-              [18, radius / 2],
+              [8, radius / 8],   // Área más grande en todos los zooms
+              [10, radius / 6],
+              [12, radius / 4],
+              [14, radius / 3],
+              [16, radius / 2],
+              [18, radius / 1.5],
               [20, radius]
             ],
             base: 2
           },
           'circle-color': '#0052a3',
-          'circle-opacity': 0.2,
+          'circle-opacity': 0.25, // Más visible
           'circle-stroke-color': '#0052a3',
-          'circle-stroke-width': 3,
+          'circle-stroke-width': 4, // Borde más grueso
           'circle-stroke-opacity': 1
         }
       });
@@ -187,7 +188,7 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
       marker.current = new mapboxgl.Marker({
         color: '#e6b325',
         draggable: true,
-        scale: 1.3
+        scale: 1.5 // Marcador del centro más grande
       })
         .setLngLat([lng, lat])
         .addTo(map.current);
@@ -247,8 +248,42 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
     updateMapDisplay(mexicoCityLat, mexicoCityLng, mapMode, areaRadius);
   };
 
+  const handleAddressSelect = (addressData: any) => {
+    console.log('Address selected:', addressData);
+    
+    // Update coordinates
+    setCurrentCoords({ lat: addressData.lat, lng: addressData.lng });
+    onLocationChange(addressData.lat, addressData.lng);
+    
+    // Fly to location on map
+    if (map.current) {
+      map.current.flyTo({
+        center: [addressData.lng, addressData.lat],
+        zoom: 16,
+        duration: 1500
+      });
+    }
+    
+    // Update map display
+    updateMapDisplay(addressData.lat, addressData.lng, mapMode, areaRadius);
+  };
   return (
     <div className={`space-y-4 ${className}`}>
+      {/* Address Search */}
+      <div>
+        <label className="block text-sm font-medium text-neutral-700 mb-2">
+          <Search className="h-4 w-4 inline mr-1" />
+          Buscar Dirección
+        </label>
+        <AddressAutocomplete
+          value={searchValue}
+          onChange={setSearchValue}
+          onAddressSelect={handleAddressSelect}
+          placeholder="Busca una dirección, colonia o lugar..."
+          className="w-full"
+        />
+      </div>
+
       {/* Map Mode Controls */}
       <div className="flex flex-wrap gap-3 items-center">
         <div className="flex bg-neutral-100 rounded-lg p-1">
@@ -347,8 +382,8 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
           </p>
           <p className="text-xs text-neutral-600">
             {mapMode === 'pin' 
-              ? 'Haz clic en el mapa para colocar el pin azul o arrastra el marcador para ajustar la posición.'
-              : 'Haz clic en el mapa para establecer el centro del área dorada o arrastra el marcador.'
+              ? 'Busca una dirección arriba o haz clic en el mapa para colocar el pin azul grande.'
+              : 'Busca una dirección o haz clic en el mapa para establecer el centro del área.'
             }
           </p>
         </div>
@@ -415,11 +450,12 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
           <div className="text-sm text-blue-800">
             <p className="font-medium mb-1">Consejos para usar el mapa:</p>
             <ul className="list-disc list-inside space-y-1 text-xs">
-              <li><strong>Ubicación Exacta:</strong> Pin azul grande que aparece al hacer clic en el mapa</li>
-              <li><strong>Área de Influencia:</strong> Círculo azul con marcador dorado en el centro</li>
+              <li><strong>Buscar:</strong> Usa el campo de búsqueda para encontrar direcciones rápidamente</li>
+              <li><strong>Ubicación Exacta:</strong> Pin azul grande para direcciones precisas</li>
+              <li><strong>Área de Influencia:</strong> Círculo azul grande con marcador dorado en el centro</li>
               <li>Puedes hacer zoom con la rueda del mouse o los controles</li>
               <li>Arrastra el marcador para ajustar la posición</li>
-              <li>El área se hace más grande automáticamente al hacer zoom</li>
+              <li>El área se escala automáticamente con el zoom para mejor visibilidad</li>
             </ul>
           </div>
         </div>
