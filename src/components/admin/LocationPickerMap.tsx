@@ -36,7 +36,6 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<any>(null);
   const marker = useRef<any>(null);
-  const circle = useRef<any>(null);
   
   const accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
@@ -44,7 +43,68 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   const defaultLat = latitude || 19.4326;
   const defaultLng = longitude || -99.1332;
 
-  // Function to toggle circle visibility
+  // Function to set pin mode
+  const setPinMode = () => {
+    setMapMode('pin');
+    onMapModeChange?.('pin');
+    removeAreaCircle();
+  };
+
+  // Function to set area mode
+  const setAreaMode = () => {
+    setMapMode('area');
+    onMapModeChange?.('area');
+    if (marker.current) {
+      const lngLat = marker.current.getLngLat();
+      addAreaCircle(lngLat.lng, lngLat.lat);
+    }
+  };
+
+  // Function to go to address
+  const goToAddress = async () => {
+    if (!address.trim() || !map.current) return;
+
+    try {
+      setIsSearching(true);
+      const encodedAddress = encodeURIComponent(address);
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${accessToken}&country=mx&language=es&limit=1`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`Error en la geocodificación: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      if (data.features && data.features.length > 0) {
+        const feature = data.features[0];
+        const [lng, lat] = feature.center;
+        
+        // Update map and marker
+        map.current.setCenter([lng, lat]);
+        map.current.setZoom(16);
+        marker.current.setLngLat([lng, lat]);
+        
+        // Update coordinates
+        onLocationChange(lat, lng);
+        
+        // Update circle if in area mode
+        if (mapMode === 'area') {
+          updateAreaCircle(lng, lat);
+        }
+      } else {
+        throw new Error('No se encontraron coordenadas para esta dirección');
+      }
+    } catch (error) {
+      console.error('Geocoding error:', error);
+      setError(error instanceof Error ? error.message : 'Error al buscar la dirección');
+      setTimeout(() => setError(null), 3000);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Remove the old toggleCircle function since we now have separate functions
   const toggleCircle = () => {
     const newMode = mapMode === 'pin' ? 'area' : 'pin';
     setMapMode(newMode);
@@ -67,71 +127,6 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
       const lngLat = marker.current.getLngLat();
       updateAreaCircle(lngLat.lng, lngLat.lat);
     }
-  };
-
-  const handleResetToDefault = () => {
-    if (map.current && marker.current) {
-      const defaultCenter = [-99.1332, 19.4326]; // Mexico City
-      map.current.setCenter(defaultCenter);
-      map.current.setZoom(10);
-      marker.current.setLngLat(defaultCenter);
-      onLocationChange(19.4326, -99.1332);
-      if (mapMode === 'area') {
-        updateAreaCircle(-99.1332, 19.4326);
-      }
-    }
-  };
-
-  // Search functionality
-  const handleSearch = async () => {
-    if (!searchQuery.trim() || !accessToken) return;
-
-    setIsSearching(true);
-    setShowSearchResults(false);
-
-    try {
-      const encodedQuery = encodeURIComponent(searchQuery);
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedQuery}.json?access_token=${accessToken}&country=mx&language=es&limit=5&types=address,poi,place`
-      );
-
-      if (!response.ok) {
-        throw new Error(`Error en la búsqueda: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setSearchResults(data.features || []);
-      setShowSearchResults(true);
-    } catch (error) {
-      console.error('Search error:', error);
-      setError(error instanceof Error ? error.message : 'Error al buscar ubicación');
-      setTimeout(() => setError(null), 3000);
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  const handleSearchResultSelect = (result: any) => {
-    const [lng, lat] = result.center;
-    
-    // Update map and marker
-    if (map.current && marker.current) {
-      map.current.setCenter([lng, lat]);
-      map.current.setZoom(16);
-      marker.current.setLngLat([lng, lat]);
-      
-      // Update coordinates
-      onLocationChange(lat, lng);
-      
-      // Update circle if in area mode
-      if (mapMode === 'area') {
-        updateAreaCircle(lng, lat);
-      }
-    }
-    
-    // Clear search
-    setSearchQuery(result.place_name);
-    setShowSearchResults(false);
   };
 
   // Handle centering on address
@@ -653,14 +648,23 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
       </div>
       {/* Map Controls */}
       <div className="mt-4 flex flex-wrap gap-3">
+        <button
+          type="button"
+          onClick={setPinMode}
+          className={`btn flex-1 sm:flex-none ${mapMode === 'pin' ? 'btn-primary' : 'btn-outline'}`}
+        >
+          <MapPin className="h-4 w-4 mr-2" />
+          Centrar Pin
+        </button>
+        
         {address && (
           <button
             type="button"
-            onClick={handleCenterOnAddress}
-            disabled={isLoading}
+            onClick={goToAddress}
+            disabled={isSearching}
             className="btn btn-outline flex-1 sm:flex-none"
           >
-            {isLoading ? (
+            {isSearching ? (
               <>
                 <Loader className="h-4 w-4 mr-2 animate-spin" />
                 Buscando...
@@ -668,7 +672,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
             ) : (
               <>
                 <Target className="h-4 w-4 mr-2" />
-                Centrar en dirección
+                Ir a Dirección
               </>
             )}
           </button>
@@ -676,7 +680,65 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         
         <button
           type="button"
-          onClick={handleResetToDefault}
+          onClick={setAreaMode}
+          className={`btn flex-1 sm:flex-none ${mapMode === 'area' ? 'btn-primary' : 'btn-outline'}`}
+        >
+          <Circle className="h-4 w-4 mr-2" />
+          Seleccionar Área
+        </button>
+      </div>
+
+      {/* Remove the old toggle button section */}
+      {/* Map Mode Controls */}
+      <div className="mt-4 flex flex-wrap gap-3">
+        <button
+          type="button"
+          onClick={toggleCircle}
+          className={`btn flex-1 sm:flex-none ${mapMode === 'area' ? 'btn-primary' : 'btn-outline'}`}
+        >
+          {mapMode === 'pin' ? (
+            <>
+              <Circle className="h-4 w-4 mr-2" />
+              Cambiar a área
+            </>
+          ) : (
+            <>
+              <MapPin className="h-4 w-4 mr-2" />
+              Cambiar a pin
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Circle Controls */}
+      {mapMode === 'area' && (
+        <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-3">
+            <label className="text-sm font-medium text-blue-800">
+              Radio del área (metros):
+            </label>
+            <span className="text-sm text-blue-600 font-medium">{radius}m</span>
+          </div>
+          <input
+            type="range"
+            min="100"
+            max="2000"
+            step="50"
+            value={radius}
+            onChange={(e) => updateRadius(Number(e.target.value))}
+            className="w-full h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer"
+          />
+          <div className="flex justify-between text-xs text-blue-600 mt-1">
+            <span>100m</span>
+            <span>2km</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default LocationPickerMap;
           className="btn btn-outline flex-1 sm:flex-none"
         >
           <RotateCcw className="h-4 w-4 mr-2" />
