@@ -236,12 +236,6 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
           map.current.removeLayer('area-circle-stroke');
         }
         map.current.removeSource('area-circle');
-        if (map.current.getLayer('property-area-circle-stroke')) {
-          map.current.removeLayer('property-area-circle-stroke');
-    } catch (err) {
-      console.warn('Error removing existing circle:', err);
-    }
-      }
     } catch (err) {
       console.warn('Error removing existing circle:', err);
     }
