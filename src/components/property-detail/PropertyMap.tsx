@@ -20,6 +20,7 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<any>(null);
   const marker = useRef<any>(null);
+  const [mapInitialized, setMapInitialized] = useState(false);
   
   const accessToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
 
@@ -73,6 +74,7 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
       try {
         setIsLoading(true);
         setError(null);
+        setMapInitialized(false);
         
         // Check if container exists
         if (!mapContainer.current) {
@@ -111,6 +113,8 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
         // Handle map load event
         map.current.on('load', () => {
           try {
+            setMapInitialized(true);
+            
             // Add marker after map loads with Nova Hestia blue
             marker.current = new mapboxgl.default.Marker({
               color: '#0052a3', // Nova Hestia blue
@@ -147,18 +151,11 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
           setIsLoading(false);
         });
 
-        // Timeout fallback
-        setTimeout(() => {
-          if (isLoading) {
-            console.warn('Map loading timeout, trying static map fallback');
-            setError('El mapa interactivo no está disponible');
-            setIsLoading(false);
-          }
-        }, 6000);
 
       } catch (err) {
         console.error('Error initializing map:', err);
-        setError('Error al cargar el mapa interactivo');
+        console.warn('Map initialization failed, using static map fallback');
+        setUseStaticMap(true);
         setIsLoading(false);
       }
     };
@@ -181,39 +178,57 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
 
   // Function to add area circle
   const addAreaCircle = (lng: number, lat: number, radiusInMeters: number) => {
-    if (!map.current) return;
+    if (!map.current || !mapInitialized || !map.current.isStyleLoaded()) return;
 
     // Create circle data
     const circleData = createCircleGeoJSON(lng, lat, radiusInMeters);
 
+    // Remove existing circle if it exists
+    try {
+      if (map.current.getSource('property-area-circle')) {
+        if (map.current.getLayer('property-area-circle-fill')) {
+          map.current.removeLayer('property-area-circle-fill');
+        }
+        if (map.current.getLayer('property-area-circle-stroke')) {
+          map.current.removeLayer('property-area-circle-stroke');
+        }
+        map.current.removeSource('property-area-circle');
+      }
+    } catch (err) {
+      console.warn('Error removing existing circle:', err);
+    }
     // Add circle source and layer
-    map.current.addSource('property-area-circle', {
-      type: 'geojson',
-      data: circleData
-    });
+    try {
+      map.current.addSource('property-area-circle', {
+        type: 'geojson',
+        data: circleData
+      });
 
-    // Add fill layer with Nova Hestia blue
-    map.current.addLayer({
-      id: 'property-area-circle-fill',
-      type: 'fill',
-      source: 'property-area-circle',
-      paint: {
-        'fill-color': '#0052a3', // Nova Hestia blue
-        'fill-opacity': 0.3
-      }
-    });
+      // Add fill layer with Nova Hestia blue
+      map.current.addLayer({
+        id: 'property-area-circle-fill',
+        type: 'fill',
+        source: 'property-area-circle',
+        paint: {
+          'fill-color': '#0052a3', // Nova Hestia blue
+          'fill-opacity': 0.3
+        }
+      });
 
-    // Add stroke layer
-    map.current.addLayer({
-      id: 'property-area-circle-stroke',
-      type: 'line',
-      source: 'property-area-circle',
-      paint: {
-        'line-color': '#0052a3', // Nova Hestia blue
-        'line-width': 3,
-        'line-opacity': 1
-      }
-    });
+      // Add stroke layer
+      map.current.addLayer({
+        id: 'property-area-circle-stroke',
+        type: 'line',
+        source: 'property-area-circle',
+        paint: {
+          'line-color': '#0052a3', // Nova Hestia blue
+          'line-width': 3,
+          'line-opacity': 1
+        }
+      });
+    } catch (err) {
+      console.warn('Error adding area circle:', err);
+    }
   };
 
   // Function to create circle GeoJSON
