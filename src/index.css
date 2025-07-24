@@ -19,6 +19,16 @@
   cursor: pointer;
 }
 
+/* Custom marker styles */
+.mapbox-marker-pin {
+  position: relative;
+  display: block;
+}
+
+.mapbox-marker-pin:hover {
+  transform: rotate(-45deg) scale(1.1);
+  transition: transform 0.2s ease;
+}
 /* Custom slider styles for area radius */
 .slider {
   -webkit-appearance: none;

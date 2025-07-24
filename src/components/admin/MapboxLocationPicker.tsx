@@ -123,13 +123,42 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
       circle.current = null;
     }
 
+    // Ensure we have valid coordinates
+    if (!lat || !lng || lat === 0 || lng === 0) {
+      console.log('Invalid coordinates, skipping marker creation');
+      return;
+    }
     if (mode === 'pin') {
       console.log('Creating pin marker at:', lat, lng);
-      // Add marker for pin mode
+      
+      // Create marker element manually for better control
+      const markerElement = document.createElement('div');
+      markerElement.className = 'mapbox-marker-pin';
+      markerElement.style.width = '30px';
+      markerElement.style.height = '30px';
+      markerElement.style.borderRadius = '50% 50% 50% 0';
+      markerElement.style.backgroundColor = '#0052a3';
+      markerElement.style.border = '3px solid #ffffff';
+      markerElement.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)';
+      markerElement.style.transform = 'rotate(-45deg)';
+      markerElement.style.cursor = 'pointer';
+      
+      // Add inner dot
+      const innerDot = document.createElement('div');
+      innerDot.style.width = '8px';
+      innerDot.style.height = '8px';
+      innerDot.style.backgroundColor = '#ffffff';
+      innerDot.style.borderRadius = '50%';
+      innerDot.style.position = 'absolute';
+      innerDot.style.top = '50%';
+      innerDot.style.left = '50%';
+      innerDot.style.transform = 'translate(-50%, -50%) rotate(45deg)';
+      markerElement.appendChild(innerDot);
+      
       marker.current = new mapboxgl.Marker({
-        color: '#0052a3',
+        element: markerElement,
         draggable: true,
-        scale: 1.8 // Pin azul más grande
+        anchor: 'bottom'
       })
         .setLngLat([lng, lat])
         .addTo(map.current);
@@ -143,6 +172,8 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
           onLocationChange(lngLat.lat, lngLat.lng);
         }
       });
+      
+      console.log('Pin marker created successfully');
     } else {
       console.log('Creating area circle at:', lat, lng, 'with radius:', radius);
       // Add circle for area mode
@@ -185,11 +216,19 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
         }
       });
 
-      // Add center marker
+      // Add center marker with custom element
+      const centerElement = document.createElement('div');
+      centerElement.style.width = '20px';
+      centerElement.style.height = '20px';
+      centerElement.style.borderRadius = '50%';
+      centerElement.style.backgroundColor = '#e6b325';
+      centerElement.style.border = '3px solid #ffffff';
+      centerElement.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.3)';
+      centerElement.style.cursor = 'pointer';
+      
       marker.current = new mapboxgl.Marker({
-        color: '#e6b325',
-        draggable: true,
-        scale: 1.5 // Marcador del centro más grande
+        element: centerElement,
+        draggable: true
       })
         .setLngLat([lng, lat])
         .addTo(map.current);
@@ -206,6 +245,7 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
       });
 
       circle.current = true;
+      console.log('Area circle and marker created successfully');
     }
   };
 
