@@ -476,7 +476,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
     setShowSearchResults(false);
   };
 
-  const handleCenterOnAddress = async () => {
+  async function handleCenterOnAddress() {
     if (!address.trim() || !map.current) return;
 
     try {
@@ -518,7 +518,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   const handleResetToDefault = () => {
     if (map.current && marker.current) {
