@@ -64,17 +64,17 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
 
     map.current.on('load', () => {
       setIsMapLoaded(true);
-      // Initialize marker after map loads
-      setTimeout(() => {
-        updateMapDisplay(initialLat, initialLng, mapMode, areaRadius);
-      }, 100);
+      // Initialize marker after map loads - sin delay para respuesta inmediata
+      updateMapDisplay(initialLat, initialLng, mapMode, areaRadius);
     });
 
     // Handle map clicks
     map.current.on('click', (e) => {
       const { lng, lat } = e.lngLat;
+      console.log('Map clicked at:', lat, lng);
       setCurrentCoords({ lat, lng });
       onLocationChange(lat, lng);
+      // Actualizar inmediatamente el display del mapa
       updateMapDisplay(lat, lng, mapMode, areaRadius);
     });
 
@@ -128,7 +128,7 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
       marker.current = new mapboxgl.Marker({
         color: '#0052a3',
         draggable: true,
-        scale: 1.2
+        scale: 1.5
       })
         .setLngLat([lng, lat])
         .addTo(map.current);
@@ -166,17 +166,20 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
         paint: {
           'circle-radius': {
             stops: [
-              [0, 0],
-              [15, radius / 8],
-              [20, radius / 4]
+              [10, radius / 15],
+              [12, radius / 10],
+              [14, radius / 6],
+              [16, radius / 4],
+              [18, radius / 2],
+              [20, radius]
             ],
             base: 2
           },
           'circle-color': '#0052a3',
-          'circle-opacity': 0.3,
+          'circle-opacity': 0.2,
           'circle-stroke-color': '#0052a3',
-          'circle-stroke-width': 2,
-          'circle-stroke-opacity': 0.8
+          'circle-stroke-width': 3,
+          'circle-stroke-opacity': 1
         }
       });
 
@@ -184,7 +187,7 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
       marker.current = new mapboxgl.Marker({
         color: '#e6b325',
         draggable: true,
-        scale: 1.0
+        scale: 1.3
       })
         .setLngLat([lng, lat])
         .addTo(map.current);
@@ -344,8 +347,8 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
           </p>
           <p className="text-xs text-neutral-600">
             {mapMode === 'pin' 
-              ? 'Haz clic en el mapa o arrastra el marcador. El pin se mantendrá dentro del área visible.'
-              : 'Haz clic en el mapa o arrastra el marcador para establecer el centro del área'
+              ? 'Haz clic en el mapa para colocar el pin azul o arrastra el marcador para ajustar la posición.'
+              : 'Haz clic en el mapa para establecer el centro del área dorada o arrastra el marcador.'
             }
           </p>
         </div>
@@ -412,11 +415,11 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
           <div className="text-sm text-blue-800">
             <p className="font-medium mb-1">Consejos para usar el mapa:</p>
             <ul className="list-disc list-inside space-y-1 text-xs">
-              <li><strong>Ubicación Exacta:</strong> Haz clic en el mapa o arrastra el marcador azul</li>
-              <li><strong>Área de Influencia:</strong> Usa cuando quieras mostrar una zona general (ideal para privacidad)</li>
+              <li><strong>Ubicación Exacta:</strong> Pin azul grande que aparece al hacer clic en el mapa</li>
+              <li><strong>Área de Influencia:</strong> Círculo azul con marcador dorado en el centro</li>
               <li>Puedes hacer zoom con la rueda del mouse o los controles</li>
               <li>Arrastra el marcador para ajustar la posición</li>
-              <li>El marcador siempre será visible en el mapa</li>
+              <li>El área se hace más grande automáticamente al hacer zoom</li>
             </ul>
           </div>
         </div>
