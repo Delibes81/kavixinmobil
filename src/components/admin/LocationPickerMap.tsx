@@ -361,7 +361,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   };
 
   // Function to toggle circle visibility
-  const toggleCircle = () => {
+  function toggleCircle() {
     const newMode = mapMode === 'pin' ? 'area' : 'pin';
     setMapMode(newMode);
     onMapModeChange?.(newMode);
@@ -373,16 +373,16 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
       setShowCircle(false);
       removeAreaCircle();
     }
-  };
+  }
 
-  const updateMapForAreaMode = () => {
+  function updateMapForAreaMode() {
     if (marker.current) {
       const lngLat = marker.current.getLngLat();
       addAreaCircle(lngLat.lng, lngLat.lat);
     }
-  };
+  }
 
-  const removeAreaCircle = () => {
+  function removeAreaCircle() {
     if (!map.current) return;
     
     try {
@@ -398,17 +398,17 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
     } catch (err) {
       console.warn('Error removing area circle:', err);
     }
-  };
+  }
 
   // Function to update circle radius
-  const updateRadius = (newRadius: number) => {
+  function updateRadius(newRadius: number) {
     setRadius(newRadius);
     onAreaRadiusChange?.(newRadius);
     if (showCircle && mapMode === 'area' && marker.current) {
       const lngLat = marker.current.getLngLat();
       updateAreaCircle(lngLat.lng, lngLat.lat);
     }
-  };
+  }
 
   // Update marker position when coordinates change externally
   useEffect(() => {
