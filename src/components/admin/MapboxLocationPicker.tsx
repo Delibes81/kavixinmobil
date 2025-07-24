@@ -37,6 +37,16 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
   // Mapbox access token - you'll need to set this in your environment
   const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
 
+  // Function to ensure coordinates are within map bounds
+  const constrainToBounds = (lat: number, lng: number) => {
+    if (!map.current) return { lat, lng };
+    
+    const bounds = map.current.getBounds();
+    const constrainedLat = Math.max(bounds.getSouth(), Math.min(bounds.getNorth(), lat));
+    const constrainedLng = Math.max(bounds.getWest(), Math.min(bounds.getEast(), lng));
+    
+    return { lat: constrainedLat, lng: constrainedLng };
+  };
   useEffect(() => {
     if (!mapContainer.current) return;
 
@@ -70,11 +80,27 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
     // Handle map clicks
     map.current.on('click', (e) => {
       const { lng, lat } = e.lngLat;
-      setCurrentCoords({ lat, lng });
-      onLocationChange(lat, lng);
-      updateMapDisplay(lat, lng, mapMode, areaRadius);
+      // Ensure the clicked location is within bounds
+      const constrainedCoords = constrainToBounds(lat, lng);
+      setCurrentCoords(constrainedCoords);
+      onLocationChange(constrainedCoords.lat, constrainedCoords.lng);
+      updateMapDisplay(constrainedCoords.lat, constrainedCoords.lng, mapMode, areaRadius);
     });
 
+    // Handle map move to constrain marker when map bounds change
+    map.current.on('moveend', () => {
+      if (mapMode === 'pin' && marker.current) {
+        const markerLngLat = marker.current.getLngLat();
+        const constrainedCoords = constrainToBounds(markerLngLat.lat, markerLngLat.lng);
+        
+        // Only update if coordinates actually changed
+        if (constrainedCoords.lat !== markerLngLat.lat || constrainedCoords.lng !== markerLngLat.lng) {
+          setCurrentCoords(constrainedCoords);
+          onLocationChange(constrainedCoords.lat, constrainedCoords.lng);
+          updateMapDisplay(constrainedCoords.lat, constrainedCoords.lng, mapMode, areaRadius);
+        }
+      }
+    });
     return () => {
       if (map.current) {
         map.current.remove();
@@ -87,13 +113,14 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
     if (isMapLoaded && (latitude !== currentCoords.lat || longitude !== currentCoords.lng)) {
       const newLat = latitude || 19.4326;
       const newLng = longitude || -99.1332;
-      setCurrentCoords({ lat: newLat, lng: newLng });
-      updateMapDisplay(newLat, newLng, mapMode, areaRadius);
+      const constrainedCoords = constrainToBounds(newLat, newLng);
+      setCurrentCoords(constrainedCoords);
+      updateMapDisplay(constrainedCoords.lat, constrainedCoords.lng, mapMode, areaRadius);
       
       // Center map on new coordinates
       if (map.current) {
         map.current.flyTo({
-          center: [newLng, newLat],
+          center: [constrainedCoords.lng, constrainedCoords.lat],
           zoom: 15,
           duration: 1000
         });
@@ -104,6 +131,10 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
   const updateMapDisplay = (lat: number, lng: number, mode: 'pin' | 'area', radius: number) => {
     if (!map.current || !isMapLoaded) return;
 
+    // Ensure coordinates are within current map bounds
+    const constrainedCoords = constrainToBounds(lat, lng);
+    const finalLat = constrainedCoords.lat;
+    const finalLng = constrainedCoords.lng;
     // Remove existing marker and circle
     if (marker.current) {
       marker.current.remove();
@@ -122,15 +153,20 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
         color: '#0052a3',
         draggable: true
       })
-        .setLngLat([lng, lat])
+        .setLngLat([finalLng, finalLat])
         .addTo(map.current);
 
       // Handle marker drag
       marker.current.on('dragend', () => {
         if (marker.current) {
           const lngLat = marker.current.getLngLat();
-          setCurrentCoords({ lat: lngLat.lat, lng: lngLat.lng });
-          onLocationChange(lngLat.lat, lngLat.lng);
+          const constrainedCoords = constrainToBounds(lngLat.lat, lngLat.lng);
+          
+          // Update marker position to constrained coordinates
+          marker.current.setLngLat([constrainedCoords.lng, constrainedCoords.lat]);
+          
+          setCurrentCoords(constrainedCoords);
+          onLocationChange(constrainedCoords.lat, constrainedCoords.lng);
         }
       });
     } else {
@@ -139,7 +175,7 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
         type: 'Feature' as const,
         geometry: {
           type: 'Point' as const,
-          coordinates: [lng, lat]
+          coordinates: [finalLng, finalLat]
         },
         properties: {}
       };
@@ -175,16 +211,21 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
         draggable: true,
         scale: 0.8
       })
-        .setLngLat([lng, lat])
+        .setLngLat([finalLng, finalLat])
         .addTo(map.current);
 
       // Handle marker drag for area mode
       marker.current.on('dragend', () => {
         if (marker.current) {
           const lngLat = marker.current.getLngLat();
-          setCurrentCoords({ lat: lngLat.lat, lng: lngLat.lng });
-          onLocationChange(lngLat.lat, lngLat.lng);
-          updateMapDisplay(lngLat.lat, lngLat.lng, mode, radius);
+          const constrainedCoords = constrainToBounds(lngLat.lat, lngLat.lng);
+          
+          // Update marker position to constrained coordinates
+          marker.current.setLngLat([constrainedCoords.lng, constrainedCoords.lat]);
+          
+          setCurrentCoords(constrainedCoords);
+          onLocationChange(constrainedCoords.lat, constrainedCoords.lng);
+          updateMapDisplay(constrainedCoords.lat, constrainedCoords.lng, mode, radius);
         }
       });
 
@@ -312,7 +353,7 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
       <div className="relative">
         <div 
           ref={mapContainer} 
-          className="w-full h-96 rounded-lg border border-neutral-300 bg-neutral-100"
+          className="w-full h-96 rounded-lg border border-neutral-300 bg-neutral-100 overflow-hidden"
           style={{ minHeight: '400px' }}
         />
         
@@ -332,7 +373,7 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
           </p>
           <p className="text-xs text-neutral-600">
             {mapMode === 'pin' 
-              ? 'Haz clic en el mapa o arrastra el marcador para establecer la ubicación exacta'
+              ? 'Haz clic en el mapa o arrastra el marcador. El pin se mantendrá dentro del área visible.'
               : 'Haz clic en el mapa o arrastra el marcador para establecer el centro del área'
             }
           </p>
@@ -349,8 +390,10 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
               value={currentCoords.lat || 0}
               onChange={(e) => {
                 const newLat = Number(e.target.value);
-                setCurrentCoords(prev => ({ ...prev, lat: newLat }));
-                onLocationChange(newLat, currentCoords.lng);
+                const constrainedCoords = constrainToBounds(newLat, currentCoords.lng);
+                setCurrentCoords(constrainedCoords);
+                onLocationChange(constrainedCoords.lat, constrainedCoords.lng);
+                updateMapDisplay(constrainedCoords.lat, constrainedCoords.lng, mapMode, areaRadius);
               }}
               step="0.000001"
               className="input-field text-sm"
@@ -364,8 +407,10 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
               value={currentCoords.lng || 0}
               onChange={(e) => {
                 const newLng = Number(e.target.value);
-                setCurrentCoords(prev => ({ ...prev, lng: newLng }));
-                onLocationChange(currentCoords.lat, newLng);
+                const constrainedCoords = constrainToBounds(currentCoords.lat, newLng);
+                setCurrentCoords(constrainedCoords);
+                onLocationChange(constrainedCoords.lat, constrainedCoords.lng);
+                updateMapDisplay(constrainedCoords.lat, constrainedCoords.lng, mapMode, areaRadius);
               }}
               step="0.000001"
               className="input-field text-sm"
@@ -389,6 +434,14 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
             </p>
           </div>
         )}
+        
+        {mapMode === 'pin' && (
+          <div className="mt-3 p-2 bg-blue-50 rounded-md">
+            <p className="text-xs text-blue-700">
+              💡 El marcador se mantiene automáticamente dentro del área visible del mapa
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Info Panel */}
@@ -398,10 +451,11 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
           <div className="text-sm text-blue-800">
             <p className="font-medium mb-1">Consejos para usar el mapa:</p>
             <ul className="list-disc list-inside space-y-1 text-xs">
-              <li><strong>Ubicación Exacta:</strong> Usa cuando tengas la dirección precisa de la propiedad</li>
+              <li><strong>Ubicación Exacta:</strong> El pin se mantiene dentro del mapa visible automáticamente</li>
               <li><strong>Área de Influencia:</strong> Usa cuando quieras mostrar una zona general (ideal para privacidad)</li>
               <li>Puedes hacer zoom con la rueda del mouse o los controles</li>
               <li>Arrastra el marcador para ajustar la posición</li>
+              <li>Si el pin sale del área visible, se reposicionará automáticamente</li>
             </ul>
           </div>
         </div>
