@@ -158,21 +158,6 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
     setShowSearchResults(false);
   };
 
-  // Remove the old toggleCircle function since we now have separate functions
-  const toggleCircle = () => {
-    const newMode = mapMode === 'pin' ? 'area' : 'pin';
-    setMapMode(newMode);
-    onMapModeChange?.(newMode);
-    
-    if (newMode === 'area') {
-      setShowCircle(true);
-      updateMapForAreaMode();
-    } else {
-      setShowCircle(false);
-      removeAreaCircle();
-    }
-  };
-
   // Function to update circle radius
   const updateRadius = (newRadius: number) => {
     setRadius(newRadius);
@@ -362,7 +347,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
 
   // Function to add area circle
   const addAreaCircle = (lng: number, lat: number) => {
-    if (!map.current) return;
+    if (!map.current || !map.current.isStyleLoaded()) return;
 
     // Remove existing circle if it exists
     if (map.current.getSource('area-circle')) {
@@ -451,7 +436,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   };
 
   const removeAreaCircle = () => {
-    if (!map.current) return;
+    if (!map.current || !map.current.isStyleLoaded()) return;
     
     try {
       if (map.current.getLayer('area-circle-fill')) {
@@ -531,27 +516,6 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
               </button>
             )}
           </div>
-        </div>
-        
-        {/* Map Mode Controls */}
-        <div className="mt-4 flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={toggleCircle}
-            className={`btn flex-1 sm:flex-none ${mapMode === 'area' ? 'btn-primary' : 'btn-outline'}`}
-          >
-            {mapMode === 'pin' ? (
-              <>
-                <Circle className="h-4 w-4 mr-2" />
-                Cambiar a área
-              </>
-            ) : (
-              <>
-                <MapPin className="h-4 w-4 mr-2" />
-                Cambiar a pin
-              </>
-            )}
-          </button>
         </div>
 
         {/* Circle Controls */}
@@ -739,28 +703,6 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         >
           <Circle className="h-4 w-4 mr-2" />
           Seleccionar Área
-        </button>
-      </div>
-
-      {/* Remove the old toggle button section */}
-      {/* Map Mode Controls */}
-      <div className="mt-4 flex flex-wrap gap-3">
-        <button
-          type="button"
-          onClick={toggleCircle}
-          className={`btn flex-1 sm:flex-none ${mapMode === 'area' ? 'btn-primary' : 'btn-outline'}`}
-        >
-          {mapMode === 'pin' ? (
-            <>
-              <Circle className="h-4 w-4 mr-2" />
-              Cambiar a área
-            </>
-          ) : (
-            <>
-              <MapPin className="h-4 w-4 mr-2" />
-              Cambiar a pin
-            </>
-          )}
         </button>
       </div>
 
