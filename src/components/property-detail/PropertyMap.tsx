@@ -54,18 +54,17 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
 
   useEffect(() => {
     if (!accessToken) {
-      setError('Token de Mapbox no configurado');
-      setIsLoading(false);
-      setUseStaticMap(true);
+      console.warn('Mapbox token not configured, but continuing with interactive map attempt');
+      // Don't set error or useStaticMap immediately - let the map try to load
+      setIsLoading(true);
       return;
     }
 
     // Check if we have valid coordinates
     const [lat, lng] = position;
     if (!lat || !lng || (lat === 0 && lng === 0)) {
-      setError('Coordenadas no disponibles para esta propiedad');
-      setIsLoading(false);
-      setUseStaticMap(true);
+      console.warn('Invalid coordinates, but attempting to show map anyway');
+      // Don't immediately fallback to static map
       return;
     }
 
@@ -150,29 +149,40 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
         // Handle map errors - fallback to static map
         map.current.on('error', (e: any) => {
           console.error('Map error:', e);
-          setUseStaticMap(true);
-          setIsLoading(false);
+          // Only fallback to static map after multiple errors
+          setTimeout(() => {
+            if (isLoading) {
+              console.warn('Map failed to load after timeout, using static fallback');
+              setUseStaticMap(true);
+              setIsLoading(false);
+            }
+          }, 2000);
         });
 
        // Handle style load event specifically for area circles
        map.current.on('styledata', () => {
          if (mapMode === 'area' && mapInitialized) {
-           setTimeout(() => {
-             addAreaCircle(lng, lat, areaRadius);
-           }, 100);
+            console.warn('Map loading timeout, trying static map');
+            setUseStaticMap(true);
+            setIsLoading(false);
          }
-       });
+        }, 10000); // Increased timeout
 
       } catch (err) {
         console.error('Error initializing map:', err);
-        console.warn('Map initialization failed, using static map fallback');
-        setUseStaticMap(true);
-        setIsLoading(false);
+        // Don't immediately fallback - give it more time
+        setTimeout(() => {
+          if (isLoading) {
+            console.warn('Map initialization failed after timeout, using static fallback');
+            setUseStaticMap(true);
+            setIsLoading(false);
+          }
+        }, 3000);
       }
     };
 
     // Add delay before initializing to ensure DOM is ready
-    const timer = setTimeout(initializeMap, 200);
+    const timer = setTimeout(initializeMap, 500); // Increased delay for Netlify
 
     // Cleanup
     return () => {
@@ -189,7 +199,17 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
 
   // Function to add area circle
   const addAreaCircle = (lng: number, lat: number, radiusInMeters: number) => {
-   if (!map.current || !mapInitialized) {
+    if (!map.current || !mapInitialized) {
+      console.log('Map not ready for area circle');
+      return;
+    }
+    
+    // Check if style is loaded with retry
+    if (!map.current.isStyleLoaded()) {
+      console.log('Map style not loaded, retrying...');
+      setTimeout(() => addAreaCircle(lng, lat), 500);
+      return;
+    }
      console.log('Map not ready for area circle');
      return;
    }
@@ -208,20 +228,23 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
 
     // Remove existing circle if it exists
     try {
-      if (map.current.getSource('property-area-circle')) {
-       console.log('Removing existing circle');
-        if (map.current.getLayer('property-area-circle-fill')) {
-          map.current.removeLayer('property-area-circle-fill');
+      if (map.current.getSource('area-circle')) {
+        if (map.current.getLayer('area-circle-fill')) {
+          map.current.removeLayer('area-circle-fill');
         }
+        if (map.current.getLayer('area-circle-stroke')) {
+          map.current.removeLayer('area-circle-stroke');
+        }
+        map.current.removeSource('area-circle');
         if (map.current.getLayer('property-area-circle-stroke')) {
           map.current.removeLayer('property-area-circle-stroke');
-        }
-        map.current.removeSource('property-area-circle');
+    } catch (err) {
+      console.warn('Error removing existing circle:', err);
+    }
       }
     } catch (err) {
       console.warn('Error removing existing circle:', err);
     }
-    // Add circle source and layer
     try {
      console.log('Adding new circle source and layers');
       map.current.addSource('property-area-circle', {
