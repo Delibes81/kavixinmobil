@@ -379,16 +379,16 @@
 
 /* Custom styles for testimonials slider */
 .slick-dots {
-  bottom: -60px !important;
+  bottom: -50px !important;
   text-align: center;
 }
 
 .slick-dots li {
-  margin: 0 6px;
+  margin: 0 4px;
 }
 
 .slick-dots li button:before {
-  font-size: 14px;
+  font-size: 12px;
   color: #0052a3;
   opacity: 0.5;
 }
@@ -398,7 +398,7 @@
   opacity: 1;
 }
 
-/* Hide default arrows completely */
+/* Hide default arrows */
 .slick-prev,
 .slick-next {
   display: none !important;

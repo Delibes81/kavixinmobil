@@ -35,6 +35,23 @@ const Testimonial: React.FC<TestimonialProps> = ({ quote, author, position, rati
         </div>
       </div>
       
+      {/* Custom navigation buttons - moved outside relative container */}
+      <div className="flex justify-center mt-6 space-x-4 md:hidden">
+        <button
+          onClick={() => sliderRef?.slickPrev()}
+          className="bg-white rounded-full p-3 shadow-md hover:bg-neutral-100 focus:outline-none transition-colors duration-200"
+          aria-label="Previous testimonial"
+        >
+          <ChevronLeft className="h-5 w-5 text-primary-600" />
+        </button>
+        <button
+          onClick={() => sliderRef?.slickNext()}
+          className="bg-white rounded-full p-3 shadow-md hover:bg-neutral-100 focus:outline-none transition-colors duration-200"
+          aria-label="Next testimonial"
+        >
+          <ChevronRight className="h-5 w-5 text-primary-600" />
+        </button>
+      </div>
     </div>
   );
 };
@@ -117,7 +134,7 @@ const TestimonialsSection: React.FC = () => {
             ))}
           </Slider>
           
-          {/* Custom navigation buttons - desktop only */}
+          {/* Custom navigation buttons */}
           <button
             onClick={() => sliderRef?.slickPrev()}
             className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-5 z-10 bg-white rounded-full p-2 shadow-md hover:bg-neutral-100 focus:outline-none hidden md:block"
@@ -132,24 +149,6 @@ const TestimonialsSection: React.FC = () => {
           >
             <ChevronRight className="h-6 w-6 text-primary-600" />
           </button>
-          
-          {/* Mobile navigation buttons - below slider */}
-          <div className="flex justify-center mt-6 space-x-4 md:hidden">
-            <button
-              onClick={() => sliderRef?.slickPrev()}
-              className="bg-white rounded-full p-3 shadow-md hover:bg-neutral-100 focus:outline-none transition-colors duration-200"
-              aria-label="Testimonio anterior"
-            >
-              <ChevronLeft className="h-5 w-5 text-primary-600" />
-            </button>
-            <button
-              onClick={() => sliderRef?.slickNext()}
-              className="bg-white rounded-full p-3 shadow-md hover:bg-neutral-100 focus:outline-none transition-colors duration-200"
-              aria-label="Siguiente testimonio"
-            >
-              <ChevronRight className="h-5 w-5 text-primary-600" />
-            </button>
-          </div>
         </div>
       </div>
     </section>
