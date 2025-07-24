@@ -377,18 +377,31 @@
   display: none;
 }
 
-/* Custom styles for property gallery */
-.slick-prev:before, .slick-next:before {
-  color: #0052a3;
+/* Custom styles for testimonials slider */
+.slick-dots {
+  bottom: -50px !important;
+  text-align: center;
+}
+
+.slick-dots li {
+  margin: 0 4px;
 }
 
 .slick-dots li button:before {
-  font-size: 10px;
+  font-size: 12px;
   color: #0052a3;
+  opacity: 0.5;
 }
 
 .slick-dots li.slick-active button:before {
   color: #0052a3;
+  opacity: 1;
+}
+
+/* Hide default arrows */
+.slick-prev,
+.slick-next {
+  display: none !important;
 }
 
 /* Property Detail Gallery */

@@ -33,21 +33,24 @@ const Testimonial: React.FC<TestimonialProps> = ({ quote, author, position, rati
             "{quote}"
           </blockquote>
         </div>
-        
-        {/* Author */}
-        <div className="flex items-center mt-4">
-          <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
-            <LazyImage
-              src={image}
-              alt={author}
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div>
-            <p className="font-medium text-primary-800">{author}</p>
-            <p className="text-sm text-neutral-600">{position}</p>
-          </div>
-        </div>
+      </div>
+      
+      {/* Custom navigation buttons - moved outside relative container */}
+      <div className="flex justify-center mt-6 space-x-4 md:hidden">
+        <button
+          onClick={() => sliderRef?.slickPrev()}
+          className="bg-white rounded-full p-3 shadow-md hover:bg-neutral-100 focus:outline-none transition-colors duration-200"
+          aria-label="Previous testimonial"
+        >
+          <ChevronLeft className="h-5 w-5 text-primary-600" />
+        </button>
+        <button
+          onClick={() => sliderRef?.slickNext()}
+          className="bg-white rounded-full p-3 shadow-md hover:bg-neutral-100 focus:outline-none transition-colors duration-200"
+          aria-label="Next testimonial"
+        >
+          <ChevronRight className="h-5 w-5 text-primary-600" />
+        </button>
       </div>
     </div>
   );
