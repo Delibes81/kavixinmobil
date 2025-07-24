@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { MapPin, Loader, AlertTriangle, Target, RotateCcw, Circle, Search, Navigation, Crosshair } from 'lucide-react';
 
 interface LocationPickerMapProps {
