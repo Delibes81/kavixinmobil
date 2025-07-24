@@ -23,8 +23,8 @@ export interface Property {
   disponible: boolean;
   destacado: boolean;
   id_interno?: string;
-  map_mode?: 'pin' | 'area';
-  area_radius?: number;
+  map_mode: 'pin' | 'area';
+  area_radius: number;
   fecha_creacion: string;
   fecha_actualizacion: string;
   amenidades?: Amenity[];

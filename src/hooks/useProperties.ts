@@ -187,15 +187,11 @@ export const useProperties = () => {
       }));
 
       console.log('Properties loaded:', transformedProperties.length);
-      console.log('Properties types distribution:', transformedProperties.reduce((acc, p) => {
-        acc[p.tipo] = (acc[p.tipo] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>));
-      console.log('Sample properties for debugging:', transformedProperties.slice(0, 3).map(p => ({
+      console.log('Properties with map modes:', transformedProperties.map(p => ({
         id: p.id,
         titulo: p.titulo,
-        tipo: p.tipo,
-        operacion: p.operacion
+        map_mode: p.map_mode,
+        area_radius: p.area_radius
       })));
       setProperties(transformedProperties);
     } catch (err) {
