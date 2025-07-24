@@ -17,6 +17,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   longitude,
   onLocationChange,
   address = '',
+  showAreaCircle,
   className = '',
   onMapModeChange,
   onAreaRadiusChange,
