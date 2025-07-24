@@ -374,23 +374,16 @@ const PropertySearchFilters: React.FC<PropertySearchFiltersProps> = ({ onApplyFi
                 <label htmlFor="ubicacion" className="block text-sm font-medium text-neutral-700 mb-2 px-1">
                   Ubicación
                 </label>
-                <AddressAutocomplete
+                <input
+                  type="text"
+                  id="ubicacion"
+                  name="ubicacion"
                   value={filters.ubicacion}
-                  onChange={(value) => handleInputChange({ target: { name: 'ubicacion', value } } as any)}
+                  onChange={handleInputChange}
                   placeholder="Ciudad, colonia o zona"
                   className={`transition-all duration-200 ${
                     filters.ubicacion ? 'border-primary-500 bg-primary-50' : ''
-                  }`}
-                  onAddressSelect={(addressData) => {
-                    // Use the most relevant location component for search
-                    const locationValue = addressData.components.locality || 
-                                        addressData.components.neighborhood || 
-                                        addressData.formatted_address;
-                    setFilters(prev => ({
-                      ...prev,
-                      ubicacion: locationValue
-                    }));
-                  }}
+                  } input-field`}
                 />
               </div>
               

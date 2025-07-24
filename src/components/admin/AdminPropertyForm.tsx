@@ -549,15 +549,8 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
             <label htmlFor="direccion" className="block text-sm font-medium text-neutral-700 mb-1">
               Dirección <span className="text-red-500">*</span>
             </label>
-            <AddressAutocomplete
-              value={formData.direccion || ''}
-              onChange={(value) => handleInputChange({ target: { name: 'direccion', value, type: 'text' } } as any)}
-              onAddressSelect={handleAddressSelect}
-              placeholder="Ej. Paseo de la Reforma 222, Depto 301"
-              className={errors.direccion ? 'border-red-500' : ''}
-              disabled={isSubmitting}
-            />
-            {/* <input
+            <input
+              type="text"
               id="direccion"
               name="direccion"
               value={formData.direccion || ''}
@@ -566,7 +559,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
               placeholder="Ej. Paseo de la Reforma 222, Depto 301"
               maxLength={200}
               disabled={isSubmitting}
-            /> */}
+            />
             {errors.direccion && <p className="mt-1 text-sm text-red-500">{errors.direccion}</p>}
           </div>
           
