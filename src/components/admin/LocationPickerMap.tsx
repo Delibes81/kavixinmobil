@@ -44,6 +44,50 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
   const defaultLat = latitude || 19.4326;
   const defaultLng = longitude || -99.1332;
 
+  // Handle centering on address
+  const handleCenterOnAddress = useCallback(async () => {
+    if (!address.trim() || !map.current) return;
+
+    try {
+      setIsLoading(true);
+      const encodedAddress = encodeURIComponent(address);
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${accessToken}&country=mx&language=es&limit=1`
+      );
+      
+      if (!response.ok) {
+        throw new Error(`Error en la geocodificación: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      if (data.features && data.features.length > 0) {
+        const feature = data.features[0];
+        const [lng, lat] = feature.center;
+        
+        // Update map and marker
+        map.current.setCenter([lng, lat]);
+        map.current.setZoom(16);
+        marker.current.setLngLat([lng, lat]);
+        
+        // Update coordinates
+        onLocationChange(lat, lng);
+        
+        // Update circle if visible
+        if (mapMode === 'area') {
+          updateAreaCircle(lng, lat);
+        }
+      } else {
+        throw new Error('No se encontraron coordenadas para esta dirección');
+      }
+    } catch (error) {
+      console.error('Geocoding error:', error);
+      setError(error instanceof Error ? error.message : 'Error al buscar la dirección');
+      setTimeout(() => setError(null), 3000);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [address, accessToken, onLocationChange, mapMode, setError, setIsLoading]);
+
   // Initialize map mode and radius from props
   useEffect(() => {
     setMapMode(initialMode);
@@ -161,57 +205,6 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
       }
     };
 
-    function handleCenterOnAddress() {
-      if (!address.trim() || !map.current) return;
-
-      try {
-        setIsLoading(true);
-        const encodedAddress = encodeURIComponent(address);
-        fetch(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodedAddress}.json?access_token=${accessToken}&country=mx&language=es&limit=1`
-        )
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`Error en la geocodificación: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (data.features && data.features.length > 0) {
-            const feature = data.features[0];
-            const [lng, lat] = feature.center;
-            
-            // Update map and marker
-            map.current.setCenter([lng, lat]);
-            map.current.setZoom(16);
-            marker.current.setLngLat([lng, lat]);
-            
-            // Update coordinates
-            onLocationChange(lat, lng);
-            
-            // Update circle if visible
-            if (mapMode === 'area') {
-              updateAreaCircle(lng, lat);
-            }
-          } else {
-            throw new Error('No se encontraron coordenadas para esta dirección');
-          }
-        })
-        .catch(error => {
-          console.error('Geocoding error:', error);
-          setError(error instanceof Error ? error.message : 'Error al buscar la dirección');
-          setTimeout(() => setError(null), 3000);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-      } catch (error) {
-        console.error('Geocoding error:', error);
-        setError(error instanceof Error ? error.message : 'Error al buscar la dirección');
-        setTimeout(() => setError(null), 3000);
-        setIsLoading(false);
-      }
-    }
     // Add delay before initializing to ensure DOM is ready
     const timer = setTimeout(initializeMap, 300);
 
@@ -226,7 +219,7 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
         }
       }
     };
-  }, [accessToken]);
+  }, [accessToken, handleCenterOnAddress]);
 
   // Fallback to static map or simple coordinate display if map fails
   if (error) {
