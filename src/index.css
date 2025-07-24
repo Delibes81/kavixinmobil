@@ -410,10 +410,6 @@
   align-items: center;
 }
 
-/* Custom Leaflet Map Styles */
-html {
-  scroll-behavior: smooth;
-}
 
 /* Page transition styles */
 .page-transition-enter {
