@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { useInitialLoading } from './hooks/useInitialLoading';
 import ErrorBoundary from './components/ui/ErrorBoundary';
@@ -59,6 +59,10 @@ function App() {
               <Route path="blog/:slug" element={<BlogPostPage />} />
               <Route path="nosotros" element={<AboutPage />} />
               <Route path="contacto" element={<ContactPage />} />
+              
+              {/* Redirect old routes */}
+              <Route path="property/:id" element={<Navigate to="/propiedades/:id" replace />} />
+              <Route path="properties/:id" element={<Navigate to="/propiedades/:id" replace />} />
             </Route>
             
             {/* Login route - standalone without main navbar */}
