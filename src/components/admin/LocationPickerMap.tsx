@@ -494,21 +494,6 @@ const LocationPickerMap: React.FC<LocationPickerMapProps> = ({
     };
   };
 
-  // Function to toggle circle visibility
-  const toggleCircle = () => {
-    const newMode = mapMode === 'pin' ? 'area' : 'pin';
-    setMapMode(newMode);
-    onMapModeChange?.(newMode);
-    
-    if (newMode === 'area') {
-      setShowCircle(true);
-      updateMapForAreaMode();
-    } else {
-      setShowCircle(false);
-      removeAreaCircle();
-    }
-  };
-
   const updateMapForAreaMode = () => {
     if (marker.current) {
       const lngLat = marker.current.getLngLat();
