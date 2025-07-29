@@ -141,7 +141,7 @@ const PropertyDetailPage: React.FC = () => {
             {/* Map Section */}
             <div className="bg-white rounded-lg shadow-md p-6 mb-8">
               <h3 className="text-xl font-semibold mb-4">Ubicación</h3>
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <p className="text-neutral-800 font-medium mb-2">Dirección completa:</p>
                 <p className="text-neutral-600">{formatFullAddress()}</p>
                 {property.map_mode === 'area' && (
@@ -149,7 +149,7 @@ const PropertyDetailPage: React.FC = () => {
                     Área de influencia: {property.area_radius}m
                   </p>
                 )}
-              </div>
+              </div> */}
               <PropertyMap 
                 position={[property.latitud, property.longitud]} 
                 address={formatFullAddress()}

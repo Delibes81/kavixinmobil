@@ -169,9 +169,9 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
       centerElement.style.width = '20px';
       centerElement.style.height = '20px';
       centerElement.style.borderRadius = '50%';
-      centerElement.style.backgroundColor = '#e6b325';
-      centerElement.style.border = '3px solid #ffffff';
-      centerElement.style.boxShadow = '0 3px 10px rgba(0, 0, 0, 0.3)';
+      centerElement.style.backgroundColor = 'none';
+      centerElement.style.border = 'none';
+      centerElement.style.boxShadow = 'none';
       centerElement.style.position = 'relative';
       centerElement.style.zIndex = '1000';
       
@@ -266,7 +266,7 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
             )}
             
             <div className="text-sm text-neutral-500">
-              <p><strong>Coordenadas:</strong> {lat.toFixed(6)}, {lng.toFixed(6)}</p>
+              {/* <p><strong>Coordenadas:</strong> {lat.toFixed(6)}, {lng.toFixed(6)}</p> */}
             </div>
           </div>
           
