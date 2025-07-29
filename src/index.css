@@ -25,7 +25,7 @@
   display: block;
   z-index: 1000 !important;
   pointer-events: auto;
-  outline: 2px solid red !important; /* Debug temporal */
+  outline: 2px solid #0052a3 !important; /* Debug temporal */
 }
 
 .mapbox-marker-pin:hover {
@@ -44,7 +44,7 @@
   position: relative !important;
   z-index: 1000 !important;
   pointer-events: auto !important;
-  outline: 2px solid red !important; /* Debug temporal */
+  outline: 2px solid #0052a3 !important; /* Debug temporal */
 }
 /* Custom slider styles for area radius */
 .slider {

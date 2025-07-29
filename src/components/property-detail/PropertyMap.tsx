@@ -244,24 +244,6 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
             </p>
           </div>
         </div>
-
-        {/* Action Buttons */}
-        <div className="absolute top-4 right-4 flex flex-col space-y-2">
-          <button
-            onClick={centerMap}
-            className="bg-white/95 backdrop-blur-sm rounded-lg p-2 shadow-md hover:bg-white transition-colors"
-            title="Centrar mapa"
-          >
-            <Navigation className="h-5 w-5 text-primary-600" />
-          </button>
-          <button
-            onClick={openInGoogleMaps}
-            className="bg-white/95 backdrop-blur-sm rounded-lg p-2 shadow-md hover:bg-white transition-colors"
-            title="Abrir en Google Maps"
-          >
-            <ExternalLink className="h-5 w-5 text-primary-600" />
-          </button>
-        </div>
       </div>
 
       {/* Property Info */}
