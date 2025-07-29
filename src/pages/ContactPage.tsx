@@ -327,13 +327,12 @@ const ContactPage: React.FC = () => {
         <FadeInSection delay={400}>
           <div className="mt-12 rounded-lg overflow-hidden shadow-md h-[400px]">
             <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3764.4!2d-99.1663!3d19.3434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85ce01a4b9b6b5b5%3A0x1234567890abcdef!2sJos%C3%A9%20Azueta%2029%2C%20Avante%2C%20Coyoac%C3%A1n%2C%2004460%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses!2smx!4v1649288299241!5m2!1ses!2smx"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3765.063645175919!2d-99.13227742418955!3d19.32304434416932!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85ce01c412a0bfcd%3A0x2b4008f1d3c6d57e!2sJos%C3%A9%20Azueta%2029%2C%20Coapa%2C%20Avante%2C%20Coyoac%C3%A1n%2C%2004460%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses!2smx!4v1753750554431!5m2!1ses!2smx"
               width="100%" 
               height="100%" 
               style={{ border: 0 }} 
               allowFullScreen 
               loading="lazy" 
-              referrerPolicy="no-referrer-when-downgrade"
               title="Ubicación de Nova Hestia - José Azueta 29, Avante, Coyoacán"
             ></iframe>
           </div>
