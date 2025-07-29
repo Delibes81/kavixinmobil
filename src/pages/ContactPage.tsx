@@ -325,17 +325,51 @@ const ContactPage: React.FC = () => {
         
         {/* Map */}
         <FadeInSection delay={400}>
-          <div className="mt-12 rounded-lg overflow-hidden shadow-md h-[400px]">
-            <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3764.4!2d-99.1663!3d19.3434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85ce01a4b9b6b5b5%3A0x1234567890abcdef!2sJos%C3%A9%20Azueta%2029%2C%20Avante%2C%20Coyoac%C3%A1n%2C%2004460%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses!2smx!4v1649288299241!5m2!1ses!2smx"
-              width="100%" 
-              height="100%" 
-              style={{ border: 0 }} 
-              allowFullScreen 
-              loading="lazy" 
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Ubicación de Nova Hestia - José Azueta 29, Avante, Coyoacán"
-            ></iframe>
+          <div className="mt-12">
+            <h3 className="text-2xl font-semibold mb-6 text-center">Nuestra Ubicación</h3>
+            <div className="bg-white rounded-lg shadow-md p-8 text-center">
+              <div className="mb-6">
+                <div className="w-16 h-16 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mx-auto mb-4">
+                  <MapPin className="h-8 w-8" />
+                </div>
+                <h4 className="text-xl font-semibold mb-2">Visítanos en nuestra oficina</h4>
+                <p className="text-neutral-700 mb-4">
+                  José Azueta 29<br />
+                  Colonia Avante<br />
+                  Alcaldía Coyoacán, 04460<br />
+                  Ciudad de México, CDMX
+                </p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row justify-center gap-4">
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=José+Azueta+29,+Avante,+Coyoacán,+04460+Ciudad+de+México,+CDMX"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary"
+                >
+                  <MapPin className="h-5 w-5 mr-2" />
+                  Ver en Google Maps
+                </a>
+                
+                <a
+                  href="https://www.google.com/maps/dir/?api=1&destination=José+Azueta+29,+Avante,+Coyoacán,+04460+Ciudad+de+México,+CDMX"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-outline"
+                >
+                  <MapPin className="h-5 w-5 mr-2" />
+                  Cómo llegar
+                </a>
+              </div>
+              
+              <div className="mt-6 pt-6 border-t border-neutral-200">
+                <p className="text-sm text-neutral-600">
+                  <strong>Transporte público:</strong> Metro Coyoacán (Línea 3), 
+                  Metrobús Línea 1 y múltiples rutas de autobús.
+                </p>
+              </div>
+            </div>
           </div>
         </FadeInSection>
       </div>
