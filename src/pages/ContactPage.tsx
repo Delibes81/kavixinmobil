@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Phone, Mail, MapPin, Send, Facebook, Instagram, Twitter } from 'lucide-react';
 import FadeInSection from '../components/ui/FadeInSection';
-import ContactMap from '../components/ui/ContactMap';
 
 const ContactPage: React.FC = () => {
   useEffect(() => {
@@ -326,13 +325,17 @@ const ContactPage: React.FC = () => {
         
         {/* Map */}
         <FadeInSection delay={400}>
-          <div className="mt-12">
-            <h3 className="text-2xl font-semibold mb-6">Nuestra Ubicación</h3>
-            <ContactMap
-              address="José Azueta 29, Colonia Avante, Alcaldía Coyoacán, 04460 Ciudad de México, CDMX"
-              latitude={19.3434}
-              longitude={-99.1663}
-            />
+          <div className="mt-12 rounded-lg overflow-hidden shadow-md h-[400px]">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3764.4!2d-99.1663!3d19.3434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85ce01a4b9b6b5b5%3A0x1234567890abcdef!2sJos%C3%A9%20Azueta%2029%2C%20Avante%2C%20Coyoac%C3%A1n%2C%2004460%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses!2smx!4v1649288299241!5m2!1ses!2smx"
+              width="100%" 
+              height="100%" 
+              style={{ border: 0 }} 
+              allowFullScreen 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Ubicación de Nova Hestia - José Azueta 29, Avante, Coyoacán"
+            ></iframe>
           </div>
         </FadeInSection>
       </div>
