@@ -761,7 +761,7 @@ El crédito hipotecario es la herramienta financiera más importante para adquir
 
 #### Cálculo de Puntos INFONAVIT:
 - **Edad**: Máximo 37 puntos
-- **Salario**: Máximo 37 puntos  
+- **Salario**: Máximo 37 puntos
 - **Saldo de subcuenta**: Máximo 37 puntos
 - **Tiempo de cotización**: Máximo 37 puntos
 - **Relación laboral**: Máximo 5 puntos
