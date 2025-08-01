@@ -12,6 +12,7 @@ const PropertiesPage: React.FC = () => {
   const location = useLocation();
   const { properties, loading, error } = useProperties();
   const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
+  const [sortBy, setSortBy] = useState('recent');
   const [isInitializing, setIsInitializing] = useState(true);
   const [activeFilters, setActiveFilters] = useState<SearchFilters>({
     operacion: '',
@@ -164,9 +165,65 @@ const PropertiesPage: React.FC = () => {
       tipo: p.tipo, 
       operacion: p.operacion 
     })));
-    setFilteredProperties(filtered);
+    
+    // Apply sorting after filtering
+    const sorted = applySorting(filtered, sortBy);
+    setFilteredProperties(sorted);
     setIsInitializing(false);
   };
+
+  const applySorting = (propertiesToSort: Property[], sortOption: string): Property[] => {
+    const sorted = [...propertiesToSort];
+    
+    switch (sortOption) {
+      case 'recent':
+        return sorted.sort((a, b) => new Date(b.fecha_creacion).getTime() - new Date(a.fecha_creacion).getTime());
+      
+      case 'price_asc':
+        return sorted.sort((a, b) => a.precio - b.precio);
+      
+      case 'price_desc':
+        return sorted.sort((a, b) => b.precio - a.precio);
+      
+      case 'area_asc':
+        return sorted.sort((a, b) => a.metros_construccion - b.metros_construccion);
+      
+      case 'area_desc':
+        return sorted.sort((a, b) => b.metros_construccion - a.metros_construccion);
+      
+      case 'title_asc':
+        return sorted.sort((a, b) => a.titulo.localeCompare(b.titulo, 'es'));
+      
+      case 'title_desc':
+        return sorted.sort((a, b) => b.titulo.localeCompare(a.titulo, 'es'));
+      
+      default:
+        return sorted;
+    }
+  };
+
+  const handleSortChange = (newSortBy: string) => {
+    console.log('Changing sort to:', newSortBy);
+    setSortBy(newSortBy);
+    
+    // Apply sorting to current filtered properties
+    const sorted = applySorting(filteredProperties, newSortBy);
+    setFilteredProperties(sorted);
+  };
+
+  // Apply sorting when filteredProperties change (but not during initial load)
+  useEffect(() => {
+    if (!isInitializing && filteredProperties.length > 0) {
+      const sorted = applySorting(filteredProperties, sortBy);
+      // Only update if the order actually changed
+      const currentOrder = filteredProperties.map(p => p.id).join(',');
+      const newOrder = sorted.map(p => p.id).join(',');
+      
+      if (currentOrder !== newOrder) {
+        setFilteredProperties(sorted);
+      }
+    }
+  }, [sortBy]);
 
   if (loading || isInitializing) {
     return (
@@ -252,12 +309,18 @@ const PropertiesPage: React.FC = () => {
                 {filteredProperties.length === 1 ? ' propiedad encontrada' : ' propiedades encontradas'}
               </h2>
               <div>
-                <select className="select-field w-auto">
+                <select 
+                  className="select-field w-auto"
+                  value={sortBy}
+                  onChange={(e) => handleSortChange(e.target.value)}
+                >
                   <option value="recent">Más recientes</option>
                   <option value="price_asc">Precio: menor a mayor</option>
                   <option value="price_desc">Precio: mayor a menor</option>
                   <option value="area_asc">Área: menor a mayor</option>
                   <option value="area_desc">Área: mayor a menor</option>
+                  <option value="title_asc">Título: A-Z</option>
+                  <option value="title_desc">Título: Z-A</option>
                 </select>
               </div>
             </div>
