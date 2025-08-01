@@ -190,15 +190,7 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
     window.open(url, '_blank');
   };
 
-  const centerMap = () => {
-    if (map.current && lat && lng) {
-      map.current.flyTo({
-        center: [lng, lat],
-        zoom: 16,
-        duration: 1000
-      });
-    }
-  };
+
 
   // Show fallback if no coordinates
   if (!lat || !lng || lat === 0 || lng === 0) {
