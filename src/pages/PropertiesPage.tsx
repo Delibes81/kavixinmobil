@@ -75,7 +75,6 @@ const PropertiesPage: React.FC = () => {
   const applyFilters = (filters: SearchFilters) => {
     console.log('Applying filters:', filters);
     console.log('Total properties to filter:', properties.length);
-    console.log('Properties before filtering:', properties.map(p => ({ id: p.id, titulo: p.titulo, tipo: p.tipo })));
     
     setActiveFilters(filters);
     
@@ -83,88 +82,54 @@ const PropertiesPage: React.FC = () => {
     
     // Apply filters
     if (filters.operacion) {
-      console.log('Filtering by operacion:', filters.operacion);
-      console.log('Properties before operacion filter:', filtered.map(p => ({ id: p.id, operacion: p.operacion })));
       filtered = filtered.filter(property => property.operacion === filters.operacion);
-      console.log('After operacion filter:', filtered.length);
-      console.log('Properties after operacion filter:', filtered.map(p => ({ id: p.id, titulo: p.titulo })));
     }
     
     if (filters.tipo) {
-      console.log('Filtering by tipo:', filters.tipo);
-      console.log('Properties before tipo filter:', filtered.map(p => ({ id: p.id, tipo: p.tipo })));
       filtered = filtered.filter(property => property.tipo === filters.tipo);
-      console.log('After tipo filter:', filtered.length);
-      console.log('Properties after tipo filter:', filtered.map(p => ({ id: p.id, titulo: p.titulo, tipo: p.tipo })));
     }
     
     if (filters.precio_min) {
-      console.log('Filtering by precio_min:', filters.precio_min);
       filtered = filtered.filter(property => property.precio >= filters.precio_min!);
-      console.log('After precio_min filter:', filtered.length);
     }
     
     if (filters.precio_max) {
-      console.log('Filtering by precio_max:', filters.precio_max);
       filtered = filtered.filter(property => property.precio <= filters.precio_max!);
-      console.log('After precio_max filter:', filtered.length);
     }
     
     if (filters.recamaras) {
-      console.log('Filtering by recamaras:', filters.recamaras);
       filtered = filtered.filter(property => property.recamaras >= filters.recamaras!);
-      console.log('After recamaras filter:', filtered.length);
     }
     
     if (filters.banos) {
-      console.log('Filtering by banos:', filters.banos);
       filtered = filtered.filter(property => property.banos >= filters.banos!);
-      console.log('After banos filter:', filtered.length);
     }
     
     if (filters.estacionamientos) {
-      console.log('Filtering by estacionamientos:', filters.estacionamientos);
       filtered = filtered.filter(property => property.estacionamientos >= filters.estacionamientos!);
-      console.log('After estacionamientos filter:', filtered.length);
     }
 
     if (filters.metros_construccion_min) {
-      console.log('Filtering by metros_construccion_min:', filters.metros_construccion_min);
       filtered = filtered.filter(property => property.metros_construccion >= filters.metros_construccion_min!);
-      console.log('After metros_construccion_min filter:', filtered.length);
     }
 
     if (filters.metros_construccion_max) {
-      console.log('Filtering by metros_construccion_max:', filters.metros_construccion_max);
       filtered = filtered.filter(property => property.metros_construccion <= filters.metros_construccion_max!);
-      console.log('After metros_construccion_max filter:', filtered.length);
     }
 
     if (filters.amueblado !== null) {
-      console.log('Filtering by amueblado:', filters.amueblado);
       filtered = filtered.filter(property => property.amueblado === filters.amueblado);
-      console.log('After amueblado filter:', filtered.length);
     }
     
     if (filters.ubicacion) {
       const searchTerm = filters.ubicacion.toLowerCase();
-      console.log('Filtering by ubicacion:', searchTerm);
       filtered = filtered.filter(property => 
         property.direccion.toLowerCase().includes(searchTerm) ||
         property.colonia.toLowerCase().includes(searchTerm) ||
         property.ciudad.toLowerCase().includes(searchTerm) ||
         property.estado.toLowerCase().includes(searchTerm)
       );
-      console.log('After ubicacion filter:', filtered.length);
     }
-    
-    console.log('Final filtered properties:', filtered.length);
-    console.log('Final filtered properties details:', filtered.map(p => ({ 
-      id: p.id, 
-      titulo: p.titulo, 
-      tipo: p.tipo, 
-      operacion: p.operacion 
-    })));
     
     // Apply sorting after filtering
     const sorted = applySorting(filtered, sortBy);
@@ -206,24 +171,10 @@ const PropertiesPage: React.FC = () => {
     console.log('Changing sort to:', newSortBy);
     setSortBy(newSortBy);
     
-    // Apply sorting to current filtered properties
-    const sorted = applySorting(filteredProperties, newSortBy);
+    // Apply sorting to current filtered properties immediately
+    const sorted = applySorting([...filteredProperties], newSortBy);
     setFilteredProperties(sorted);
   };
-
-  // Apply sorting when filteredProperties change (but not during initial load)
-  useEffect(() => {
-    if (!isInitializing && filteredProperties.length > 0) {
-      const sorted = applySorting(filteredProperties, sortBy);
-      // Only update if the order actually changed
-      const currentOrder = filteredProperties.map(p => p.id).join(',');
-      const newOrder = sorted.map(p => p.id).join(',');
-      
-      if (currentOrder !== newOrder) {
-        setFilteredProperties(sorted);
-      }
-    }
-  }, [sortBy]);
 
   if (loading || isInitializing) {
     return (
