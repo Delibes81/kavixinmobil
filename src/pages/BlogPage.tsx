@@ -12,8 +12,8 @@ const BlogPage: React.FC = () => {
   }, []);
 
   // Get featured post (most recent)
-  const featuredPost = blogPosts && blogPosts.length > 0 ? blogPosts[0] : null;
-  const otherPosts = blogPosts && blogPosts.length > 1 ? blogPosts.slice(1) : [];
+  const featuredPost = blogPosts[0];
+  const otherPosts = blogPosts.slice(1);
 
   return (
     <div className="pt-20">
@@ -34,27 +34,9 @@ const BlogPage: React.FC = () => {
       </div>
 
       <div className="container-custom py-12">
-        {/* Debug info - remove in production */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mb-4 p-4 bg-yellow-100 border border-yellow-400 rounded">
-            <p className="text-sm">Debug: Total de artículos cargados: {blogPosts.length}</p>
-            <p className="text-sm">Artículos disponibles: {blogPosts.map(post => post.slug).join(', ')}</p>
-          </div>
-        )}
-
         {/* Featured Article */}
         <FadeInSection>
           <div className="mb-12">
-            {!featuredPost ? (
-              <div className="text-center py-16">
-                <BookOpen className="h-16 w-16 text-neutral-300 mx-auto mb-4" />
-                <h3 className="text-2xl font-semibold mb-2">No hay artículos disponibles</h3>
-                <p className="text-neutral-600">
-                  Los artículos del blog se están cargando. Por favor, intenta más tarde.
-                </p>
-              </div>
-            ) : (
-              <>
             <div className="flex items-center mb-6">
               <TrendingUp className="h-6 w-6 text-primary-600 mr-2" />
               <h2 className="text-2xl font-semibold text-primary-800">Artículo Destacado</h2>
@@ -114,29 +96,23 @@ const BlogPage: React.FC = () => {
                 </a>
               </div>
             </div>
-              </>
-            )}
           </div>
         </FadeInSection>
 
         {/* Other Articles */}
-        {otherPosts.length > 0 && (
-          <>
-            <FadeInSection>
-              <div className="mb-8">
-                <h2 className="text-2xl font-semibold text-primary-800 mb-6">Más Artículos</h2>
-              </div>
-            </FadeInSection>
+        <FadeInSection>
+          <div className="mb-8">
+            <h2 className="text-2xl font-semibold text-primary-800 mb-6">Más Artículos</h2>
+          </div>
+        </FadeInSection>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {otherPosts.map((post, index) => (
-                <FadeInSection key={post.id} delay={index * 100}>
-                  <BlogPostCard post={post} />
-                </FadeInSection>
-              ))}
-            </div>
-          </>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {otherPosts.map((post, index) => (
+            <FadeInSection key={post.id} delay={index * 100}>
+              <BlogPostCard post={post} />
+            </FadeInSection>
+          ))}
+        </div>
       </div>
     </div>
   );
