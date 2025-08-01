@@ -187,11 +187,6 @@ const LoginForm: React.FC = () => {
                 Conexión segura y encriptada
               </p>
             </div>
-            <div className="mt-2 text-xs text-neutral-400">
-              <p>Usuarios de prueba:</p>
-              <p>admin / admin123 (Super Admin)</p>
-              <p>usuario1 / password123 (Admin)</p>
-            </div>
           </div>
         </form>
 
