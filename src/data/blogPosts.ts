@@ -708,7 +708,7 @@ La elección de colonia en CDMX depende de tus prioridades personales, presupues
   },
   {
     id: '5',
-    slug: 'credito-hipotecario-mexico-todo-lo-que-debes-saber',
+    slug: 'credito-hipotecario-mexico-guia-completa',
     title: 'Crédito Hipotecario en México: Todo lo que Debes Saber',
     excerpt: 'Guía completa sobre créditos hipotecarios en México: tipos, requisitos, tasas de interés y consejos para obtener las mejores condiciones.',
     content: `
