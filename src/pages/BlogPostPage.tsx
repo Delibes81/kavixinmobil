@@ -100,12 +100,13 @@ const BlogPostPage: React.FC = () => {
       const trimmedLine = line.trim();
       
       // Skip empty lines, headers, lists, and HTML tags
-      if (!trimmedLine || 
-          trimmedLine.startsWith('<') || 
-          trimmedLine.startsWith('#') || 
-          trimmedLine.startsWith('-') ||
-          trimmedLine.startsWith('```')) {
-        return line;
+if (!trimmedLine || 
+        trimmedLine.startsWith('<h') || 
+        trimmedLine.startsWith('<li') ||
+        trimmedLine.startsWith('#') || 
+        trimmedLine.startsWith('-') ||
+        trimmedLine.startsWith('```')) {
+      return line;
       }
       
       // Wrap regular text in paragraph tags
