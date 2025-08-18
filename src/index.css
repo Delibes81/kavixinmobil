@@ -33,6 +33,31 @@
   transition: transform 0.2s ease;
 }
 
+/* Image reordering styles */
+.image-drag-preview {
+  transform: rotate(5deg) scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.image-drop-zone {
+  border: 2px dashed #0052a3;
+  background-color: rgba(0, 82, 163, 0.05);
+}
+
+.image-reorder-item {
+  transition: all 0.2s ease;
+  cursor: grab;
+}
+
+.image-reorder-item:active {
+  cursor: grabbing;
+}
+
+.image-reorder-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 /* Ensure Mapbox markers are visible */
 .mapboxgl-marker {
   z-index: 1000 !important;
