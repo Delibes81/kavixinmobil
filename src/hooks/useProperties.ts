@@ -13,7 +13,7 @@ export const useProperties = () => {
       setError(null);
 
       // Check if Supabase is properly configured
-      if (!supabaseConfig.isValid) {
+      if (!supabaseConfig.hasUrl || !supabaseConfig.hasKey) {
         console.warn('Supabase not configured, using mock data');
         // Use mock data when Supabase is not configured
         const mockProperties: Property[] = [
@@ -317,7 +317,7 @@ export const useProperties = () => {
       console.log('Amenity IDs:', amenityIds);
 
       // Check if Supabase is configured
-      if (!supabaseConfig.isValid) {
+      if (!supabaseConfig.hasUrl || !supabaseConfig.hasKey) {
         throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
       }
 
@@ -409,7 +409,7 @@ export const useProperties = () => {
       console.log('Amenity IDs:', amenityIds);
 
       // Check if Supabase is configured
-      if (!supabaseConfig.isValid) {
+      if (!supabaseConfig.hasUrl || !supabaseConfig.hasKey) {
         throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
       }
 
@@ -480,7 +480,7 @@ export const useProperties = () => {
   const deleteProperty = async (id: string) => {
     try {
       // Check if Supabase is configured
-      if (!supabaseConfig.isValid) {
+      if (!supabaseConfig.hasUrl || !supabaseConfig.hasKey) {
         throw new Error('Supabase no está configurado. Por favor, configura las variables de entorno.');
       }
 
@@ -523,7 +523,7 @@ export const useAmenities = () => {
       setLoading(true);
 
       // Check if Supabase is configured
-      if (!supabaseConfig.isValid) {
+      if (!supabaseConfig.hasUrl || !supabaseConfig.hasKey) {
         console.warn('Supabase not configured, using mock amenities');
         setAmenities([]);
         setLoading(false);

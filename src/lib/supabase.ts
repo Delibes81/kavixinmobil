@@ -4,21 +4,17 @@ import { Database } from '../types/database';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-// Check if we have valid Supabase configuration
-const hasValidConfig = supabaseUrl && supabaseAnonKey && 
-  supabaseUrl !== 'your_supabase_project_url' && 
-  supabaseAnonKey !== 'your_supabase_anon_key' &&
-  supabaseUrl.includes('supabase.co');
+// Fallback values for development/demo
+const defaultUrl = 'https://your-project.supabase.co';
+const defaultKey = 'your-anon-key';
 
-if (!hasValidConfig) {
-  console.warn('Missing or invalid Supabase environment variables. Please configure VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your .env file.');
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn('Missing Supabase environment variables. Using fallback values for demo.');
 }
 
-// Only create client if we have valid configuration
-// Use dummy values that won't cause network requests if config is invalid
 export const supabase = createClient<Database>(
-  hasValidConfig ? supabaseUrl : 'https://dummy.supabase.co',
-  hasValidConfig ? supabaseAnonKey : 'dummy-key',
+  supabaseUrl || defaultUrl,
+  supabaseAnonKey || defaultKey,
   {
     auth: {
       persistSession: true,
@@ -37,9 +33,8 @@ export const supabase = createClient<Database>(
 
 // Export configuration status for debugging
 export const supabaseConfig = {
-  hasUrl: !!supabaseUrl && supabaseUrl !== 'your_supabase_project_url',
-  hasKey: !!supabaseAnonKey && supabaseAnonKey !== 'your_supabase_anon_key',
-  isValid: hasValidConfig,
+  hasUrl: !!supabaseUrl,
+  hasKey: !!supabaseAnonKey,
   url: supabaseUrl ? 'configured' : 'missing',
   key: supabaseAnonKey ? 'configured' : 'missing'
 };
