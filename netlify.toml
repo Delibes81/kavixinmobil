@@ -2,43 +2,14 @@
   publish = "dist"
   command = "npm run build"
 
-# SPA routing for React Router - Fixed for all routes
+# SPA routing for React Router
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-  force = false
-  
-# Specific redirects for better handling
-[[redirects]]
-  from = "/propiedades/*"
-  to = "/index.html"
-  status = 200
-  
-[[redirects]]
-  from = "/blog/*"
-  to = "/index.html"
-  status = 200
-  
-[[redirects]]
-  from = "/admin/*"
-  to = "/index.html"
-  status = 200
 
-# Headers for security and performance
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-
-[[headers]]
-  for = "/assets/*"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-# Environment variables for build
+# Environment variables for build (REMOVE SENSITIVE DATA)
 [build.environment]
   NODE_VERSION = "18"
+  # IMPORTANT: Remove sensitive environment variables from here
+  # Set them in Netlify dashboard instead
