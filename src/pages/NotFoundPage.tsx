@@ -1,10 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router';
 import { Home, Search } from 'lucide-react';
+import Seo from '../seo/Seo';
+import { NOINDEX_META } from '../seo/meta';
 
 const NotFoundPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-neutral-50 flex items-center">
+      <Seo {...NOINDEX_META('Página no encontrada | Nova Hestia', window.location.pathname)} />
       <div className="container-custom py-16 text-center">
         <h1 className="text-9xl font-bold text-primary-800 mb-4">404</h1>
         <h2 className="text-3xl font-semibold mb-4">Página no encontrada</h2>

@@ -58,28 +58,28 @@ const TestimonialsSection: React.FC = () => {
       author: "Carlos Méndez",
       position: "Comprador",
       rating: 5,
-      image: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg"
+      image: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1200"
     },
     {
       quote: "Vendí mi departamento en tiempo récord y al precio que esperaba gracias a la estrategia de marketing que implementaron. Su profesionalismo y conocimiento del mercado hicieron toda la diferencia.",
       author: "Ana García",
       position: "Vendedora",
       rating: 5,
-      image: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg"
+      image: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=1200"
     },
     {
       quote: "Llevan administrando mi propiedad en renta por más de 3 años y nunca he tenido problemas. Se encargan de todo y me mantienen informado constantemente.",
       author: "Roberto Juárez",
       position: "Propietario",
       rating: 4,
-      image: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg"
+      image: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=1200"
     },
     {
       quote: "Como inversionista inmobiliario, valoro mucho la transparencia y eficiencia de Nova Hestia. Su asesoría me ha permitido expandir mi portafolio de propiedades con excelentes resultados.",
       author: "Laura Sánchez",
       position: "Inversionista",
       rating: 5,
-      image: "https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg"
+      image: "https://images.pexels.com/photos/1036623/pexels-photo-1036623.jpeg?auto=compress&cs=tinysrgb&w=1200"
     }
   ];
 

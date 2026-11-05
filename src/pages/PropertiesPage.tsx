@@ -7,6 +7,9 @@ import FadeInSection from '../components/ui/FadeInSection';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { useProperties } from '../hooks/useProperties';
 import { Property, SearchFilters } from '../types';
+import Seo from '../seo/Seo';
+import { SITE_URL } from '../seo/siteUrl';
+import { staticPageMeta } from '../seo/meta';
 
 const PropertiesPage: React.FC = () => {
   const location = useLocation();
@@ -29,7 +32,6 @@ const PropertiesPage: React.FC = () => {
   });
 
   useEffect(() => {
-    document.title = 'Propiedades | Nova Hestia';
     // Scroll to top when component mounts
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
@@ -230,6 +232,7 @@ const PropertiesPage: React.FC = () => {
 
   return (
     <div className="pt-20">
+      <Seo {...staticPageMeta(SITE_URL, '/propiedades')} />
       {/* Page Header */}
       <div className="bg-primary-800 text-white py-12">
         <div className="container-custom">

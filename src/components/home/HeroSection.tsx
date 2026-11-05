@@ -60,7 +60,7 @@ const HeroSection: React.FC = () => {
         <div className="absolute inset-0 bg-linear-to-r from-primary-900/80 to-primary-800/70 z-10"></div>
         <img
           src="https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1920"
-          alt="Luxury Home"
+          alt="Casa de lujo en venta en Ciudad de México"
           className="w-full h-full object-cover animate-ken-burns"
           loading="eager"
           fetchPriority="high"

@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Phone, Mail, MapPin, Send } from 'lucide-react';
 import { Facebook, Instagram, Twitter } from '../components/ui/SocialIcons';
 import FadeInSection from '../components/ui/FadeInSection';
+import Seo from '../seo/Seo';
+import { SITE_URL } from '../seo/siteUrl';
+import { staticPageMeta } from '../seo/meta';
 
 const ContactPage: React.FC = () => {
   useEffect(() => {
-    document.title = 'Contacto | Nova Hestia';
   }, []);
 
   const [formData, setFormData] = useState({
@@ -73,6 +75,7 @@ const ContactPage: React.FC = () => {
 
   return (
     <div className="pt-20">
+      <Seo {...staticPageMeta(SITE_URL, '/contacto')} />
       {/* Page Header */}
       <div className="bg-primary-800 text-white py-12">
         <div className="container-custom">

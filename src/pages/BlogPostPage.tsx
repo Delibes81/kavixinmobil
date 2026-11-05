@@ -7,6 +7,9 @@ import BlogPostCard from '../components/blog/BlogPostCard';
 import { blogPosts } from '../data/blogPosts';
 import { BlogPost } from '../types';
 import NotFoundPage from './NotFoundPage';
+import Seo from '../seo/Seo';
+import { SITE_URL } from '../seo/siteUrl';
+import { blogPostMeta } from '../seo/meta';
 
 const BlogPostPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -18,12 +21,6 @@ const BlogPostPage: React.FC = () => {
     if (slug) {
       const foundPost = blogPosts.find(p => p.slug === slug);
       setPost(foundPost);
-      
-      if (foundPost) {
-        document.title = `${foundPost.title} | Blog Nova Hestia`;
-      } else {
-        document.title = 'Artículo no encontrado | Blog Nova Hestia';
-      }
     }
     setLoadingPost(false);
     
@@ -123,6 +120,7 @@ if (!trimmedLine ||
 
   return (
     <div className="pt-20">
+      {post && <Seo {...blogPostMeta(SITE_URL, post)} />}
       {/* Article Header */}
       <div className="bg-primary-800 text-white py-12">
         <div className="container-custom">

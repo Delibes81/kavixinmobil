@@ -49,7 +49,15 @@ pnpm build
    - `VITE_SUPABASE_URL` — Supabase → Project Settings → API → Project URL
    - `VITE_SUPABASE_ANON_KEY` — Supabase → Project Settings → API → clave `anon` `public` (nunca la `service_role`)
    - `VITE_MAPBOX_ACCESS_TOKEN` — account.mapbox.com → Access tokens (`pk.…`)
+   - `VITE_SITE_URL` — tu dominio final, p. ej. `https://tudominio.com` (canonical, Open Graph y sitemap)
 3. Despliega. Si cambias alguna variable después, haz **Redeploy** (Vite las incrusta en el build).
+
+## SEO
+
+- `src/seo/meta.ts` define título, descripción y datos estructurados (JSON-LD) de cada página; `<Seo>` los aplica en el navegador.
+- En el build, `vite/seo-plugin.ts` genera un HTML por ruta pública (inicio, propiedades, blog, nosotros, contacto, cada artículo y cada propiedad leída de Supabase) con sus metadatos ya incluidos, más `sitemap.xml` y `robots.txt`.
+- Las propiedades nuevas aparecen en el sitemap y en las vistas previas de redes al siguiente deploy. Para automatizarlo, crea un *Deploy Hook* en Vercel y llámalo desde un webhook de Supabase al insertar o actualizar en `properties`.
+- Tras publicar, da de alta el dominio en Google Search Console y envía `https://tudominio.com/sitemap.xml`.
 
 ## Project Structure
 

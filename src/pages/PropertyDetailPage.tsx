@@ -8,6 +8,9 @@ import PropertyContact from '../components/property-detail/PropertyContact';
 import { useProperties } from '../hooks/useProperties';
 import { Property } from '../types';
 import NotFoundPage from './NotFoundPage';
+import Seo from '../seo/Seo';
+import { SITE_URL } from '../seo/siteUrl';
+import { propertyMeta } from '../seo/meta';
 
 const PropertyDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -18,13 +21,6 @@ const PropertyDetailPage: React.FC = () => {
     if (properties.length > 0 && id) {
       const foundProperty = properties.find(p => p.id === id);
       setProperty(foundProperty);
-      
-      // Update the page title
-      if (foundProperty) {
-        document.title = `${foundProperty.titulo} | Nova Hestia`;
-      } else {
-        document.title = 'Propiedad no encontrada | Nova Hestia';
-      }
     }
   }, [id, properties]);
   
@@ -66,6 +62,7 @@ const PropertyDetailPage: React.FC = () => {
 
   return (
     <div className="pt-20">
+      {property && <Seo {...propertyMeta(SITE_URL, property)} />}
       {/* Property Header */}
       <div className="bg-primary-800 text-white py-10">
         <div className="container-custom">
