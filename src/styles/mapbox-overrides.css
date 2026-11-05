@@ -1,0 +1,42 @@
+/* Ajustes sobre mapbox-gl.css: se importa después de él en los componentes de mapa */
+/* Custom Mapbox styles */
+.mapboxgl-popup {
+  max-width: 300px;
+}
+
+.mapboxgl-popup-content {
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.mapboxgl-marker {
+  cursor: pointer;
+}
+
+/* Custom marker styles */
+.mapbox-marker-pin {
+  position: relative;
+  display: block;
+  z-index: 1000 !important;
+  pointer-events: auto;
+  outline: 2px solid #0052a3 !important; /* Debug temporal */
+}
+
+.mapbox-marker-pin:hover {
+  transform: rotate(-45deg) scale(1.1);
+  transition: transform 0.2s ease;
+}
+
+/* Ensure Mapbox markers are visible */
+.mapboxgl-marker {
+  z-index: 1000 !important;
+  pointer-events: auto !important;
+}
+
+/* Property map specific styles */
+.property-map-pin {
+  position: relative !important;
+  z-index: 1000 !important;
+  pointer-events: auto !important;
+  outline: 2px solid #0052a3 !important; /* Debug temporal */
+}

@@ -1,13 +1,10 @@
 import React, { Suspense } from 'react';
 import { Routes, Route, Navigate, useParams } from 'react-router';
-import { AuthProvider } from './contexts/AuthContext';
 import { useInitialLoading } from './hooks/useInitialLoading';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 import InitialLoadingScreen from './components/ui/InitialLoadingScreen';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 import Layout from './components/layout/Layout';
-import AdminLayout from './components/layout/AdminLayout';
-import ProtectedRoute from './components/auth/ProtectedRoute';
 
 // Lazy load components for better performance
 const HomePage = React.lazy(() => import('./pages/HomePage'));
@@ -23,6 +20,8 @@ const AdminProperties = React.lazy(() => import('./pages/admin/AdminProperties')
 const AdminPropertyEdit = React.lazy(() => import('./pages/admin/AdminPropertyEdit'));
 const AdminPropertyCreate = React.lazy(() => import('./pages/admin/AdminPropertyCreate'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
+const AuthOutlet = React.lazy(() => import('./components/auth/AuthOutlet'));
+const ProtectedAdminLayout = React.lazy(() => import('./components/auth/ProtectedAdminLayout'));
 
 // Redirige rutas antiguas (/property/:id, /properties/:id) conservando el id
 const LegacyPropertyRedirect = () => {
@@ -31,21 +30,12 @@ const LegacyPropertyRedirect = () => {
 };
 
 function App() {
-  const { showInitialLoading, isInitialLoadComplete, completeInitialLoading } = useInitialLoading();
-
-  // Show initial loading screen on first visit
-  if (showInitialLoading) {
-    return <InitialLoadingScreen onComplete={completeInitialLoading} />;
-  }
-
-  // Don't render anything until initial loading is complete
-  if (!isInitialLoadComplete) {
-    return null;
-  }
+  const { showInitialLoading, completeInitialLoading } = useInitialLoading();
 
   return (
     <ErrorBoundary>
-      <AuthProvider>
+      {/* Animación de bienvenida en la primera visita: se superpone mientras la web carga por debajo */}
+      {showInitialLoading && <InitialLoadingScreen onComplete={completeInitialLoading} />}
         {/* Simple spinner for subsequent loads */}
         <Suspense fallback={
           <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
@@ -71,26 +61,24 @@ function App() {
               <Route path="properties/:id" element={<LegacyPropertyRedirect />} />
             </Route>
             
+            {/* Login y admin: únicas rutas que necesitan autenticación (Supabase Auth) */}
+            <Route element={<AuthOutlet />}>
             {/* Login route - standalone without main navbar */}
             <Route path="/login" element={<LoginPage />} />
             
             {/* Protected admin routes with AdminLayout */}
-            <Route path="/admin" element={
-              <ProtectedRoute>
-                <AdminLayout />
-              </ProtectedRoute>
-            }>
+            <Route path="/admin" element={<ProtectedAdminLayout />}>
               <Route index element={<AdminDashboard />} />
               <Route path="propiedades" element={<AdminProperties />} />
               <Route path="propiedades/:id" element={<AdminPropertyEdit />} />
               <Route path="propiedades/nueva" element={<AdminPropertyCreate />} />
+            </Route>
             </Route>
             
             {/* 404 route - standalone */}
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Suspense>
-      </AuthProvider>
     </ErrorBoundary>
   );
 }

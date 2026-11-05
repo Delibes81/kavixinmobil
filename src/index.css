@@ -1,7 +1,11 @@
 @import 'tailwindcss';
 
-/* Import Mapbox GL CSS - Updated import */
-@import 'mapbox-gl/dist/mapbox-gl.css' layer(utilities);
+/* Fuentes alojadas en el propio sitio (sin peticiones a Google Fonts) */
+@import '@fontsource-variable/inter/wght.css';
+@import '@fontsource/roboto/latin-400.css';
+@import '@fontsource/roboto/latin-500.css';
+
+/* El CSS de Mapbox lo importan solo los componentes de mapa (PropertyMap, MapboxLocationPicker) */
 
 @theme {
   --color-primary-50: #e6f0fa;
@@ -37,8 +41,8 @@
   --color-neutral-800: #3f4552;
   --color-neutral-900: #1f2229;
 
-  --font-heading: Inter, sans-serif;
-  --font-body: Roboto, sans-serif;
+  --font-heading: 'Inter Variable', Inter, system-ui, sans-serif;
+  --font-body: Roboto, system-ui, sans-serif;
 
   --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.08);
   --shadow-card-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
@@ -158,34 +162,6 @@
 }
 
 @layer utilities {
-  /* Custom Mapbox styles */
-  .mapboxgl-popup {
-    max-width: 300px;
-  }
-
-  .mapboxgl-popup-content {
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  }
-
-  .mapboxgl-marker {
-    cursor: pointer;
-  }
-
-  /* Custom marker styles */
-  .mapbox-marker-pin {
-    position: relative;
-    display: block;
-    z-index: 1000 !important;
-    pointer-events: auto;
-    outline: 2px solid #0052a3 !important; /* Debug temporal */
-  }
-
-  .mapbox-marker-pin:hover {
-    transform: rotate(-45deg) scale(1.1);
-    transition: transform 0.2s ease;
-  }
-
   /* Image reordering styles */
   .image-drag-preview {
     transform: rotate(5deg) scale(1.05);
@@ -210,19 +186,6 @@
   .image-reorder-item:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  }
-  /* Ensure Mapbox markers are visible */
-  .mapboxgl-marker {
-    z-index: 1000 !important;
-    pointer-events: auto !important;
-  }
-
-  /* Property map specific styles */
-  .property-map-pin {
-    position: relative !important;
-    z-index: 1000 !important;
-    pointer-events: auto !important;
-    outline: 2px solid #0052a3 !important; /* Debug temporal */
   }
   /* Custom slider styles for area radius */
   .slider {
@@ -642,16 +605,6 @@
   contain: layout style;
 }
 
-/* Optimize font loading */
-@font-face {
-  font-family: 'Inter';
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Roboto';
-  font-display: swap;
-}
 
 /* FIXED: Mobile responsive improvements */
 @media (max-width: 768px) {

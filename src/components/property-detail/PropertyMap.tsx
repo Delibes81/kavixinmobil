@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import '../../styles/mapbox-overrides.css';
 import { MapPin, ExternalLink, Navigation } from 'lucide-react';
 
 interface PropertyMapProps {
