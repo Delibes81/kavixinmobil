@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useParams, Link } from 'react-router';
 import { ArrowLeft, Home, Calendar, Tag } from 'lucide-react';
 import PropertyGallery from '../components/property-detail/PropertyGallery';
@@ -15,14 +15,8 @@ import { propertyMeta } from '../seo/meta';
 const PropertyDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { properties, loading } = useProperties();
-  const [property, setProperty] = useState<Property | undefined>();
-  
-  useEffect(() => {
-    if (properties.length > 0 && id) {
-      const foundProperty = properties.find(p => p.id === id);
-      setProperty(foundProperty);
-    }
-  }, [id, properties]);
+  // Derivado directamente: evita mostrar un 404 momentáneo antes de encontrar la propiedad
+  const property: Property | undefined = id ? properties.find(p => p.id === id) : undefined;
   
   if (loading) {
     return (
@@ -62,7 +56,7 @@ const PropertyDetailPage: React.FC = () => {
 
   return (
     <div className="pt-20">
-      {property && <Seo {...propertyMeta(SITE_URL, property)} />}
+      <Seo {...propertyMeta(SITE_URL, property)} />
       {/* Property Header */}
       <div className="bg-primary-800 text-white py-10">
         <div className="container-custom">

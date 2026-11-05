@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { buildHeadTags, type PageMeta } from './meta';
 import { SITE_URL } from './siteUrl';
+import { trackPageView } from '../lib/analytics';
 
 const MARK = 'data-seo';
 
@@ -26,6 +27,8 @@ const Seo = (meta: PageMeta) => {
       fragment.appendChild(el);
     }
     document.head.appendChild(fragment);
+
+    trackPageView(current.title);
   }, [key]);
 
   return null;

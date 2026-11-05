@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { Link } from 'react-router';
 import { BookOpen, TrendingUp } from 'lucide-react';
 import BlogPostCard from '../components/blog/BlogPostCard';
 import FadeInSection from '../components/ui/FadeInSection';
@@ -91,12 +92,12 @@ const BlogPage: React.FC = () => {
                   ))}
                 </div>
                 
-                <a
-                  href={`/blog/${featuredPost.slug}`}
+                <Link
+                  to={`/blog/${featuredPost.slug}`}
                   className="btn btn-primary w-fit"
                 >
                   Leer artículo completo
-                </a>
+                </Link>
               </div>
             </div>
           </div>

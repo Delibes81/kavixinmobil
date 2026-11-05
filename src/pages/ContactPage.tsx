@@ -4,6 +4,7 @@ import { Facebook, Instagram, Twitter } from '../components/ui/SocialIcons';
 import FadeInSection from '../components/ui/FadeInSection';
 import Seo from '../seo/Seo';
 import { SITE_URL } from '../seo/siteUrl';
+import { trackLead } from '../lib/analytics';
 import { staticPageMeta } from '../seo/meta';
 
 const ContactPage: React.FC = () => {
@@ -55,6 +56,7 @@ const ContactPage: React.FC = () => {
     
     // In a real app, this would submit the form data to a server
     console.log('Form submitted:', formData);
+    trackLead('form', { subject: formData.subject });
     setIsSubmitted(true);
     setErrors({});
     

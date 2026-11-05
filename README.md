@@ -50,6 +50,7 @@ pnpm build
    - `VITE_SUPABASE_ANON_KEY` — Supabase → Project Settings → API → clave `anon` `public` (nunca la `service_role`)
    - `VITE_MAPBOX_ACCESS_TOKEN` — account.mapbox.com → Access tokens (`pk.…`)
    - `VITE_SITE_URL` — tu dominio final, p. ej. `https://tudominio.com` (canonical, Open Graph y sitemap)
+   - `VITE_GA_MEASUREMENT_ID` — (opcional) ID de Google Analytics 4, `G-XXXXXXXXXX`
 3. Despliega. Si cambias alguna variable después, haz **Redeploy** (Vite las incrusta en el build).
 
 ## SEO
@@ -58,6 +59,12 @@ pnpm build
 - En el build, `vite/seo-plugin.ts` genera un HTML por ruta pública (inicio, propiedades, blog, nosotros, contacto, cada artículo y cada propiedad leída de Supabase) con sus metadatos ya incluidos, más `sitemap.xml` y `robots.txt`.
 - Las propiedades nuevas aparecen en el sitemap y en las vistas previas de redes al siguiente deploy. Para automatizarlo, crea un *Deploy Hook* en Vercel y llámalo desde un webhook de Supabase al insertar o actualizar en `properties`.
 - Tras publicar, da de alta el dominio en Google Search Console y envía `https://tudominio.com/sitemap.xml`.
+
+## Analítica
+
+- **Vercel Web Analytics y Speed Insights**: ya integrados (`@vercel/analytics`, `@vercel/speed-insights`). Actívalos en Vercel → proyecto → pestañas **Analytics** y **Speed Insights** → *Enable*.
+- **Google Analytics 4**: crea una propiedad en analytics.google.com → *Flujo de datos web* y copia el ID `G-…` en `VITE_GA_MEASUREMENT_ID`. Solo se carga en producción.
+- Se registran páginas vistas (sin `/admin` ni `/login`) y el evento `generate_lead` con `method` = `whatsapp`, `phone`, `email` o `form`. En GA4 márcalo como *evento clave* para medir contactos.
 
 ## Project Structure
 
