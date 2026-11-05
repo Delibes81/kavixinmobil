@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Search, MapPin, Home, ChevronDown } from 'lucide-react';
-import { Link, useNavigate } from 'react-router';
+import { Search, Home, ChevronDown } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import FadeInSection from '../ui/FadeInSection';
-import AddressAutocomplete from '../admin/AddressAutocomplete';
 import { HERO_IMAGE } from '../../seo/meta';
 
 const HeroSection: React.FC = () => {

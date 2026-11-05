@@ -21,7 +21,6 @@ const InitialLoadingScreen: React.FC<InitialLoadingScreenProps> = ({ onComplete 
     // Total ~2 s: 1.4 s de progreso + 0.1 s de pausa + 0.5 s de salida.
     // La web se carga por debajo mientras tanto (ver App.tsx).
     const duration = 1400;
-    const stepDuration = duration / loadingSteps.length;
     const progressInterval = 50; // Update every 50ms for smooth animation
 
     const progressTimer = setInterval(() => {
