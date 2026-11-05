@@ -1,6 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Facebook, Instagram, Mail, MapPin, Phone, Twitter } from 'lucide-react';
+import { Link } from 'react-router';
+import { Mail, MapPin, Phone } from 'lucide-react';
+import { Facebook, Instagram, Twitter } from '../ui/SocialIcons';
 import NovaHestiaLogo from '../ui/NovaHestiaLogo';
 
 const Footer: React.FC = () => {

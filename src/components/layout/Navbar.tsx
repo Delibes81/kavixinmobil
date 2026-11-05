@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router';
 import { Home, Building2, BookOpen, Users, Phone, Menu, X, Lock } from 'lucide-react';
 import NovaHestiaLogo from '../ui/NovaHestiaLogo';
 
@@ -124,7 +124,7 @@ const Navbar: React.FC = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-2 rounded-md focus:outline-none transition-colors duration-300 z-10"
+            className="lg:hidden p-2 rounded-md focus:outline-hidden transition-colors duration-300 z-10"
             onClick={toggleMenu}
             aria-label="Toggle menu"
           >

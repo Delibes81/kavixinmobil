@@ -1,57 +1,37 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import tailwindcss from '@tailwindcss/vite';
 
-// https://vitejs.dev/config/
+// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
-  esbuild: {
-    target: 'es2020' // Support for big integer literals and modern JS features
-  },
-  optimizeDeps: {
-    exclude: ['lucide-react'],
-    include: ['react', 'react-dom', 'react-router-dom']
-  },
+  plugins: [react(), tailwindcss()],
   build: {
     outDir: 'dist',
     sourcemap: false,
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn']
-      },
-      mangle: {
-        safari10: true
-      },
-      format: {
-        comments: false
-      }
-    },
-    rollupOptions: {
+    target: 'es2022',
+    chunkSizeWarningLimit: 2000, // mapbox-gl pesa ~1.9 MB y se carga de forma diferida
+    reportCompressedSize: false,
+    rolldownOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          ui: ['lucide-react'],
-          slider: ['react-slick', 'slick-carousel'],
-          supabase: ['@supabase/supabase-js']
+        minify: {
+          compress: { dropConsole: true, dropDebugger: true },
+        },
+        codeSplitting: {
+          groups: [
+            { name: 'vendor', test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/ },
+            { name: 'router', test: /node_modules[\\/]react-router[\\/]/ },
+            { name: 'ui', test: /node_modules[\\/]lucide-react[\\/]/ },
+            { name: 'slider', test: /node_modules[\\/](react-slick|slick-carousel)[\\/]/ },
+            { name: 'supabase', test: /node_modules[\\/]@supabase[\\/]/ },
+          ],
         },
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name]-[hash].js',
-        assetFileNames: 'assets/[name]-[hash].[ext]'
-      }
+        assetFileNames: 'assets/[name]-[hash].[ext]',
+      },
     },
-    chunkSizeWarningLimit: 1000,
-    reportCompressedSize: false,
-    target: 'es2020'
   },
   server: {
-    hmr: {
-      overlay: false
-    }
+    hmr: { overlay: false },
   },
-  define: {
-    'process.env': {}
-  }
 });

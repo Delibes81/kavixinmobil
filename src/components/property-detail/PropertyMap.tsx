@@ -23,10 +23,10 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
   const [lat, lng] = position;
 
   // Mapbox access token
-  const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+  const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN ?? '';
 
   useEffect(() => {
-    if (!mapContainer.current || !lat || !lng || lat === 0 || lng === 0) return;
+    if (!mapContainer.current || !MAPBOX_TOKEN || !lat || !lng || lat === 0 || lng === 0) return;
 
     // Initialize map
     mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -228,7 +228,7 @@ const PropertyMap: React.FC<PropertyMapProps> = ({
         )}
 
         {/* Map Controls */}
-        <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg p-3 shadow-md">
+        <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-xs rounded-lg p-3 shadow-md">
           <div className="flex items-center space-x-2">
             <div className={`w-3 h-3 rounded-full ${mapMode === 'pin' ? 'bg-blue-600' : 'bg-yellow-500'}`}></div>
             <p className="text-xs text-neutral-700 font-medium">

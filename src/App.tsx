@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router';
 import { AuthProvider } from './contexts/AuthContext';
 import { useInitialLoading } from './hooks/useInitialLoading';
 import ErrorBoundary from './components/ui/ErrorBoundary';

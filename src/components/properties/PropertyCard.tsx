@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { MapPin, Bed, Bath, Car, Move, Tag } from 'lucide-react';
 import { Property } from '../../types';
 import LazyImage from '../ui/LazyImage';
@@ -38,7 +38,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
             alt={property.titulo}
             className="w-full h-full group-hover:scale-110 transition-transform duration-700"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="absolute top-4 left-4 z-10 flex gap-2">
             <span className={`px-3 py-1 text-xs font-medium rounded-full text-white transform transition-all duration-300 group-hover:scale-105 ${
               property.operacion === 'venta' ? 'bg-primary-600' : 'bg-secondary-500'
@@ -73,7 +73,7 @@ const PropertyCard: React.FC<PropertyCardProps> = ({ property }) => {
         </div>
 
         <div className="flex items-center text-neutral-600 mb-4">
-          <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+          <MapPin className="h-4 w-4 mr-1 shrink-0" />
           <span className="text-sm truncate">{formatAddress()}</span>
         </div>
 

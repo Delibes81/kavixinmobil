@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router';
 import { ArrowLeft, Save, Plus } from 'lucide-react';
 import AdminPropertyForm from '../../components/admin/AdminPropertyForm';
 import { useProperties } from '../../hooks/useProperties';

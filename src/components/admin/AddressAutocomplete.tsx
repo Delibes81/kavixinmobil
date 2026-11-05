@@ -36,7 +36,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
   const [isLoading, setIsLoading] = React.useState(false);
   const [showSuggestions, setShowSuggestions] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
-  const debounceRef = React.useRef<NodeJS.Timeout>();
+  const debounceRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
@@ -189,7 +189,7 @@ const AddressAutocomplete: React.FC<AddressAutocompleteProps> = ({
               }`}
             >
               <div className="flex items-start">
-                <MapPin className="h-4 w-4 text-neutral-400 mr-2 mt-0.5 flex-shrink-0" />
+                <MapPin className="h-4 w-4 text-neutral-400 mr-2 mt-0.5 shrink-0" />
                 <div className="flex-1 min-w-0">
                   <div className="text-sm font-medium truncate">
                     {suggestion.place_name}

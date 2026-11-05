@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Slider from 'react-slick';
+import Slider from '../../lib/slick';
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -130,14 +130,14 @@ const TestimonialsSection: React.FC = () => {
           {/* Custom navigation buttons */}
           <button
             onClick={() => sliderRef?.slickPrev()}
-            className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-5 z-10 bg-white rounded-full p-2 shadow-md hover:bg-neutral-100 focus:outline-none hidden md:block"
+            className="absolute top-1/2 left-0 -translate-y-1/2 -translate-x-5 z-10 bg-white rounded-full p-2 shadow-md hover:bg-neutral-100 focus:outline-hidden hidden md:block"
             aria-label="Previous testimonial"
           >
             <ChevronLeft className="h-6 w-6 text-primary-600" />
           </button>
           <button
             onClick={() => sliderRef?.slickNext()}
-            className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-5 z-10 bg-white rounded-full p-2 shadow-md hover:bg-neutral-100 focus:outline-none hidden md:block"
+            className="absolute top-1/2 right-0 -translate-y-1/2 translate-x-5 z-10 bg-white rounded-full p-2 shadow-md hover:bg-neutral-100 focus:outline-hidden hidden md:block"
             aria-label="Next testimonial"
           >
             <ChevronRight className="h-6 w-6 text-primary-600" />
@@ -148,14 +148,14 @@ const TestimonialsSection: React.FC = () => {
         <div className="flex justify-center mt-8 space-x-4 md:hidden">
           <button
             onClick={() => sliderRef?.slickPrev()}
-            className="bg-white rounded-full p-3 shadow-md hover:bg-neutral-100 focus:outline-none transition-colors duration-200"
+            className="bg-white rounded-full p-3 shadow-md hover:bg-neutral-100 focus:outline-hidden transition-colors duration-200"
             aria-label="Anterior testimonio"
           >
             <ChevronLeft className="h-5 w-5 text-primary-600" />
           </button>
           <button
             onClick={() => sliderRef?.slickNext()}
-            className="bg-white rounded-full p-3 shadow-md hover:bg-neutral-100 focus:outline-none transition-colors duration-200"
+            className="bg-white rounded-full p-3 shadow-md hover:bg-neutral-100 focus:outline-hidden transition-colors duration-200"
             aria-label="Siguiente testimonio"
           >
             <ChevronRight className="h-5 w-5 text-primary-600" />

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router';
 import { ArrowLeft, Calendar, User, Clock, Share2, Tag } from 'lucide-react';
 import FadeInSection from '../components/ui/FadeInSection';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
@@ -178,7 +178,7 @@ if (!trimmedLine ||
             {/* Article Content */}
             <FadeInSection delay={200}>
               <article className="prose prose-lg max-w-none">
-                <div className="bg-white rounded-lg shadow-sm p-8">
+                <div className="bg-white rounded-lg shadow-xs p-8">
                   <div 
                     className="blog-content"
                     dangerouslySetInnerHTML={{ __html: formatContent(post.content) }}
@@ -241,7 +241,7 @@ if (!trimmedLine ||
 
             {/* Contact CTA */}
             <FadeInSection delay={400}>
-              <div className="bg-gradient-to-br from-primary-600 to-primary-700 rounded-lg p-6 text-white mb-8">
+              <div className="bg-linear-to-br from-primary-600 to-primary-700 rounded-lg p-6 text-white mb-8">
                 <h3 className="text-lg text-white/90 font-semibold mb-3">¿Necesitas asesoría inmobiliaria?</h3>
                 <p className="text-white/90 text-sm mb-4">
                   Nuestros expertos están listos para ayudarte a encontrar la propiedad perfecta.

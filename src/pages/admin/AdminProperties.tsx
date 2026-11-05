@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Building2, Search, Filter, Plus, Eye, PenSquare, Trash2, MoreHorizontal } from 'lucide-react';
 import { useProperties } from '../../hooks/useProperties';
 import { Property } from '../../types';
@@ -94,7 +94,7 @@ const AdminProperties: React.FC = () => {
   if (error) {
     return (
       <div className="container-custom py-16 text-center">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm mb-4">
           <p>Error al cargar las propiedades: {error}</p>
         </div>
         <p className="text-neutral-600">Por favor, intenta recargar la página.</p>
@@ -206,7 +206,7 @@ const AdminProperties: React.FC = () => {
                   <tr key={property.id} className="hover:bg-neutral-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="h-12 w-12 flex-shrink-0">
+                        <div className="h-12 w-12 shrink-0">
                           <img className="h-12 w-12 rounded-md object-cover" src={property.imagenes[0]} alt={property.titulo} />
                         </div>
                         <div className="ml-4">

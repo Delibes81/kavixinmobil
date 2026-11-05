@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Building2, User, DollarSign, Clock, Eye, PenSquare, Home } from 'lucide-react';
 import { useProperties } from '../../hooks/useProperties';
 import { useAuth } from '../../contexts/AuthContext';
@@ -277,7 +277,7 @@ const AdminDashboard: React.FC = () => {
                     <tr key={property.id} className="hover:bg-neutral-50">
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="h-10 w-10 flex-shrink-0">
+                          <div className="h-10 w-10 shrink-0">
                             <img className="h-10 w-10 rounded-md object-cover" src={property.imagenes[0]} alt={property.titulo} />
                           </div>
                           <div className="ml-4">
@@ -369,7 +369,7 @@ const AdminDashboard: React.FC = () => {
             
             <div className="space-y-6">
               <div className="flex items-start">
-                <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center shrink-0">
                   <User className="h-5 w-5 text-primary-600" />
                 </div>
                 <div className="ml-4">
@@ -380,7 +380,7 @@ const AdminDashboard: React.FC = () => {
               </div>
               
               <div className="flex items-start">
-                <div className="w-10 h-10 rounded-full bg-secondary-100 flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-secondary-100 flex items-center justify-center shrink-0">
                   <PenSquare className="h-5 w-5 text-secondary-600" />
                 </div>
                 <div className="ml-4">
@@ -391,7 +391,7 @@ const AdminDashboard: React.FC = () => {
               </div>
               
               <div className="flex items-start">
-                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center shrink-0">
                   <DollarSign className="h-5 w-5 text-green-600" />
                 </div>
                 <div className="ml-4">

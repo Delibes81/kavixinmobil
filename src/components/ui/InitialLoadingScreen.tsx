@@ -49,10 +49,10 @@ const InitialLoadingScreen: React.FC<InitialLoadingScreenProps> = ({ onComplete 
   }, [onComplete]);
 
   return (
-    <div className={`fixed inset-0 z-[9999] flex items-center justify-center transition-all duration-800 ${
+    <div className={`fixed inset-0 z-9999 flex items-center justify-center transition-all duration-800 ${
       isExiting 
-        ? 'opacity-0 scale-110 bg-gradient-to-br from-primary-900/90 to-primary-800/90' 
-        : 'opacity-100 scale-100 bg-gradient-to-br from-primary-900 to-primary-800'
+        ? 'opacity-0 scale-110 bg-linear-to-br from-primary-900/90 to-primary-800/90' 
+        : 'opacity-100 scale-100 bg-linear-to-br from-primary-900 to-primary-800'
     }`}>
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
@@ -77,7 +77,7 @@ const InitialLoadingScreen: React.FC<InitialLoadingScreenProps> = ({ onComplete 
             </div>
             
             {/* Logo */}
-            <div className="relative w-32 h-32 mx-auto flex items-center justify-center bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
+            <div className="relative w-32 h-32 mx-auto flex items-center justify-center bg-white/10 backdrop-blur-xs rounded-full border border-white/20">
               <NovaHestiaLogo className="h-16 w-16 animate-pulse" color="#e6b325" />
             </div>
           </div>
@@ -102,11 +102,11 @@ const InitialLoadingScreen: React.FC<InitialLoadingScreenProps> = ({ onComplete 
           {/* Progress Bar */}
           <div className="w-full bg-white/20 rounded-full h-2 mb-4 overflow-hidden">
             <div 
-              className="h-full bg-gradient-to-r from-secondary-400 to-secondary-300 rounded-full transition-all duration-300 ease-out relative"
+              className="h-full bg-linear-to-r from-secondary-400 to-secondary-300 rounded-full transition-all duration-300 ease-out relative"
               style={{ width: `${progress}%` }}
             >
               {/* Shimmer Effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
+              <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
             </div>
           </div>
           

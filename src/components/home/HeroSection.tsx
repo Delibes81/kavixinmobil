@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, MapPin, Home, ChevronDown } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router';
 import FadeInSection from '../ui/FadeInSection';
 import AddressAutocomplete from '../admin/AddressAutocomplete';
 
@@ -57,7 +57,7 @@ const HeroSection: React.FC = () => {
     <section className="relative h-screen min-h-[600px] flex items-center overflow-hidden hero-section">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary-900/80 to-primary-800/70 z-10"></div>
+        <div className="absolute inset-0 bg-linear-to-r from-primary-900/80 to-primary-800/70 z-10"></div>
         <img
           src="https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1920"
           alt="Luxury Home"

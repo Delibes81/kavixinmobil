@@ -232,9 +232,9 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
     <form onSubmit={handleSubmit} className="space-y-6" id="property-form">
       {/* Display validation errors */}
       {Object.keys(errors).length > 0 && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm">
           <div className="flex items-start">
-            <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
             <div>
               <p className="font-medium mb-1">Por favor, corrige los siguientes errores:</p>
               <ul className="list-disc list-inside text-sm">
@@ -378,7 +378,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
                 name="amueblado"
                 checked={formData.amueblado || false}
                 onChange={handleCheckboxChange}
-                className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+                className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded-sm"
                 disabled={isSubmitting}
               />
               <label htmlFor="amueblado" className="ml-2 block text-neutral-700">
@@ -393,7 +393,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
                 name="disponible"
                 checked={formData.disponible ?? true}
                 onChange={handleCheckboxChange}
-                className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+                className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded-sm"
                 disabled={isSubmitting}
               />
               <label htmlFor="disponible" className="ml-2 block text-neutral-700">
@@ -408,7 +408,7 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
                 name="destacado"
                 checked={formData.destacado || false}
                 onChange={handleCheckboxChange}
-                className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+                className="h-5 w-5 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded-sm"
                 disabled={isSubmitting}
               />
               <label htmlFor="destacado" className="ml-2 block text-neutral-700">
@@ -687,12 +687,12 @@ const AdminPropertyForm: React.FC<AdminPropertyFormProps> = ({ property, onSubmi
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {categoryAmenities.map((amenity) => (
-                <label key={amenity.id} className="flex items-center space-x-2 p-3 hover:bg-neutral-50 rounded cursor-pointer border border-neutral-200">
+                <label key={amenity.id} className="flex items-center space-x-2 p-3 hover:bg-neutral-50 rounded-sm cursor-pointer border border-neutral-200">
                   <input
                     type="checkbox"
                     checked={selectedAmenities.includes(amenity.id)}
                     onChange={(e) => handleAmenityChange(amenity.id, e.target.checked)}
-                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded"
+                    className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-neutral-300 rounded-sm"
                     disabled={isSubmitting}
                   />
                   <span className="text-sm text-neutral-700">{amenity.nombre}</span>

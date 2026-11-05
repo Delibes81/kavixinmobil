@@ -13,29 +13,33 @@ A modern, responsive real estate website built with React, TypeScript, and Tailw
 
 ## Technologies Used
 
-- React 18
-- TypeScript
-- Tailwind CSS
-- React Router
-- Leaflet Maps
+- React 19
+- TypeScript 6
+- Vite 8
+- Tailwind CSS 4
+- React Router 8
+- Supabase
+- Mapbox GL
 - React Slick Carousel
 - Lucide React Icons
 
 ## Getting Started
 
+Requires Node.js 22.12+ and [pnpm](https://pnpm.io) 10 (`corepack enable` installs the version pinned in `package.json`).
+
 1. Install dependencies:
 ```bash
-npm install
+pnpm install
 ```
 
 2. Start the development server:
 ```bash
-npm run dev
+pnpm dev
 ```
 
 3. Build for production:
 ```bash
-npm run build
+pnpm build
 ```
 
 ## Deploy en Vercel
