@@ -18,7 +18,9 @@ const InitialLoadingScreen: React.FC<InitialLoadingScreenProps> = ({ onComplete 
   ];
 
   useEffect(() => {
-    const duration = 3000; // 3 seconds total
+    // Total ~2 s: 1.4 s de progreso + 0.1 s de pausa + 0.5 s de salida.
+    // La web se carga por debajo mientras tanto (ver App.tsx).
+    const duration = 1400;
     const stepDuration = duration / loadingSteps.length;
     const progressInterval = 50; // Update every 50ms for smooth animation
 
@@ -36,8 +38,8 @@ const InitialLoadingScreen: React.FC<InitialLoadingScreenProps> = ({ onComplete 
           setTimeout(() => {
             setIsExiting(true);
             // Complete loading after exit animation
-            setTimeout(onComplete, 800);
-          }, 500);
+            setTimeout(onComplete, 500);
+          }, 100);
           return 100;
         }
         
@@ -49,7 +51,7 @@ const InitialLoadingScreen: React.FC<InitialLoadingScreenProps> = ({ onComplete 
   }, [onComplete]);
 
   return (
-    <div className={`fixed inset-0 z-9999 flex items-center justify-center transition-all duration-800 ${
+    <div style={{ zIndex: 10000 }} className={`fixed inset-0 flex items-center justify-center transition-all duration-500 ${
       isExiting 
         ? 'opacity-0 scale-110 bg-linear-to-br from-primary-900/90 to-primary-800/90' 
         : 'opacity-100 scale-100 bg-linear-to-br from-primary-900 to-primary-800'

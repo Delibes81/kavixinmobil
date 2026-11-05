@@ -3,6 +3,7 @@ import { Search, MapPin, Home, ChevronDown } from 'lucide-react';
 import { Link, useNavigate } from 'react-router';
 import FadeInSection from '../ui/FadeInSection';
 import AddressAutocomplete from '../admin/AddressAutocomplete';
+import { HERO_IMAGE } from '../../seo/meta';
 
 const HeroSection: React.FC = () => {
   const navigate = useNavigate();
@@ -59,7 +60,9 @@ const HeroSection: React.FC = () => {
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-linear-to-r from-primary-900/80 to-primary-800/70 z-10"></div>
         <img
-          src="https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1920"
+          src={HERO_IMAGE.src}
+          srcSet={HERO_IMAGE.srcSet}
+          sizes={HERO_IMAGE.sizes}
           alt="Casa de lujo en venta en Ciudad de México"
           className="w-full h-full object-cover animate-ken-burns"
           loading="eager"

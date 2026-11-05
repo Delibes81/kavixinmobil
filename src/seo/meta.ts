@@ -26,6 +26,14 @@ export const SITE = {
 
 export type JsonLd = Record<string, unknown>;
 
+/** Imagen principal de la portada (elemento LCP), en varios tamaños. */
+const HERO_BASE = 'https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb';
+export const HERO_IMAGE = {
+  src: `${HERO_BASE}&w=1920`,
+  srcSet: [768, 1280, 1920].map((w) => `${HERO_BASE}&w=${w} ${w}w`).join(', '),
+  sizes: '100vw',
+};
+
 export interface PageMeta {
   /** Título completo de la página (ya incluye la marca). */
   title: string;
@@ -36,6 +44,8 @@ export interface PageMeta {
   type?: 'website' | 'article';
   noindex?: boolean;
   jsonLd?: JsonLd[];
+  /** Imagen a precargar (elemento LCP de la página). */
+  preloadImage?: { srcSet: string; sizes: string };
   /** Solo para artículos. */
   publishedTime?: string;
   modifiedTime?: string;
@@ -159,7 +169,13 @@ export const staticPageMeta = (siteUrl: string, path: keyof typeof STATIC_PAGES)
       ]),
     );
   }
-  return { title: page.title, description: page.description, path, jsonLd };
+  return {
+    title: page.title,
+    description: page.description,
+    path,
+    jsonLd,
+    preloadImage: path === '/' ? { srcSet: HERO_IMAGE.srcSet, sizes: HERO_IMAGE.sizes } : undefined,
+  };
 };
 
 export const NOINDEX_META = (title: string, path: string): PageMeta => ({
@@ -350,6 +366,18 @@ export const buildHeadTags = (siteUrl: string, meta: PageMeta): HeadTag[] => {
     { tag: 'meta', attrs: { name: 'twitter:image', content: image } },
   ];
   if (!meta.noindex) tags.push({ tag: 'link', attrs: { rel: 'canonical', href: url } });
+  if (meta.preloadImage) {
+    tags.push({
+      tag: 'link',
+      attrs: {
+        rel: 'preload',
+        as: 'image',
+        imagesrcset: meta.preloadImage.srcSet,
+        imagesizes: meta.preloadImage.sizes,
+        fetchpriority: 'high',
+      },
+    });
+  }
   if (meta.publishedTime) tags.push({ tag: 'meta', attrs: { property: 'article:published_time', content: meta.publishedTime } });
   if (meta.modifiedTime) tags.push({ tag: 'meta', attrs: { property: 'article:modified_time', content: meta.modifiedTime } });
   for (const data of meta.jsonLd ?? []) {
