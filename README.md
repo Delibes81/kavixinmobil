@@ -38,6 +38,15 @@ npm run dev
 npm run build
 ```
 
+## Deploy en Vercel
+
+1. Importa el repositorio en Vercel (preset **Vite**; `vercel.json` ya define build, salida `dist`, rutas SPA y cabeceras de seguridad).
+2. En **Settings → Environment Variables** añade:
+   - `VITE_SUPABASE_URL` — Supabase → Project Settings → API → Project URL
+   - `VITE_SUPABASE_ANON_KEY` — Supabase → Project Settings → API → clave `anon` `public` (nunca la `service_role`)
+   - `VITE_MAPBOX_ACCESS_TOKEN` — account.mapbox.com → Access tokens (`pk.…`)
+3. Despliega. Si cambias alguna variable después, haz **Redeploy** (Vite las incrusta en el build).
+
 ## Project Structure
 
 - `/src/components` - Reusable UI components
