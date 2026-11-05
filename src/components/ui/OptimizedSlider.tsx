@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import Slider from 'react-slick';
+import Slider from '../../lib/slick';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import LazyImage from './LazyImage';
 
@@ -101,7 +101,7 @@ const OptimizedSlider: React.FC<OptimizedSliderProps> = ({
     <div className={className}>
       {/* Main Gallery */}
       <div className="relative rounded-lg overflow-hidden mb-3">
-        <div className="aspect-[16/9] bg-neutral-100">
+        <div className="aspect-video bg-neutral-100">
           <Slider 
             ref={setMainSlider}
             {...mainSettings}
@@ -109,7 +109,7 @@ const OptimizedSlider: React.FC<OptimizedSliderProps> = ({
             className="h-full"
           >
             {images.map((image, index) => (
-              <div key={index} className="outline-none h-full">
+              <div key={index} className="outline-hidden h-full">
                 <div className="h-[500px] w-full">
                   <LazyImage
                     src={image}
@@ -127,14 +127,14 @@ const OptimizedSlider: React.FC<OptimizedSliderProps> = ({
           <>
             <button
               onClick={handlePrevious}
-              className="absolute top-1/2 left-4 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 rounded-full p-2 text-white transition-colors duration-200 focus:outline-none"
+              className="absolute top-1/2 left-4 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 rounded-full p-2 text-white transition-colors duration-200 focus:outline-hidden"
               aria-label="Imagen anterior"
             >
               <ChevronLeft className="h-6 w-6" />
             </button>
             <button
               onClick={handleNext}
-              className="absolute top-1/2 right-4 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 rounded-full p-2 text-white transition-colors duration-200 focus:outline-none"
+              className="absolute top-1/2 right-4 -translate-y-1/2 z-10 bg-black/50 hover:bg-black/70 rounded-full p-2 text-white transition-colors duration-200 focus:outline-hidden"
               aria-label="Siguiente imagen"
             >
               <ChevronRight className="h-6 w-6" />
@@ -159,7 +159,7 @@ const OptimizedSlider: React.FC<OptimizedSliderProps> = ({
               className="thumbnail-slider"
             >
               {images.map((image, index) => (
-                <div key={index} className="px-1 outline-none">
+                <div key={index} className="px-1 outline-hidden">
                   <div 
                     className={`gallery-thumbnail h-20 cursor-pointer rounded-md overflow-hidden border-2 transition-all duration-200 ${
                       currentSlide === index 
@@ -183,14 +183,14 @@ const OptimizedSlider: React.FC<OptimizedSliderProps> = ({
             <>
               <button
                 onClick={handleThumbnailPrev}
-                className="absolute top-1/2 left-0 -translate-y-1/2 z-10 bg-white rounded-full p-1 shadow-md hover:bg-neutral-100 focus:outline-none"
+                className="absolute top-1/2 left-0 -translate-y-1/2 z-10 bg-white rounded-full p-1 shadow-md hover:bg-neutral-100 focus:outline-hidden"
                 aria-label="Miniaturas anteriores"
               >
                 <ChevronLeft className="h-5 w-5 text-primary-600" />
               </button>
               <button
                 onClick={handleThumbnailNext}
-                className="absolute top-1/2 right-0 -translate-y-1/2 z-10 bg-white rounded-full p-1 shadow-md hover:bg-neutral-100 focus:outline-none"
+                className="absolute top-1/2 right-0 -translate-y-1/2 z-10 bg-white rounded-full p-1 shadow-md hover:bg-neutral-100 focus:outline-hidden"
                 aria-label="Siguientes miniaturas"
               >
                 <ChevronRight className="h-5 w-5 text-primary-600" />

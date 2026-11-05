@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router';
 import { Lock, User, Eye, EyeOff, AlertCircle, Shield, Home } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { sanitizeInput } from '../../utils/security';
@@ -66,7 +66,7 @@ const LoginForm: React.FC = () => {
   const timeLeftMinutes = Math.ceil(timeUntilReset / 1000 / 60);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
+    <div className="min-h-screen bg-linear-to-br from-primary-50 to-primary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative">
       <div className="max-w-md w-full space-y-8">
         <div>
           <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-primary-600">
@@ -146,8 +146,8 @@ const LoginForm: React.FC = () => {
 
           {/* Rate limiting info */}
           {!isBlocked && remainingAttempts < 5 && (
-            <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded flex items-start">
-              <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+            <div className="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-sm flex items-start">
+              <AlertCircle className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
               <p className="text-sm">
                 Intentos restantes: {remainingAttempts}
               </p>
@@ -155,8 +155,8 @@ const LoginForm: React.FC = () => {
           )}
 
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded flex items-start">
-              <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm flex items-start">
+              <AlertCircle className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
               <p className="text-sm">{error}</p>
             </div>
           )}

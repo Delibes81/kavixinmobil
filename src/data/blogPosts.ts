@@ -1,4 +1,4 @@
-import { BlogPost } from '../types';
+import type { BlogPost } from '../types/index.ts';
 
 export const blogPosts: BlogPost[] = [
   {
@@ -68,7 +68,7 @@ El 2025 promete ser un año de consolidación para estas tendencias. Los profesi
     `,
     author: 'Carlos Rodríguez',
     publishDate: '2025-01-15',
-    imageUrl: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg',
+    imageUrl: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1200',
     tags: ['Mercado Inmobiliario', 'Tendencias', 'Inversión', 'México'],
     readTime: 8
   },
@@ -203,7 +203,7 @@ Comprar tu primera casa requiere preparación, paciencia y asesoría profesional
     `,
     author: 'Ana García',
     publishDate: '2025-01-10',
-    imageUrl: 'https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg',
+    imageUrl: 'https://images.pexels.com/photos/1396132/pexels-photo-1396132.jpeg?auto=compress&cs=tinysrgb&w=1200',
     tags: ['Primera Casa', 'Crédito Hipotecario', 'INFONAVIT', 'Guía'],
     readTime: 12
   },
@@ -419,7 +419,7 @@ La inversión inmobiliaria en México ofrece oportunidades sólidas para generar
     `,
     author: 'Roberto Méndez',
     publishDate: '2025-01-05',
-    imageUrl: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg',
+    imageUrl: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1200',
     tags: ['Inversión', 'ROI', 'Bienes Raíces', 'Finanzas'],
     readTime: 15
   },
@@ -702,7 +702,7 @@ La elección de colonia en CDMX depende de tus prioridades personales, presupues
     `,
     author: 'Laura Sánchez',
     publishDate: '2024-12-28',
-    imageUrl: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg',
+    imageUrl: 'https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=1200',
     tags: ['CDMX', 'Colonias', 'Calidad de Vida', 'Ubicación'],
     readTime: 18
   },

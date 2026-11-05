@@ -286,7 +286,7 @@ const ImageUploadComponent: React.FC<ImageUploadComponentProps> = ({
           {/* Reordering Instructions */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
             <div className="flex items-start">
-              <AlertCircle className="h-5 w-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="h-5 w-5 text-blue-600 mr-2 shrink-0 mt-0.5" />
               <div className="text-sm text-blue-800">
                 <p className="font-medium mb-1">Cómo reordenar las imágenes:</p>
                 <ul className="list-disc list-inside space-y-1 text-xs">
@@ -389,8 +389,8 @@ const ImageUploadComponent: React.FC<ImageUploadComponentProps> = ({
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded flex items-start">
-          <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0 mt-0.5" />
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm flex items-start">
+          <AlertCircle className="h-5 w-5 mr-2 shrink-0 mt-0.5" />
           <p className="text-sm">{error}</p>
         </div>
       )}
@@ -398,7 +398,7 @@ const ImageUploadComponent: React.FC<ImageUploadComponentProps> = ({
       {/* Info */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-start">
-          <AlertCircle className="h-5 w-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="h-5 w-5 text-blue-600 mr-2 shrink-0 mt-0.5" />
           <div className="text-sm text-blue-800">
             <p className="font-medium mb-1">Consejos para mejores resultados:</p>
             <ul className="list-disc list-inside space-y-1 text-xs">

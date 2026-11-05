@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { LogOut, User, Shield } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import NovaHestiaLogo from '../ui/NovaHestiaLogo';
@@ -27,7 +27,7 @@ const AdminHeader: React.FC = () => {
 
   return (
     <>
-      <header className="bg-white shadow-sm border-b border-neutral-200">
+      <header className="bg-white shadow-xs border-b border-neutral-200">
         <div className="container-custom py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}

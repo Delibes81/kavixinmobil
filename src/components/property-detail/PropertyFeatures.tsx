@@ -63,7 +63,7 @@ const PropertyFeatures: React.FC<PropertyFeaturesProps> = ({ property }) => {
         {property.id_interno && (
           <div className="mb-4 p-3 bg-neutral-50 rounded-md">
             <div className="flex items-center">
-              <CheckCircle2 className="h-5 w-5 text-primary-600 mr-2 flex-shrink-0" />
+              <CheckCircle2 className="h-5 w-5 text-primary-600 mr-2 shrink-0" />
               <span className="text-sm font-medium text-neutral-700">
                 ID de la propiedad: <span className="font-mono text-primary-600">{property.id_interno}</span>
               </span>
@@ -75,7 +75,7 @@ const PropertyFeatures: React.FC<PropertyFeaturesProps> = ({ property }) => {
           {property.amenidades && property.amenidades.length > 0 ? (
             property.amenidades.map((amenity, index) => (
               <div key={index} className="flex items-center py-1">
-                <CheckCircle2 className="h-5 w-5 text-secondary-500 mr-2 flex-shrink-0" />
+                <CheckCircle2 className="h-5 w-5 text-secondary-500 mr-2 shrink-0" />
                 <span>{amenity.nombre}</span>
               </div>
             ))
@@ -84,7 +84,7 @@ const PropertyFeatures: React.FC<PropertyFeaturesProps> = ({ property }) => {
           )}
           {property.amueblado && (
             <div className="flex items-center py-1">
-              <CheckCircle2 className="h-5 w-5 text-secondary-500 mr-2 flex-shrink-0" />
+              <CheckCircle2 className="h-5 w-5 text-secondary-500 mr-2 shrink-0" />
               <span>Amueblado</span>
             </div>
           )}

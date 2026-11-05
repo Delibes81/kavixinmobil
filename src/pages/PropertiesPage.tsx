@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import { Building2 } from 'lucide-react';
 import PropertySearchFilters from '../components/properties/PropertySearchFilters';
 import PropertyCard from '../components/properties/PropertyCard';
@@ -7,6 +7,9 @@ import FadeInSection from '../components/ui/FadeInSection';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import { useProperties } from '../hooks/useProperties';
 import { Property, SearchFilters } from '../types';
+import Seo from '../seo/Seo';
+import { SITE_URL } from '../seo/siteUrl';
+import { staticPageMeta } from '../seo/meta';
 
 const PropertiesPage: React.FC = () => {
   const location = useLocation();
@@ -29,7 +32,6 @@ const PropertiesPage: React.FC = () => {
   });
 
   useEffect(() => {
-    document.title = 'Propiedades | Nova Hestia';
     // Scroll to top when component mounts
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
@@ -219,7 +221,7 @@ const PropertiesPage: React.FC = () => {
           </div>
         </div>
         <div className="container-custom py-16 text-center">
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm mb-4">
             <p>Error al cargar las propiedades: {error}</p>
           </div>
           <p className="text-neutral-600">Por favor, intenta recargar la página.</p>
@@ -230,6 +232,7 @@ const PropertiesPage: React.FC = () => {
 
   return (
     <div className="pt-20">
+      <Seo {...staticPageMeta(SITE_URL, '/propiedades')} />
       {/* Page Header */}
       <div className="bg-primary-800 text-white py-12">
         <div className="container-custom">

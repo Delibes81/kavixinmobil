@@ -52,12 +52,12 @@ class ErrorBoundary extends Component<Props, State> {
               Recargar página
             </button>
             
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <details className="mt-4 text-left">
                 <summary className="text-sm text-neutral-500 cursor-pointer">
                   Detalles del error (desarrollo)
                 </summary>
-                <pre className="mt-2 text-xs text-red-600 bg-red-50 p-2 rounded overflow-auto">
+                <pre className="mt-2 text-xs text-red-600 bg-red-50 p-2 rounded-sm overflow-auto">
                   {this.state.error.stack}
                 </pre>
               </details>

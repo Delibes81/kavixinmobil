@@ -1,12 +1,15 @@
 import React, { useEffect } from 'react';
+import { Link } from 'react-router';
 import { BookOpen, TrendingUp } from 'lucide-react';
 import BlogPostCard from '../components/blog/BlogPostCard';
 import FadeInSection from '../components/ui/FadeInSection';
 import { blogPosts } from '../data/blogPosts';
+import Seo from '../seo/Seo';
+import { SITE_URL } from '../seo/siteUrl';
+import { staticPageMeta } from '../seo/meta';
 
 const BlogPage: React.FC = () => {
   useEffect(() => {
-    document.title = 'Blog Inmobiliario | Nova Hestia';
     // Scroll to top when component mounts
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
@@ -17,6 +20,7 @@ const BlogPage: React.FC = () => {
 
   return (
     <div className="pt-20">
+      <Seo {...staticPageMeta(SITE_URL, '/blog')} />
       {/* Page Header */}
       <div className="bg-primary-800 text-white py-12">
         <div className="container-custom">
@@ -88,12 +92,12 @@ const BlogPage: React.FC = () => {
                   ))}
                 </div>
                 
-                <a
-                  href={`/blog/${featuredPost.slug}`}
+                <Link
+                  to={`/blog/${featuredPost.slug}`}
                   className="btn btn-primary w-fit"
                 >
                   Leer artículo completo
-                </a>
+                </Link>
               </div>
             </div>
           </div>

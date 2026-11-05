@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useParams } from 'react-router';
 import { AuthProvider } from './contexts/AuthContext';
 import { useInitialLoading } from './hooks/useInitialLoading';
 import ErrorBoundary from './components/ui/ErrorBoundary';
@@ -23,6 +23,12 @@ const AdminProperties = React.lazy(() => import('./pages/admin/AdminProperties')
 const AdminPropertyEdit = React.lazy(() => import('./pages/admin/AdminPropertyEdit'));
 const AdminPropertyCreate = React.lazy(() => import('./pages/admin/AdminPropertyCreate'));
 const NotFoundPage = React.lazy(() => import('./pages/NotFoundPage'));
+
+// Redirige rutas antiguas (/property/:id, /properties/:id) conservando el id
+const LegacyPropertyRedirect = () => {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={`/propiedades/${id ?? ''}`} replace />;
+};
 
 function App() {
   const { showInitialLoading, isInitialLoadComplete, completeInitialLoading } = useInitialLoading();
@@ -61,8 +67,8 @@ function App() {
               <Route path="contacto" element={<ContactPage />} />
               
               {/* Redirect old routes */}
-              <Route path="property/:id" element={<Navigate to="/propiedades/:id" replace />} />
-              <Route path="properties/:id" element={<Navigate to="/propiedades/:id" replace />} />
+              <Route path="property/:id" element={<LegacyPropertyRedirect />} />
+              <Route path="properties/:id" element={<LegacyPropertyRedirect />} />
             </Route>
             
             {/* Login route - standalone without main navbar */}

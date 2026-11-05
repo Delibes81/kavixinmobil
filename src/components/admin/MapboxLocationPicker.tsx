@@ -40,10 +40,10 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
   // Usamos refs para tener los valores más actuales dentro de los listeners del mapa,
   // ya que estos se registran una sola vez
   // Mapbox access token
-  const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN || 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+  const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN ?? '';
 
   useEffect(() => {
-    if (!mapContainer.current) return;
+    if (!mapContainer.current || !MAPBOX_TOKEN) return;
 
     // Initialize map
     mapboxgl.accessToken = MAPBOX_TOKEN;
@@ -338,7 +338,7 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
             onClick={() => handleModeChange('pin')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
               mapMode === 'pin'
-                ? 'bg-primary-600 text-white shadow-sm'
+                ? 'bg-primary-600 text-white shadow-xs'
                 : 'text-neutral-600 hover:text-neutral-800'
             }`}
           >
@@ -350,7 +350,7 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
             onClick={() => handleModeChange('area')}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
               mapMode === 'area'
-                ? 'bg-primary-600 text-white shadow-sm'
+                ? 'bg-primary-600 text-white shadow-xs'
                 : 'text-neutral-600 hover:text-neutral-800'
             }`}
           >
@@ -422,7 +422,7 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
         )}
 
         {/* Instructions Overlay */}
-        <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg p-3 shadow-md max-w-xs">
+        <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-xs rounded-lg p-3 shadow-md max-w-xs">
           <p className="text-xs text-neutral-700 font-medium mb-1">
             {mapMode === 'pin' ? 'Ubicación Exacta' : 'Área de Influencia'}
           </p>
@@ -492,7 +492,7 @@ const MapboxLocationPicker: React.FC<MapboxLocationPickerProps> = ({
       {/* Info Panel */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-start">
-          <MapPin className="h-5 w-5 text-blue-600 mr-2 flex-shrink-0 mt-0.5" />
+          <MapPin className="h-5 w-5 text-blue-600 mr-2 shrink-0 mt-0.5" />
           <div className="text-sm text-blue-800">
             <p className="font-medium mb-1">Consejos para usar el mapa:</p>
             <ul className="list-disc list-inside space-y-1 text-xs">

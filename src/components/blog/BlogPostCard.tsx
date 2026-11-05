@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { Calendar, User, Clock, ArrowRight } from 'lucide-react';
 import { BlogPost } from '../../types';
 import LazyImage from '../ui/LazyImage';
@@ -27,7 +27,7 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
             alt={post.title}
             className="w-full h-full group-hover:scale-110 transition-transform duration-700"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           
           {/* Reading time badge */}
           <div className="absolute top-4 right-4 bg-primary-600 text-white px-3 py-1 rounded-full text-sm font-medium flex items-center">

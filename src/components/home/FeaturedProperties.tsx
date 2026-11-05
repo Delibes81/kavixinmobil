@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { ChevronRight } from 'lucide-react';
 import PropertyCard from '../properties/PropertyCard';
 import FadeInSection from '../ui/FadeInSection';

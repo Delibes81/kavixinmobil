@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import ScrollToTop from '../ui/ScrollToTop';
@@ -18,7 +18,7 @@ const Layout: React.FC = () => {
       <Navbar />
       
       {/* Main content with proper top padding to account for fixed navbar */}
-      <main className="flex-grow">
+      <main className="grow">
         <Outlet />
       </main>
       

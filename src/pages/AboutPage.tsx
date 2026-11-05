@@ -1,14 +1,17 @@
 import React, { useEffect } from 'react';
 import { Users, Award, Target, MapPin, Phone, Mail } from 'lucide-react';
 import FadeInSection from '../components/ui/FadeInSection';
+import Seo from '../seo/Seo';
+import { SITE_URL } from '../seo/siteUrl';
+import { staticPageMeta } from '../seo/meta';
 
 const AboutPage: React.FC = () => {
   useEffect(() => {
-    document.title = 'Nosotros | Nova Hestia';
   }, []);
 
   return (
     <div className="pt-20">
+      <Seo {...staticPageMeta(SITE_URL, '/nosotros')} />
       {/* Page Header */}
       <div className="bg-primary-800 text-white py-12">
         <div className="container-custom">
@@ -50,7 +53,7 @@ const AboutPage: React.FC = () => {
             <FadeInSection delay={200}>
               <div>
                 <img 
-                  src="https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg" 
+                  src="https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=1200" 
                   alt="Equipo Nova Hestia" 
                   className="rounded-lg shadow-lg w-full h-auto"
                 />
@@ -124,7 +127,7 @@ const AboutPage: React.FC = () => {
             <FadeInSection delay={100}>
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <img 
-                  src="https://images.pexels.com/photos/2381069/pexels-photo-2381069.jpeg" 
+                  src="https://images.pexels.com/photos/2381069/pexels-photo-2381069.jpeg?auto=compress&cs=tinysrgb&w=1200" 
                   alt="Carlos Rodríguez" 
                   className="w-full h-64 object-cover"
                 />
@@ -142,7 +145,7 @@ const AboutPage: React.FC = () => {
             <FadeInSection delay={200}>
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <img 
-                  src="https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg" 
+                  src="https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=1200" 
                   alt="Ana García" 
                   className="w-full h-64 object-cover"
                 />
@@ -160,7 +163,7 @@ const AboutPage: React.FC = () => {
             <FadeInSection delay={300}>
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <img 
-                  src="https://images.pexels.com/photos/3778603/pexels-photo-3778603.jpeg" 
+                  src="https://images.pexels.com/photos/3778603/pexels-photo-3778603.jpeg?auto=compress&cs=tinysrgb&w=1200" 
                   alt="Roberto Méndez" 
                   className="w-full h-64 object-cover"
                 />
@@ -178,7 +181,7 @@ const AboutPage: React.FC = () => {
             <FadeInSection delay={400}>
               <div className="bg-white rounded-lg shadow-md overflow-hidden">
                 <img 
-                  src="https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg" 
+                  src="https://images.pexels.com/photos/3763188/pexels-photo-3763188.jpeg?auto=compress&cs=tinysrgb&w=1200" 
                   alt="Laura Sánchez" 
                   className="w-full h-64 object-cover"
                 />

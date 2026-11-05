@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router';
 import { ArrowLeft, Save, Trash2 } from 'lucide-react';
 import AdminPropertyForm from '../../components/admin/AdminPropertyForm';
 import { useProperties } from '../../hooks/useProperties';
@@ -73,7 +73,7 @@ const AdminPropertyEdit: React.FC = () => {
   if (!property) {
     return (
       <div className="container-custom py-16 text-center">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-sm mb-4">
           <p>No se encontró la propiedad con ID: {id}</p>
         </div>
         <Link to="/admin/propiedades" className="btn btn-primary">

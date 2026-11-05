@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Phone, Mail, MapPin, Send, Facebook, Instagram, Twitter } from 'lucide-react';
+import { Phone, Mail, MapPin, Send } from 'lucide-react';
+import { Facebook, Instagram, Twitter } from '../components/ui/SocialIcons';
 import FadeInSection from '../components/ui/FadeInSection';
+import Seo from '../seo/Seo';
+import { SITE_URL } from '../seo/siteUrl';
+import { trackLead } from '../lib/analytics';
+import { staticPageMeta } from '../seo/meta';
 
 const ContactPage: React.FC = () => {
   useEffect(() => {
-    document.title = 'Contacto | Nova Hestia';
   }, []);
 
   const [formData, setFormData] = useState({
@@ -52,6 +56,7 @@ const ContactPage: React.FC = () => {
     
     // In a real app, this would submit the form data to a server
     console.log('Form submitted:', formData);
+    trackLead('form', { subject: formData.subject });
     setIsSubmitted(true);
     setErrors({});
     
@@ -72,6 +77,7 @@ const ContactPage: React.FC = () => {
 
   return (
     <div className="pt-20">
+      <Seo {...staticPageMeta(SITE_URL, '/contacto')} />
       {/* Page Header */}
       <div className="bg-primary-800 text-white py-12">
         <div className="container-custom">
@@ -99,7 +105,7 @@ const ContactPage: React.FC = () => {
               <div className="space-y-6 mb-8">
                 <FadeInSection delay={100}>
                   <div className="flex items-start">
-                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mr-4 flex-shrink-0">
+                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mr-4 shrink-0">
                       <MapPin className="h-5 w-5" />
                     </div>
                     <div>
@@ -116,7 +122,7 @@ const ContactPage: React.FC = () => {
                 
                 <FadeInSection delay={200}>
                   <div className="flex items-start">
-                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mr-4 flex-shrink-0">
+                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mr-4 shrink-0">
                       <Phone className="h-5 w-5" />
                     </div>
                     <div>
@@ -135,7 +141,7 @@ const ContactPage: React.FC = () => {
                 
                 <FadeInSection delay={300}>
                   <div className="flex items-start">
-                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mr-4 flex-shrink-0">
+                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-primary-100 text-primary-600 mr-4 shrink-0">
                       <Mail className="h-5 w-5" />
                     </div>
                     <div>
@@ -214,7 +220,7 @@ const ContactPage: React.FC = () => {
               
                 {/* Success Message */}
                 {isSubmitted && (
-                  <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+                  <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-sm mb-6">
                     <p>¡Gracias por contactarnos! Te responderemos a la brevedad.</p>
                   </div>
                 )}
