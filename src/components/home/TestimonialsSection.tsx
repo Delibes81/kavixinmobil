@@ -145,7 +145,7 @@ const TestimonialsSection: React.FC = () => {
         </div>
 
         {/* Custom navigation buttons for mobile */}
-        <div className="flex justify-center mt-8 space-x-4 md:hidden">
+        <div className="flex justify-center mt-16 space-x-4 md:hidden">
           <button
             onClick={() => sliderRef?.slickPrev()}
             className="bg-white rounded-full p-3 shadow-md hover:bg-neutral-100 focus:outline-hidden transition-colors duration-200"
